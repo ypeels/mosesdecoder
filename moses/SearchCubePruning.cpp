@@ -161,6 +161,15 @@ void SearchCubePruning::ProcessSentence()
 
     stackNo++;
   }
+
+  IFVERBOSE(1) { 
+    cerr << "Stack size: ";
+    for (size_t i = 0; i < m_hypoStackColl.size(); ++i) {
+      const HypothesisStack &stack = *m_hypoStackColl[i];
+      cerr << stack.size() << " ";
+    }
+    cerr << endl;
+  }
 }
 
 void SearchCubePruning::CreateForwardTodos(HypothesisStackCubePruning &stack)
