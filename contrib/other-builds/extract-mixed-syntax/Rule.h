@@ -79,7 +79,7 @@ protected:
 	void CreateAlignments(int sourcePos, const RuleSymbol *targetSought);
 
 	bool ContainTerm(const ConsistentPhrase &cp, const std::set<const Word*> &terms) const;
-	int GetScope() const;
+	int GetScope(const Parameter &params) const;
 
 	void NonTermContext(int sourceTarget, int factors, size_t ntInd, const ConsistentPhrase &cp, std::ostream &out) const;
 		// sourceTarget: 1 = source, 2 = target

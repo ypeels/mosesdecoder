@@ -431,7 +431,7 @@ void Rule::Prevalidate(const Parameter &params)
   }
 
   if (params.maxScope != UNDEFINED || params.minScope > 0) {
-	  int scope = GetScope();
+	  int scope = GetScope(params);
 	  if (scope > params.maxScope) {
 		  // scope of subsequent rules will be the same or increase
 		  // therefore can NOT recurse
@@ -448,7 +448,7 @@ void Rule::Prevalidate(const Parameter &params)
   }
 }
 
-int Rule::GetScope() const
+int Rule::GetScope(const Parameter &params) const
 {
 	size_t scope = 0;
 	bool previousIsAmbiguous = false;
@@ -461,6 +461,12 @@ int Rule::GetScope() const
 	for (size_t i = 1; i < m_source.GetSize(); ++i) {
 		const RuleSymbol *symbol = m_source[i];
 		bool isAmbiguous = symbol->IsNonTerm();
+		if (isAmbiguous) {
+			// mixed syntax
+			const NonTerm *nt = static_cast<const NonTerm*>(symbol);
+			isAmbiguous = ! nt->IsHiero(Moses::Input, params);
+		}
+
 		if (isAmbiguous && previousIsAmbiguous) {
 			scope++;
 		}
