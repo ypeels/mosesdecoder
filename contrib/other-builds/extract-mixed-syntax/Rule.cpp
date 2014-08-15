@@ -464,7 +464,7 @@ int Rule::GetScope(const Parameter &params) const
 		if (isAmbiguous) {
 			// mixed syntax
 			const NonTerm *nt = static_cast<const NonTerm*>(symbol);
-			isAmbiguous = ! nt->IsHiero(Moses::Input, params);
+			isAmbiguous = nt->IsHiero(Moses::Input, params);
 		}
 
 		if (isAmbiguous && previousIsAmbiguous) {
