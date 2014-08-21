@@ -217,6 +217,9 @@ namespace Moses
     if ((m = param.find("extra")) != param.end()) 
       extra_data = m->second;
 
+    dflt = pair<string,string>("tuneable","true");
+    m_tuneable = Scan<bool>(param.insert(dflt).first->second.c_str());
+
     // check for unknown parameters
     vector<string> known_parameters; known_parameters.reserve(50);
     known_parameters.push_back("L1");
@@ -243,6 +246,7 @@ namespace Moses
     known_parameters.push_back("sample");
     known_parameters.push_back("smooth");
     known_parameters.push_back("table-limit");
+    known_parameters.push_back("tuneable");
     known_parameters.push_back("unal");
     known_parameters.push_back("workers");
     for (map<string,string>::iterator m = param.begin(); m != param.end(); ++m)
