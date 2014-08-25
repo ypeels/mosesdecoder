@@ -446,6 +446,23 @@ void Rule::Prevalidate(const Parameter &params)
 		  m_isValid = false;
 	  }
   }
+
+  // min/max span per scope
+  if (params.scopeSpan.size()) {
+	  int scope = GetScope(params);
+	  if (scope >= params.scopeSpan.size()) {
+		  // no constraint on it. It's ok
+	  }
+	  else {
+		  const std::pair<int,int> &constraint = params.scopeSpan[scope];
+		  int sourceWidth = m_lhs.GetWidth(Moses::Input);
+		  if (sourceWidth < constraint.first || sourceWidth > constraint.second) {
+			  m_isValid = false;
+			  m_canRecurse = false;
+			  return;
+		  }
+	  }
+  }
 }
 
 int Rule::GetScope(const Parameter &params) const
