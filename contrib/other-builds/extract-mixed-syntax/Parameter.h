@@ -8,6 +8,7 @@
 
 #include <string>
 #include <limits>
+#include <vector>
 
 #define UNDEFINED	std::numeric_limits<int>::max()
 
@@ -51,5 +52,11 @@ public:
   int nonTermContextFactor;
 
   int numSourceFactors, numTargetFactors;
+
+  std::string scopeSpanStr;
+  std::vector<std::pair<int,int> > scopeSpan;
+
+  void SetScopeSpan(const std::string &str);
+
 };
 

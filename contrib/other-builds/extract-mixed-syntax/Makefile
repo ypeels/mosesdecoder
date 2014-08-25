@@ -12,6 +12,6 @@ OBJECTS = AlignedSentence.o ConsistentPhrase.o ConsistentPhrases.o InputFileStre
 
 extract-mixed-syntax: $(OBJECTS) 
 
-	g++ $(OBJECTS)   -L../../../boost/lib64 -lz -lboost_iostreams-mt -lboost_program_options-mt -o extract-mixed-syntax
+	g++ $(OBJECTS)   -L../../../boost/lib64 -L../../../lib -lz -lboost_iostreams-mt -lboost_program_options-mt -lmoses -o extract-mixed-syntax
 
 

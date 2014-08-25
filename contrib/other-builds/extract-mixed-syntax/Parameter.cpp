@@ -5,6 +5,10 @@
  *      Author: hieu
  */
 #include "Parameter.h"
+#include "moses/Util.h"
+#include "util/exception.hh"
+
+using namespace std;
 
 Parameter::Parameter()
 :maxSpan(10)
@@ -46,3 +50,20 @@ Parameter::~Parameter() {
 	// TODO Auto-generated destructor stub
 }
 
+void Parameter::SetScopeSpan(const std::string &str)
+{
+	scopeSpanStr = str;
+	vector<string> toks1;
+	Moses::Tokenize(toks1, str, ":");
+
+	for (size_t i = 0; i < toks1.size(); ++i) {
+		const string &tok1 = toks1[i];
+
+		vector<int> toks2;
+		Moses::Tokenize<int>(toks2, tok1, ",");
+		UTIL_THROW_IF2(toks2.size() != 2, "Format is min,max:min,max...");
+
+		std::pair<int,int> values(toks2[0], toks2[1]);
+		scopeSpan.push_back(values);
+	}
+}

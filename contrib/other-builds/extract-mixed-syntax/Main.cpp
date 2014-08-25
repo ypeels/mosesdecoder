@@ -52,7 +52,8 @@ int main(int argc, char** argv)
     ("NumSourceFactors", po::value<int>()->default_value(params.numSourceFactors), "Number of source factors.")
     ("NumTargetFactors", po::value<int>()->default_value(params.numTargetFactors), "Number of target factors.")
 
-    ("HieroNonTerm", po::value<string>()->default_value(params.hieroNonTerm), "Hiero non-terminal label, including bracket");
+    ("HieroNonTerm", po::value<string>()->default_value(params.hieroNonTerm), "Hiero non-terminal label, including bracket")
+    ("ScopeSpan", po::value<string>()->default_value(params.scopeSpanStr), "Min and max span for rules of each scope. Format is min,max:min,max...");
 
   po::variables_map vm;
   try
@@ -108,6 +109,9 @@ int main(int argc, char** argv)
   if (vm.count("NumTargetFactors")) params.numTargetFactors = vm["NumTargetFactors"].as<int>();
 
   if (vm.count("HieroNonTerm")) params.hieroNonTerm = vm["HieroNonTerm"].as<string>();
+  if (vm.count("ScopeSpan")) {
+	  params.SetScopeSpan(vm["HieroNonTerm"].as<string>());
+  }
 
   // input files;
   string pathTarget = argv[1];
