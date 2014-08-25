@@ -61,7 +61,7 @@ void Parameter::SetScopeSpan(const std::string &str)
 
 		vector<int> toks2;
 		Moses::Tokenize<int>(toks2, tok1, ",");
-		UTIL_THROW_IF2(toks2.size() != 2, "Format is min,max:min,max...");
+		UTIL_THROW_IF2(toks2.size() != 2, "Format is min,max:min,max... String is " << tok1);
 
 		std::pair<int,int> values(toks2[0], toks2[1]);
 		scopeSpan.push_back(values);
