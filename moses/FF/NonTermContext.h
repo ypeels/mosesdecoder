@@ -39,6 +39,7 @@ protected:
   FactorType m_factor;
   int m_type; // 0 = indie. 1 = joint
   bool m_doInner, m_doOuter;
+  bool m_onlyAmbiguousNT;
 
   void SetScores(size_t ntInd, const InputType &input,
 		  	  const NonTermContextProperty &ntContextProp,

@@ -18,6 +18,7 @@ NonTermContext::NonTermContext(const std::string &line)
 ,m_type(0)
 ,m_doInner(true)
 ,m_doOuter(true)
+,m_onlyAmbiguousNT(false)
 {
   ReadParameters();
 }
@@ -26,7 +27,11 @@ void NonTermContext::EvaluateInIsolation(const Phrase &source
                                    , const TargetPhrase &targetPhrase
                                    , ScoreComponentCollection &scoreBreakdown
                                    , ScoreComponentCollection &estimatedFutureScore) const
-{}
+{
+	if (m_onlyAmbiguousNT) {
+		targetPhrase.SetRuleSource(source);
+	}
+}
 
 void NonTermContext::EvaluateWithSourceContext(const InputType &input
                                    , const InputPath &inputPath
@@ -43,9 +48,40 @@ void NonTermContext::EvaluateWithSourceContext(const InputType &input
 	}
 	const NonTermContextProperty &ntContextProp = *static_cast<const NonTermContextProperty*>(prop);
 
-	for (size_t i = 0; i < stackVec->size(); ++i) {
-		const ChartCellLabel &cell = *stackVec->at(i);
-		SetScores(i, input, ntContextProp, cell, targetPhrase, scoreBreakdown);
+	if (m_onlyAmbiguousNT) {
+		const Phrase *sourcePhrase = targetPhrase.GetRuleSource();
+		assert(sourcePhrase);
+
+		size_t ntInd = 0;
+		for (size_t sourcePos = 0; sourcePos < sourcePhrase->GetSize(); ++sourcePos) {
+			const Word &word = sourcePhrase->GetWord(sourcePos);
+			if (word.IsNonTerminal()) {
+				bool ambiguous = false;
+
+				if (sourcePos == 0 || sourcePos + 1 == sourcePhrase->GetSize()) {
+					ambiguous = true;
+				}
+				else if (sourcePhrase->GetWord(sourcePos - 1).IsNonTerminal()
+					  || sourcePhrase->GetWord(sourcePos + 1).IsNonTerminal()) {
+					ambiguous = true;
+				}
+
+				// NT could vary in length
+				if (ambiguous) {
+					const ChartCellLabel &cell = *stackVec->at(ntInd);
+					SetScores(ntInd, input, ntContextProp, cell, targetPhrase, scoreBreakdown);
+				}
+
+				++ntInd;
+			}
+
+		}
+	}
+	else {
+		for (size_t ntInd = 0; ntInd < stackVec->size(); ++ntInd) {
+			const ChartCellLabel &cell = *stackVec->at(ntInd);
+			SetScores(ntInd, input, ntContextProp, cell, targetPhrase, scoreBreakdown);
+		}
 	}
 }
 
@@ -67,6 +103,9 @@ void NonTermContext::SetParameter(const std::string& key, const std::string& val
   }
   else if (key == "do-outer") {
 	  m_doOuter = Scan<bool>(value);
+  }
+  else if (key == "only-ambiguous-nt") {
+	  m_onlyAmbiguousNT = Scan<bool>(value);
   }
   else if (key == "factor") {
 	  m_factor = Scan<FactorType>(value);
