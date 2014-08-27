@@ -16,6 +16,8 @@ NonTermContext::NonTermContext(const std::string &line)
 ,m_smoothConst(1)
 ,m_factor(0)
 ,m_type(0)
+,m_doInner(true)
+,m_doOuter(true)
 {
   ReadParameters();
 }
@@ -60,6 +62,12 @@ void NonTermContext::SetParameter(const std::string& key, const std::string& val
   if (key == "constant") {
 	  m_smoothConst = Scan<float>(value);
   }
+  else if (key == "do-inner") {
+	  m_doInner = Scan<bool>(value);
+  }
+  else if (key == "do-outer") {
+	  m_doOuter = Scan<bool>(value);
+  }
   else if (key == "factor") {
 	  m_factor = Scan<FactorType>(value);
   }
@@ -87,45 +95,60 @@ void NonTermContext::SetScores(size_t ntInd, const InputType &input,
 {
 	const WordsRange &range = cell.GetCoverage();
 
-	const Word &leftOuter = input.GetWord(range.GetStartPos() - 1);
-	const Word &leftInner = input.GetWord(range.GetStartPos());
-	const Word &rightInner = input.GetWord(range.GetEndPos());
-	const Word &rightOuter = input.GetWord(range.GetEndPos() + 1);
+	const Word *leftOuter, *rightOuter, *leftInner, *rightInner;
+	if (m_doOuter) {
+		leftOuter = &input.GetWord(range.GetStartPos() - 1);
+		rightOuter = &input.GetWord(range.GetEndPos() + 1);
+	}
+	if (m_doInner) {
+		leftInner = &input.GetWord(range.GetStartPos());
+		rightInner = &input.GetWord(range.GetEndPos());
+	}
+
+	vector<float> scores(m_numScoreComponents);
+	size_t scoreInd = 0;
 
 	if (m_type == 0) {
     //cerr << "if (m_type == 0) {" << endl;
-		float outer = ntContextProp.GetProb(ntInd, 0, leftOuter.GetFactor(m_factor), m_smoothConst);
-		outer *= ntContextProp.GetProb(ntInd, 3, rightOuter.GetFactor(m_factor), m_smoothConst);
+		if (m_doOuter) {
+			float outer = ntContextProp.GetProb(ntInd, 0, leftOuter->GetFactor(m_factor), m_smoothConst);
+			outer *= ntContextProp.GetProb(ntInd, 3, rightOuter->GetFactor(m_factor), m_smoothConst);
+			scores[scoreInd] = TransformScore(outer);
+			++scoreInd;
+		}
 
-		float inner = ntContextProp.GetProb(ntInd, 1, leftInner.GetFactor(m_factor), m_smoothConst);
-		inner *= ntContextProp.GetProb(ntInd, 2, rightInner.GetFactor(m_factor), m_smoothConst);
-
-		vector<float> scores(2);
-		scores[0] = TransformScore(outer);
-		scores[1] = TransformScore(inner);
-
-		scoreBreakdown.PlusEquals(this, scores);
+		if (m_doInner) {
+			float inner = ntContextProp.GetProb(ntInd, 1, leftInner->GetFactor(m_factor), m_smoothConst);
+			inner *= ntContextProp.GetProb(ntInd, 2, rightInner->GetFactor(m_factor), m_smoothConst);
+			scores[scoreInd] = TransformScore(inner);
+			++scoreInd;
+		}
 	}
 	else if (m_type == 1) {
     //cerr << "if (m_type == 1) {" << endl;
-		float inner = ntContextProp.GetProb(ntInd,
-											0,
-											leftInner.GetFactor(m_factor),
-											rightInner.GetFactor(m_factor),
-											m_smoothConst);
-
-		float outer = ntContextProp.GetProb(ntInd,
+		if (m_doOuter) {
+			float outer = ntContextProp.GetProb(ntInd,
 											1,
-											leftOuter.GetFactor(m_factor),
-											rightOuter.GetFactor(m_factor),
+											leftOuter->GetFactor(m_factor),
+											rightOuter->GetFactor(m_factor),
 											m_smoothConst);
+			scores[scoreInd] = TransformScore(outer);
+			++scoreInd;
+		}
 
-		vector<float> scores(2);
-		scores[0] = TransformScore(outer);
-		scores[1] = TransformScore(inner);
-
-		scoreBreakdown.PlusEquals(this, scores);
+		if (m_doInner) {
+			float inner = ntContextProp.GetProb(ntInd,
+											0,
+											leftInner->GetFactor(m_factor),
+											rightInner->GetFactor(m_factor),
+											m_smoothConst);
+			scores[scoreInd] = TransformScore(inner);
+			++scoreInd;
+		}
 	}
+
+	// all done. set score
+	scoreBreakdown.PlusEquals(this, scores);
 }
 
 }
