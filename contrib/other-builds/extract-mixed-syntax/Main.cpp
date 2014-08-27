@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 
   if (vm.count("HieroNonTerm")) params.hieroNonTerm = vm["HieroNonTerm"].as<string>();
   if (vm.count("ScopeSpan")) {
-	  params.SetScopeSpan(vm["HieroNonTerm"].as<string>());
+	  params.SetScopeSpan(vm["ScopeSpan"].as<string>());
   }
 
   // input files;
