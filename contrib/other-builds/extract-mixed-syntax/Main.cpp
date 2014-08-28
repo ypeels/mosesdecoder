@@ -53,7 +53,10 @@ int main(int argc, char** argv)
     ("NumTargetFactors", po::value<int>()->default_value(params.numTargetFactors), "Number of target factors.")
 
     ("HieroNonTerm", po::value<string>()->default_value(params.hieroNonTerm), "Hiero non-terminal label, including bracket")
-    ("ScopeSpan", po::value<string>()->default_value(params.scopeSpanStr), "Min and max span for rules of each scope. Format is min,max:min,max...");
+    ("ScopeSpan", po::value<string>()->default_value(params.scopeSpanStr), "Min and max span for rules of each scope. Format is min,max:min,max...")
+
+    ("NonTermConsecSource", po::value<bool>()->default_value(params.nonTermConsecSource), "Allow consecutive non-terms on the source side");
+
 
   po::variables_map vm;
   try
@@ -112,6 +115,8 @@ int main(int argc, char** argv)
   if (vm.count("ScopeSpan")) {
 	  params.SetScopeSpan(vm["ScopeSpan"].as<string>());
   }
+
+  if (vm.count("NonTermConsecSource")) params.nonTermConsecSource = true;
 
   // input files;
   string pathTarget = argv[1];
