@@ -357,7 +357,7 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
     // arbitrary key-value pairs
     fileConsolidated << " |||";
     if (itemDirect.size() >= 6) {
-    	fileConsolidated << itemDirect[5];
+    	fileConsolidated << " " << itemDirect[5];
     }
 
     if (countsProperty) {
