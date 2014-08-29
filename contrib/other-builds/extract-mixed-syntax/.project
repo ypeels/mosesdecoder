@@ -91,11 +91,6 @@
 			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/Main.h</locationURI>
 		</link>
 		<link>
-			<name>Makefile</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/Makefile</locationURI>
-		</link>
-		<link>
 			<name>NonTerm.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/NonTerm.cpp</locationURI>
