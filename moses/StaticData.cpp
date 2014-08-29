@@ -67,6 +67,7 @@ StaticData::StaticData()
   ,m_isAlwaysCreateDirectTranslationOption(false)
   ,m_currentWeightSetting("default")
   ,m_treeStructure(NULL)
+  ,m_requireSortingAfterSourceContext(false)
 {
   m_xmlBrackets.first="<";
   m_xmlBrackets.second=">";
@@ -917,12 +918,15 @@ void StaticData::CleanUpAfterSentenceProcessing(const InputType& source) const
 
 void StaticData::LoadFeatureFunctions()
 {
-  const std::vector<FeatureFunction*> &ffs
-  = FeatureFunction::GetFeatureFunctions();
+  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
   std::vector<FeatureFunction*>::const_iterator iter;
   for (iter = ffs.begin(); iter != ffs.end(); ++iter) {
     FeatureFunction *ff = *iter;
     bool doLoad = true;
+
+    if (ff->RequireSortingAfterSourceContext()) {
+    	m_requireSortingAfterSourceContext = true;
+    }
 
     // if (PhraseDictionary *ffCast = dynamic_cast<PhraseDictionary*>(ff)) {
     if (dynamic_cast<PhraseDictionary*>(ff)) {

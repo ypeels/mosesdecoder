@@ -20,6 +20,7 @@ NonTermContext::NonTermContext(const std::string &line)
 ,m_doOuter(true)
 ,m_onlyAmbiguousNT(false)
 {
+  m_requireSortingAfterSourceContext = true;
   ReadParameters();
 }
 

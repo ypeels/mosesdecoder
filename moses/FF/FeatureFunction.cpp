@@ -45,6 +45,7 @@ void FeatureFunction::CallChangeSource(InputType *&input)
 FeatureFunction::
 FeatureFunction(const std::string& line)
   : m_tuneable(true)
+  , m_requireSortingAfterSourceContext(false)
   , m_numScoreComponents(1)
 {
   Initialize(line);
@@ -54,6 +55,7 @@ FeatureFunction::
 FeatureFunction(size_t numScoreComponents,
                 const std::string& line)
   : m_tuneable(true)
+  , m_requireSortingAfterSourceContext(false)
   , m_numScoreComponents(numScoreComponents)
 {
   Initialize(line);
@@ -115,8 +117,13 @@ void FeatureFunction::SetParameter(const std::string& key, const std::string& va
 {
   if (key == "tuneable") {
     m_tuneable = Scan<bool>(value);
-  } else if (key == "filterable") { //ignore
-  } else {
+  }
+  else if (key == "require-sorting-after-source-context") {
+    m_requireSortingAfterSourceContext = Scan<bool>(value);
+  }
+  else if (key == "filterable") { //ignore
+  }
+  else {
     UTIL_THROW(util::Exception, "Unknown argument " << key << "=" << value);
   }
 }
