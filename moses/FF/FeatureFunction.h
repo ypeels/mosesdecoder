@@ -35,6 +35,7 @@ protected:
   std::string m_description, m_argLine;
   std::vector<std::vector<std::string> > m_args;
   bool m_tuneable;
+  bool m_requireSortingAfterSourceContext;
   size_t m_numScoreComponents;
   //In case there's multiple producers with the same description
   static std::multiset<std::string> description_counts;
@@ -85,6 +86,11 @@ public:
   virtual bool IsTuneable() const {
     return m_tuneable;
   }
+
+  virtual bool RequireSortingAfterSourceContext() const {
+      return m_requireSortingAfterSourceContext;
+  }
+
   virtual std::vector<float> DefaultWeights() const;
 
   //! Called before search and collecting of translation options
