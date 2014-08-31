@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     ("MaxScope", po::value<int>()->default_value(params.maxScope), "maximum scope (see Hopkins and Langmead (2010)). Default is HIGH")
     ("MinScope", po::value<int>()->default_value(params.minScope), "min scope.")
 
-    ("SpanLength", "Property - span length of RHS each non-term")
+    ("SpanLength", "Property - span length of each LHS non-term")
 
     ("NonTermContext", "Property - (source) left and right, inside and outside words of each non-term ")
     ("NonTermContextTarget", "Property - (target) left and right, inside and outside words of each non-term")
