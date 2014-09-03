@@ -15,9 +15,10 @@ namespace Moses
 {
 SpanLength::SpanLength(const std::string &line)
 :StatelessFeatureFunction(1, line)
-,m_smoothingMethod(None)
-,m_const(0)
+,m_smoothingMethod(PlusConst)
+,m_const(1)
 {
+  m_requireSortingAfterSourceContext = true;
   ReadParameters();
 }
 
@@ -26,7 +27,6 @@ void SpanLength::EvaluateInIsolation(const Phrase &source
 						, ScoreComponentCollection &scoreBreakdown
 						, ScoreComponentCollection &estimatedFutureScore) const
 {
-  targetPhrase.SetRuleSource(source);
 }
 
 void SpanLength::EvaluateWithSourceContext(const InputType &input
@@ -44,9 +44,6 @@ void SpanLength::EvaluateWithSourceContext(const InputType &input
   }
 
   const SpanLengthPhraseProperty *slProp = static_cast<const SpanLengthPhraseProperty*>(property);
-
-  const Phrase *ruleSource = targetPhrase.GetRuleSource();
-  assert(ruleSource);
 
   float score = 0;
   for (size_t i = 0; i < stackVec->size(); ++i) {
