@@ -36,6 +36,9 @@ public:
 
 protected:
   size_t m_minSpan;
+
+  bool IsGlueRule(const TargetPhrase &targetPhrase) const;
+
 };
 
 }

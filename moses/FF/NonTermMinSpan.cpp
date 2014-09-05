@@ -33,6 +33,10 @@ void NonTermMinSpan::EvaluateWithSourceContext(const InputType &input
 {
 	assert(stackVec);
 
+	if (IsGlueRule(targetPhrase)) {
+		return;
+	}
+
 	for (size_t ntInd = 0; ntInd < stackVec->size(); ++ntInd) {
 		const ChartCellLabel &cell = *stackVec->at(ntInd);
 		const WordsRange &range = cell.GetCoverage();
@@ -66,6 +70,23 @@ std::vector<float> NonTermMinSpan::DefaultWeights() const
   UTIL_THROW_IF2(m_numScoreComponents != 1, "Need 1 score");
   vector<float> ret(1, 1);
   return ret;
+}
+
+bool NonTermMinSpan::IsGlueRule(const TargetPhrase &targetPhrase) const
+{
+	const Phrase *source = targetPhrase.GetRuleSource();
+	assert(source);
+
+	string sourceStr = source->ToString();
+	if (sourceStr == "<s> " || sourceStr == "X </s> " || sourceStr == "X X ") {
+	  // don't score glue rule
+	  //cerr << "sourceStr=" << sourceStr << endl;
+	  return true;
+	}
+	else {
+	  return false;
+	}
+
 }
 
 }
