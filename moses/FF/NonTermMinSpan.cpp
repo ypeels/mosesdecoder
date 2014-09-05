@@ -22,6 +22,7 @@ void NonTermMinSpan::EvaluateInIsolation(const Phrase &source
                                    , ScoreComponentCollection &scoreBreakdown
                                    , ScoreComponentCollection &estimatedFutureScore) const
 {
+  targetPhrase.SetRuleSource(source);
 }
 
 void NonTermMinSpan::EvaluateWithSourceContext(const InputType &input
