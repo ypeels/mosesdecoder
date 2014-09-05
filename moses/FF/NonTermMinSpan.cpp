@@ -69,5 +69,12 @@ void NonTermMinSpan::SetParameter(const std::string& key, const std::string& val
   }
 }
 
+std::vector<float> NonTermMinSpan::DefaultWeights() const
+{
+  UTIL_THROW_IF2(m_numScoreComponents != 1, "Need 1 score");
+  vector<float> ret(1, 1);
+  return ret;
+}
+
 }
 
