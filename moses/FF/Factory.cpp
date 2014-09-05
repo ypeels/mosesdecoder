@@ -54,6 +54,7 @@
 #include "NonTermContextTarget.h"
 #include "KeepOnlyReordering.h"
 #include "ScopeSpan.h"
+#include "NonTermMinSpan.h"
 
 #include "moses/FF/SkeletonStatelessFF.h"
 #include "moses/FF/SkeletonStatefulFF.h"
@@ -221,6 +222,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(NonTermContextTarget);
   MOSES_FNAME(KeepOnlyReordering);
   MOSES_FNAME(ScopeSpan);
+  MOSES_FNAME(NonTermMinSpan);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
