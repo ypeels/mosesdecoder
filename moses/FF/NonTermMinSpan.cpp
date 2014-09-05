@@ -10,9 +10,10 @@ using namespace std;
 namespace Moses
 {
 NonTermMinSpan::NonTermMinSpan(const std::string &line)
-  :StatelessFeatureFunction(2, line)
+  :StatelessFeatureFunction(1, line)
   ,m_minSpan(2)
 {
+  m_tuneable = false;
   ReadParameters();
 }
 
@@ -21,15 +22,6 @@ void NonTermMinSpan::EvaluateInIsolation(const Phrase &source
                                    , ScoreComponentCollection &scoreBreakdown
                                    , ScoreComponentCollection &estimatedFutureScore) const
 {
-  // dense scores
-  vector<float> newScores(m_numScoreComponents);
-  newScores[0] = 1.5;
-  newScores[1] = 0.3;
-  scoreBreakdown.PlusEquals(this, newScores);
-
-  // sparse scores
-  scoreBreakdown.PlusEquals(this, "sparse-name", 2.4);
-
 }
 
 void NonTermMinSpan::EvaluateWithSourceContext(const InputType &input
