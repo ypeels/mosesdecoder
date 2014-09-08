@@ -74,5 +74,13 @@ void DiscardOnlyNonTermSpan::SetParameter(const std::string& key, const std::str
   }
 }
 
+std::vector<float> DiscardOnlyNonTermSpan::DefaultWeights() const
+{
+  UTIL_THROW_IF2(m_numScoreComponents != 1,
+          "DiscardOnlyNonTermSpan must only have 1 score");
+  vector<float> ret(1, 1);
+  return ret;
+}
+
 }
 
