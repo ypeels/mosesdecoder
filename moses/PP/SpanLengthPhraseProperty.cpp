@@ -124,4 +124,22 @@ float SpanLengthPhraseProperty::GetProb(size_t ntInd, size_t sourceWidth, float 
 	return ret;
 }
 
+bool SpanLengthPhraseProperty::OnlyContainSpanLength(size_t ntInd, size_t spanLength) const
+{
+	const std::pair<Map, float> &data = m_source[ntInd];
+	const Map &map = data.first;
+
+	if (map.size() > 1) {
+		return false;
+	}
+	assert(map.size() == 1);
+
+	size_t onlySpanLength = map.begin()->first;
+	if (onlySpanLength == spanLength) {
+		return true;
+	}
+
+	return false;
+}
+
 }

@@ -1072,6 +1072,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DecodeFeature.h</locationURI>
 		</link>
 		<link>
+			<name>FF/DiscardOnlyNonTermSpan.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DiscardOnlyNonTermSpan.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/DiscardOnlyNonTermSpan.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DiscardOnlyNonTermSpan.h</locationURI>
+		</link>
+		<link>
 			<name>FF/DistortionScoreProducer.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DistortionScoreProducer.cpp</locationURI>
