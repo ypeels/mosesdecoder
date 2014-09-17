@@ -199,6 +199,7 @@ protected:
   FactorType m_placeHolderFactor;
   bool m_useLegacyPT;
   bool m_defaultNonTermOnlyForEmptyRange;
+  bool m_printNBestTrees;
 
   FeatureRegistry m_registry;
   PhrasePropertyFactory m_phrasePropertyFactory;
@@ -763,8 +764,13 @@ public:
   bool GetDefaultNonTermOnlyForEmptyRange() const
   { return m_defaultNonTermOnlyForEmptyRange; }
 
+<<<<<<< HEAD
   bool RequireSortingAfterSourceContext() const {
       return m_requireSortingAfterSourceContext;
+=======
+  bool PrintNBestTrees() const {
+    return m_printNBestTrees;
+>>>>>>> 0861b464c58cd5a770638df2f6ceac4870f4625b
   }
 
 };

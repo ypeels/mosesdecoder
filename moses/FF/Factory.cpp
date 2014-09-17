@@ -56,6 +56,7 @@
 #include "ScopeSpan.h"
 #include "NonTermMinSpan.h"
 #include "DiscardOnlyNonTermSpan.h"
+#include "moses/FF/PhraseOrientationFeature.h"
 
 #include "moses/FF/SkeletonStatelessFF.h"
 #include "moses/FF/SkeletonStatefulFF.h"
@@ -225,6 +226,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(ScopeSpan);
   MOSES_FNAME(NonTermMinSpan);
   MOSES_FNAME(DiscardOnlyNonTermSpan);
+  MOSES_FNAME(PhraseOrientationFeature);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
