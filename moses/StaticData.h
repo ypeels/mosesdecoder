@@ -764,14 +764,11 @@ public:
   bool GetDefaultNonTermOnlyForEmptyRange() const
   { return m_defaultNonTermOnlyForEmptyRange; }
 
-<<<<<<< HEAD
-  bool RequireSortingAfterSourceContext() const {
-      return m_requireSortingAfterSourceContext;
-=======
-  bool PrintNBestTrees() const {
-    return m_printNBestTrees;
->>>>>>> 0861b464c58cd5a770638df2f6ceac4870f4625b
-  }
+  bool RequireSortingAfterSourceContext() const
+  { return m_requireSortingAfterSourceContext; }
+
+  bool PrintNBestTrees() const
+  { return m_printNBestTrees; }
 
 };
 
