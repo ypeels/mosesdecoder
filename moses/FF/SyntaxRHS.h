@@ -27,9 +27,12 @@ public:
                 , ScoreComponentCollection &scoreBreakdown
                 , ScoreComponentCollection *estimatedFutureScore = NULL) const;
   void EvaluateWhenApplied(const Hypothesis& hypo,
-                ScoreComponentCollection* accumulator) const;
+                ScoreComponentCollection* accumulator) const
+  {}
+
   void EvaluateWhenApplied(const ChartHypothesis &hypo,
-                     ScoreComponentCollection* accumulator) const;
+                     ScoreComponentCollection* accumulator) const
+  {}
 
   void SetParameter(const std::string& key, const std::string& value);
   std::vector<float> DefaultWeights() const;

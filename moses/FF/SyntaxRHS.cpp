@@ -75,14 +75,6 @@ void SyntaxRHS::EvaluateWithSourceContext(const InputType &input
 	}
 }
 
-void SyntaxRHS::EvaluateWhenApplied(const Hypothesis& hypo,
-                                   ScoreComponentCollection* accumulator) const
-{}
-
-void SyntaxRHS::EvaluateWhenApplied(const ChartHypothesis &hypo,
-                                        ScoreComponentCollection* accumulator) const
-{}
-
 bool SyntaxRHS::IsValid(const Word &ruleNT, const NonTerminalSet &labels) const
 {
   /*
