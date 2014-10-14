@@ -7,10 +7,10 @@ namespace Moses
 {
 class PhraseDictionary;
 
-class ScopeSpan : public StatelessFeatureFunction
+class MaxNonTerm : public StatelessFeatureFunction
 {
 public:
-  ScopeSpan(const std::string &line);
+  MaxNonTerm(const std::string &line);
 
   bool IsUseable(const FactorMask &mask) const {
     return true;

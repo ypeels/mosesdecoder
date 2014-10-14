@@ -1,5 +1,5 @@
 #include <vector>
-#include "ScopeSpan.h"
+#include "MaxNonTerm.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/TargetPhrase.h"
 #include "moses/ChartTranslationOptionList.h"
@@ -11,7 +11,7 @@ using namespace std;
 
 namespace Moses
 {
-ScopeSpan::ScopeSpan(const std::string &line)
+MaxNonTerm::MaxNonTerm(const std::string &line)
 :StatelessFeatureFunction(0, line)
 ,m_minCount(20)
 ,m_scopeRange(3, std::pair<size_t, size_t>(0,100000))
@@ -21,14 +21,14 @@ ScopeSpan::ScopeSpan(const std::string &line)
   ReadParameters();
 }
 
-std::vector<float> ScopeSpan::DefaultWeights() const
+std::vector<float> MaxNonTerm::DefaultWeights() const
 {
   UTIL_THROW_IF2(m_numScoreComponents != 0, "No scores here");
   vector<float> ret(0);
   return ret;
 }
 
-void ScopeSpan::EvaluateInIsolation(const Phrase &source
+void MaxNonTerm::EvaluateInIsolation(const Phrase &source
                                    , const TargetPhrase &targetPhrase
                                    , ScoreComponentCollection &scoreBreakdown
                                    , ScoreComponentCollection &estimatedFutureScore) const
@@ -36,7 +36,7 @@ void ScopeSpan::EvaluateInIsolation(const Phrase &source
   targetPhrase.SetRuleSource(source);
 }
 
-void ScopeSpan::EvaluateWithSourceContext(const InputType &input
+void MaxNonTerm::EvaluateWithSourceContext(const InputType &input
                                    , const InputPath &inputPath
                                    , const TargetPhrase &targetPhrase
                                    , const StackVec *stackVec
@@ -45,15 +45,15 @@ void ScopeSpan::EvaluateWithSourceContext(const InputType &input
 {
 }
 
-void ScopeSpan::EvaluateWhenApplied(const Hypothesis& hypo,
+void MaxNonTerm::EvaluateWhenApplied(const Hypothesis& hypo,
                                    ScoreComponentCollection* accumulator) const
 {}
 
-void ScopeSpan::EvaluateWhenApplied(const ChartHypothesis &hypo,
+void MaxNonTerm::EvaluateWhenApplied(const ChartHypothesis &hypo,
                                         ScoreComponentCollection* accumulator) const
 {}
 
-void ScopeSpan::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
+void MaxNonTerm::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
 {
 	if (transOptList.GetSize() == 0) {
 		return;
@@ -122,7 +122,7 @@ void ScopeSpan::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 	}
 }
 
-void ScopeSpan::SetParameter(const std::string& key, const std::string& value)
+void MaxNonTerm::SetParameter(const std::string& key, const std::string& value)
 {
   if (key.substr(0, 5) == "scope") {
 	  UTIL_THROW_IF2(key.size() < 5, "Incorrect key format:" << key);
