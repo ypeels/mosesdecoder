@@ -1217,6 +1217,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>FF/MaxNonTerm.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxNonTerm.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/MaxNonTerm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxNonTerm.h</locationURI>
+		</link>
+		<link>
 			<name>FF/MaxSpanFreeNonTermSource.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxSpanFreeNonTermSource.cpp</locationURI>
