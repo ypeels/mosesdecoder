@@ -37,8 +37,7 @@ public:
   std::vector<float> DefaultWeights() const;
 
 protected:
-  float m_minCount;
-  std::vector< std::pair<size_t, size_t> > m_scopeRange;
+  size_t m_maxNonTerm;
   const PhraseDictionary *m_pt;
 };
 
