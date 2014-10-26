@@ -50,7 +50,7 @@ bool OK(const string &line)
 			inside = true;
 		}
 		else if (inside) {
-			if (tok == "}}") {
+			if (tok.find("}}") != tok.npos) {
 				break;
 			}
 
