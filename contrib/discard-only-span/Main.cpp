@@ -88,7 +88,10 @@ bool OK(const string &line)
 	for (size_t i = 0; i < spanLength.size(); ++i) {
 		const Lengths &lengths = spanLength[i];
 
-		assert(lengths.size());
+		if (lengths.size() == 0) {
+			cerr << "ERROR:" << line << endl;
+			exit(1);
+		}
 		if (lengths.size()  > 1) {
 			continue;
 		}
