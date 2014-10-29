@@ -656,7 +656,7 @@ void Rule::CreateProperties(const Parameter &params)
 		  const ConsistentPhrase &cp = nonTerm.GetConsistentPhrase();
 		  NonTermContext(1, factor, i, cp, strme);
 	  }
-	  strme << "}} ";
+	  strme << "}}";
 
 	  m_properties.push_back(strme.str());
   }
@@ -673,7 +673,7 @@ void Rule::CreateProperties(const Parameter &params)
 		  const ConsistentPhrase &cp = nonTerm.GetConsistentPhrase();
 		  NonTermContext(2, factor, i, cp, strme);
 	  }
-	  strme << "}} ";
+	  strme << "}}";
 
 	  m_properties.push_back(strme.str());
   }
