@@ -8,6 +8,7 @@
 #include <vector>
 #include "Phrase.h"
 #include "RulePhrase.h"
+#include "Property.h"
 #include "moses/TypeDef.h"
 
 class ConsistentPhrase;
@@ -19,6 +20,7 @@ class Parameter;
 class Rule {
 public:
 	typedef std::set<std::pair<int,int> > Alignments;
+	typedef std::vector<Property> Properties;
 
 	Rule(const Rule &copy); // do not implement
 
@@ -51,11 +53,15 @@ public:
 	const Alignments &GetAlignments() const
 	{ return m_alignments; }
 
+	const Properties &GetProperties() const
+	{ return m_properties; }
+
 	std::string Debug() const;
 	void Output(std::ostream &out, bool forward, const Parameter &params) const;
 
 	void Prevalidate(const Parameter &params);
 	void CreateTarget(const Parameter &params);
+	void CreateProperties(const Parameter &params);
 
 	const RulePhrase &GetPhrase(Moses::FactorDirection direction) const
 	{ return (direction == Moses::Input) ? m_source : m_target; }
@@ -72,6 +78,9 @@ protected:
 	std::vector<const NonTerm*> m_nonterms;
 
 	bool m_isValid, m_canRecurse;
+
+	// should be in consistent order, for comparisons
+	Properties m_properties;
 
 	void CreateSource();
 	void CreateAlignments();

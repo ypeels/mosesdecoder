@@ -137,6 +137,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/Phrase.h</locationURI>
 		</link>
 		<link>
+			<name>Property.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/Property.cpp</locationURI>
+		</link>
+		<link>
+			<name>Property.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/Property.h</locationURI>
+		</link>
+		<link>
 			<name>Rule.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/phrase-extract/extract-mixed-syntax/Rule.cpp</locationURI>

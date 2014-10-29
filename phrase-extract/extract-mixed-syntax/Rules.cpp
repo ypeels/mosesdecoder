@@ -50,7 +50,7 @@ void Rules::CreateRule(const NonTerm &nonTerm,
 
 	rule->Prevalidate(params);
 	rule->CreateTarget(params);
-
+	rule->CreateProperties(params);
 
 	if (rule->CanRecurse()) {
 		Extend(*rule, params);
@@ -122,6 +122,7 @@ void Rules::Extend(const Rule &rule, const ConsistentPhrase &cp, const Parameter
 		Rule *newRule = new Rule(rule, nonTerm);
 		newRule->Prevalidate(params);
 		newRule->CreateTarget(params);
+		newRule->CreateProperties(params);
 
 		if (newRule->CanRecurse()) {
 			// recursively extend
