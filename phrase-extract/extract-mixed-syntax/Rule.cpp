@@ -627,7 +627,7 @@ void Rule::CreateAlignments(int sourcePos, const RuleSymbol *targetSought)
 
 void Rule::CreateProperties(const Parameter &params)
 {
-  cerr << Debug() << " " << m_nonterms.size() << endl;
+  //cerr << Debug() << " " << m_nonterms.size() << endl;
 
   // span length
   if (params.spanLength && m_nonterms.size()) {
