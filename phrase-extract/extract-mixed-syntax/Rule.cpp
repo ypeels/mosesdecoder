@@ -121,7 +121,7 @@ std::string Rule::Debug() const
   return out.str();
 }
 
-void Rule::Output(std::ostream &out, bool forward, const Parameter &params) const
+void Rule::Output(std::ostream &out, bool forward) const
 {
   if (forward) {
 	  // source

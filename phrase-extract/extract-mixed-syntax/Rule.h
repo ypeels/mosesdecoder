@@ -57,7 +57,7 @@ public:
 	{ return m_properties; }
 
 	std::string Debug() const;
-	void Output(std::ostream &out, bool forward, const Parameter &params) const;
+	void Output(std::ostream &out, bool forward) const;
 
 	void Prevalidate(const Parameter &params);
 	void CreateTarget(const Parameter &params);

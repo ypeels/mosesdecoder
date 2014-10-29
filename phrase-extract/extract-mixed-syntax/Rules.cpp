@@ -157,7 +157,7 @@ void Rules::Output(std::ostream &out, bool forward, const Parameter &params) con
 	std::set<Rule*, CompareRules>::const_iterator iter;
 	for (iter = m_mergeRules.begin(); iter != m_mergeRules.end(); ++iter) {
 		const Rule &rule = **iter;
-		rule.Output(out, forward, params);
+		rule.Output(out, forward);
 		out << endl;
 	}
 }
