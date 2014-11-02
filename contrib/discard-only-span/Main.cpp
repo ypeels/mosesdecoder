@@ -22,6 +22,7 @@ int main(int argc, char** argv)
 	getline(origStrme, origLine);
 	vector<string> origVec = TokenizeMultiCharSeparator(origLine, "|||");
 
+  int count = 0;
 	string line;
 	while (getline(cin, line)) {
 		bool ok = OK(line, origVec);
@@ -31,9 +32,12 @@ int main(int argc, char** argv)
 
 			getline(origStrme, origLine);
 			origVec = TokenizeMultiCharSeparator(origLine, "|||");
+
+      ++count;
 		}			
 	}
 
+  cerr << "Total lines=" << count << count;
 	cerr << "Finished" << endl;
 }
 
