@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 bool OK(const string &line, const vector<string> &origVec)
 {
 	std::vector<std::string> toks = TokenizeMultiCharSeparator(line, "|||");
-	if (toks[0] == origVec[0] && toks[1] == origVec[1] && toks[3] == origVec[3]) {
+	if (toks[0] == origVec[0] && toks[1] == origVec[1] && toks[2] == origVec[2]) {
 		return true;
 	}
 	else {
