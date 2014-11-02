@@ -1,1 +1,1 @@
-g++ Main.cpp InputFileStream.cpp -lz
+g++ Main.cpp InputFileStream.cpp -lz -o discard-only-span
