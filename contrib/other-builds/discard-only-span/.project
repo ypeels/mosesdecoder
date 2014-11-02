@@ -26,6 +26,16 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>InputFileStream.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/discard-only-span/InputFileStream.cpp</locationURI>
+		</link>
+		<link>
+			<name>InputFileStream.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/discard-only-span/InputFileStream.h</locationURI>
+		</link>
+		<link>
 			<name>Main.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/discard-only-span/Main.cpp</locationURI>
@@ -34,6 +44,11 @@
 			<name>Util.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/discard-only-span/Util.h</locationURI>
+		</link>
+		<link>
+			<name>gzfilebuf.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/discard-only-span/gzfilebuf.h</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
