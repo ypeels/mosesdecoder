@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 		}			
 	}
 
-  cerr << "Total lines=" << count << count;
+  cerr << "Total lines=" << count << endl;
 	cerr << "Finished" << endl;
 }
 
