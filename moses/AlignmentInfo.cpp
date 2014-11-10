@@ -94,13 +94,6 @@ std::set<size_t> AlignmentInfo::GetAlignmentsForTarget(size_t targetPos) const
 }
 
 
-bool compare_source(const std::pair<size_t,size_t> *a, const std::pair<size_t,size_t> *b)
-{
-  if(a->first < b->first)  return true;
-  if(a->first == b->first) return (a->second < b->second);
-  return false;
-}
-
 bool compare_target(const std::pair<size_t,size_t> *a, const std::pair<size_t,size_t> *b)
 {
   if(a->second < b->second)  return true;
@@ -108,7 +101,8 @@ bool compare_target(const std::pair<size_t,size_t> *a, const std::pair<size_t,si
   return false;
 }
 
-std::vector< const std::pair<size_t,size_t>* > AlignmentInfo::GetSortedAlignments(int order) const
+
+std::vector< const std::pair<size_t,size_t>* > AlignmentInfo::GetSortedAlignments() const
 {
   std::vector< const std::pair<size_t,size_t>* > ret;
 
@@ -118,21 +112,37 @@ std::vector< const std::pair<size_t,size_t>* > AlignmentInfo::GetSortedAlignment
     ret.push_back(&alignPair);
   }
 
-  switch (order) {
-  case 0:
+  const StaticData &staticData = StaticData::Instance();
+  WordAlignmentSort wordAlignmentSort = staticData.GetWordAlignmentSort();
+
+  switch (wordAlignmentSort) {
+  case NoSort:
     break;
-  case 1:
-    std::sort(ret.begin(), ret.end(), compare_source);
-    break;
-  case 2:
+
+  case TargetOrder:
     std::sort(ret.begin(), ret.end(), compare_target);
     break;
+
   default:
-    UTIL_THROW(util::Exception, "Unknown alignment sort option: " << order);
+    UTIL_THROW(util::Exception, "Unknown alignment sort option: " << wordAlignmentSort);
   }
 
   return ret;
 
+}
+
+bool AlignmentInfo::Cross(const std::pair<size_t,size_t> &align) const
+{
+       AlignmentInfo::const_iterator iter;
+       for (iter = begin(); iter != end(); ++iter) {
+               const std::pair<size_t,size_t> &currAlign = *iter;
+               if ( (align.first > currAlign.first && align.second < currAlign.second)
+                 && (align.first < currAlign.first && align.second > currAlign.second))
+               {
+                       return true;
+               }
+       }
+       return false;
 }
 
 std::vector<size_t> AlignmentInfo::GetSourceIndex2PosMap() const
@@ -146,20 +156,6 @@ std::vector<size_t> AlignmentInfo::GetSourceIndex2PosMap() const
   }
   std::vector<size_t> ret(sourcePoses.begin(), sourcePoses.end());
   return ret;
-}
-
-bool AlignmentInfo::Cross(const std::pair<size_t,size_t> &align) const
-{
-	AlignmentInfo::const_iterator iter;
-	for (iter = begin(); iter != end(); ++iter) {
-		const std::pair<size_t,size_t> &currAlign = *iter;
-		if ( (align.first > currAlign.first && align.second < currAlign.second)
-		  && (align.first < currAlign.first && align.second > currAlign.second))
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
 std::ostream& operator<<(std::ostream &out, const AlignmentInfo &alignmentInfo)
