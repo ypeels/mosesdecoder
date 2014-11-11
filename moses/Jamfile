@@ -78,6 +78,7 @@ lib moses :
   FF/*.cpp
   FF/OSM-Feature/*.cpp
   FF/LexicalReordering/*.cpp
+  FF/HyperParam/*.cpp
   PP/*.cpp
 : #exceptions
   ThreadPool.cpp
