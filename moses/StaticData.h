@@ -186,6 +186,7 @@ protected:
   Word m_inputDefaultNonTerminal, m_outputDefaultNonTerminal;
   SourceLabelOverlap m_sourceLabelOverlap;
   UnknownLHSList m_unknownLHS;
+  WordAlignmentSort m_wordAlignmentSort;
 
   int m_threadCount;
   long m_startTranslationId;
@@ -627,6 +628,9 @@ public:
   }
   bool PrintAlignmentInfoInNbest() const {
     return m_PrintAlignmentInfoNbest;
+  }
+  WordAlignmentSort GetWordAlignmentSort() const {
+    return m_wordAlignmentSort;
   }
 
   bool NBestIncludesSegmentation() const {
