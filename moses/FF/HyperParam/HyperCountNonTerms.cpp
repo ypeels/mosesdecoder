@@ -1,3 +1,4 @@
+#include <cassert>
 #include "HyperCountNonTerms.h"
 #include "moses/Util.h"
 #include "moses/TargetPhrase.h"
@@ -19,6 +20,7 @@ HyperCountNonTerms::HyperCountNonTerms(const std::string &line)
 
 void HyperCountNonTerms::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
 {
+
 	if (transOptList.GetSize() == 0) {
 		return;
 	}
@@ -37,6 +39,9 @@ void HyperCountNonTerms::EvaluateWithAllTransOpts(ChartTranslationOptionList &tr
 	// transopts to be deleted
 	typedef set<ChartTranslationOptions*> Coll;
 	Coll transOptsToDelete;
+
+	std::vector<float> weights = StaticData::Instance().GetWeights(this);
+	assert(weights.size() == 2);
 
 	// collect counts
 	//cerr << "ChartTranslationOptionList:" << endl;
@@ -60,10 +65,19 @@ void HyperCountNonTerms::EvaluateWithAllTransOpts(ChartTranslationOptionList &tr
 		UTIL_THROW_IF2(transOpts.GetSize() == 0, "transOpts can't be empty");
 
 		assert(transOpts.GetSize());
-		// get scope
 		const ChartTranslationOption &transOpt = transOpts.Get(0);
 		const TargetPhrase &tp = transOpt.GetPhrase();
 		size_t numNT = tp.GetNumNonTerminals();
+
+		if (numNT == 0) {
+			// no NT. Keep the rules
+			continue;
+		}
+		float weight = weights[numNT - 1];
+		if (weight > 0) {
+			// delete rules
+			transOptsToDelete.insert(&transOpts);
+		}
 
 	}
 
