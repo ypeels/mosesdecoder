@@ -16,7 +16,8 @@ public:
   void EvaluateInIsolation(const Phrase &source
                 , const TargetPhrase &targetPhrase
                 , ScoreComponentCollection &scoreBreakdown
-                , ScoreComponentCollection &estimatedFutureScore) const;
+                , ScoreComponentCollection &estimatedFutureScore) const
+  {}
 
   void EvaluateWithSourceContext(const InputType &input
                 , const InputPath &inputPath

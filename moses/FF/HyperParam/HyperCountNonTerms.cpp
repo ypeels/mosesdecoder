@@ -4,6 +4,7 @@
 #include "moses/ChartTranslationOptionList.h"
 #include "moses/ChartTranslationOptions.h"
 #include "moses/StaticData.h"
+#include "moses/TranslationModel/PhraseDictionary.h"
 
 using namespace std;
 
@@ -47,8 +48,6 @@ void HyperCountNonTerms::EvaluateWithAllTransOpts(ChartTranslationOptionList &tr
 		  continue;
 		}
 
-		size_t width = range.GetNumWordsCovered();
-
 		//cerr << "ChartTranslationOptions " << i << "=" << transOpts.GetSize() << endl;
 
 		/*
@@ -64,17 +63,8 @@ void HyperCountNonTerms::EvaluateWithAllTransOpts(ChartTranslationOptionList &tr
 		// get scope
 		const ChartTranslationOption &transOpt = transOpts.Get(0);
 		const TargetPhrase &tp = transOpt.GetPhrase();
-		const Phrase *sp = tp.GetRuleSource();
-		assert(sp);
+		size_t numNT = tp.GetNumNonTerminals();
 
-		int scope = sp->GetScope();
-		UTIL_THROW_IF2(scope > 2, "Max scope = 2. Current scope = " << scope);
-
-		const std::pair<size_t, size_t> &allowableRange = m_scopeRange[scope];
-
-		if (width < allowableRange.first || width > allowableRange.second) {
-			transOptsToDelete.insert(&transOpts);
-		}
 	}
 
 	// delete
