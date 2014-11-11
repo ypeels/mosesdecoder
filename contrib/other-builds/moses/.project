@@ -1207,6 +1207,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/GlobalLexicalModelUnlimited.h</locationURI>
 		</link>
 		<link>
+			<name>FF/HyperParam</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>FF/HyperParameterAsWeight.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/HyperParameterAsWeight.cpp</locationURI>
@@ -2230,6 +2235,16 @@
 			<name>bin/lm.log</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/LM/bin/lm.log</locationURI>
+		</link>
+		<link>
+			<name>FF/HyperParam/HyperCountNonTerms.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/HyperParam/HyperCountNonTerms.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/HyperParam/HyperCountNonTerms.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/HyperParam/HyperCountNonTerms.h</locationURI>
 		</link>
 		<link>
 			<name>FF/LexicalReordering/LexicalReordering.cpp</name>

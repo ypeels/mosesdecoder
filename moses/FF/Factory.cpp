@@ -66,6 +66,8 @@
 #include "moses/TranslationModel/SkeletonPT.h"
 #include "moses/Syntax/RuleTableFF.h"
 
+#include "moses/FF/HyperParam/HyperCountNonTerms.h"
+
 #ifdef HAVE_CMPH
 #include "moses/TranslationModel/CompactPT/PhraseDictionaryCompact.h"
 #endif
@@ -231,6 +233,8 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(DiscardOnlyNonTermSpan);
   MOSES_FNAME(PhraseOrientationFeature);
   MOSES_FNAME(MaxNonTerm);
+
+  MOSES_FNAME(HyperCountNonTerms);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
