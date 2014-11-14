@@ -363,7 +363,7 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
     if (countsProperty) {
     	fileConsolidated << " {{Counts " << countE << " " << countF << " " << countEF << "}}";
       //if (sourceLabelsFlag) {
-        fileConsolidated << " " << propertiesConsolidator.ProcessPropertiesString(itemDirect[5]);
+        fileConsolidated << propertiesConsolidator.ProcessPropertiesString(itemDirect[5]);
       //} else {
       //  fileConsolidated << itemDirect[5];
       //}
