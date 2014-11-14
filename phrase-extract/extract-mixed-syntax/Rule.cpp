@@ -644,6 +644,17 @@ void Rule::CreateProperties(const Parameter &params)
 	  m_properties.push_back(strme.str());
   }
 
+  if (params.ruleLength && m_nonterms.size()) {
+	  const ConsistentPhrase &cp = m_lhs.GetConsistentPhrase();
+
+	  stringstream strme;
+	  strme << "{{RuleLength ";
+	  strme << cp.GetWidth(Moses::Input);
+	  strme << "}}";
+
+	  m_properties.push_back(strme.str());
+  }
+
   // non-term context (source)
   if (params.nonTermContext && m_nonterms.size()) {
 	  stringstream strme;

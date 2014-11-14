@@ -65,6 +65,7 @@ bool unalignedFlag = false;
 bool unalignedFWFlag = false;
 bool crossedNonTerm = false;
 bool spanLength = false;
+bool ruleLength = false;
 bool nonTermContext = false;
 bool nonTermContextTarget = false;
 
@@ -239,6 +240,9 @@ int main(int argc, char* argv[])
     } else if (strcmp(argv[i],"--SpanLength") == 0) {
       spanLength = true;
       std::cerr << "span length feature" << std::endl;
+    } else if (strcmp(argv[i],"--RuleLength") == 0) {
+      ruleLength = true;
+      std::cerr << "rule length feature" << std::endl;
     } else if (strcmp(argv[i],"--NonTermContext") == 0) {
       nonTermContext = true;
       std::cerr << "non-term context" << std::endl;
@@ -865,6 +869,13 @@ void outputPhrasePair(const ExtractionPhrasePair &phrasePair,
 	  string propValue = phrasePair.CollectAllPropertyValues("SpanLength");
 	  if (!propValue.empty()) {
   	    phraseTableFile << " {{SpanLength " << propValue << "}}";
+	  }
+  }
+
+  if (ruleLength && !inverseFlag) {
+	  string propValue = phrasePair.CollectAllPropertyValues("RuleLength");
+	  if (!propValue.empty()) {
+  	    phraseTableFile << " {{RuleLength " << propValue << "}}";
 	  }
   }
 
