@@ -1397,6 +1397,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleBackoff.h</locationURI>
 		</link>
 		<link>
+			<name>FF/RuleLength.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleLength.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleLength.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleLength.h</locationURI>
+		</link>
+		<link>
 			<name>FF/RuleScope.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleScope.cpp</locationURI>
@@ -1890,6 +1900,16 @@
 			<name>PP/PhraseProperty.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/PhraseProperty.h</locationURI>
+		</link>
+		<link>
+			<name>PP/RuleLengthPhraseProperty.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/RuleLengthPhraseProperty.cpp</locationURI>
+		</link>
+		<link>
+			<name>PP/RuleLengthPhraseProperty.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/RuleLengthPhraseProperty.h</locationURI>
 		</link>
 		<link>
 			<name>PP/SourceLabelsPhraseProperty.cpp</name>

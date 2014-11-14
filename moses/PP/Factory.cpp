@@ -8,6 +8,7 @@
 #include "moses/PP/SourceLabelsPhraseProperty.h"
 #include "moses/PP/TreeStructurePhraseProperty.h"
 #include "moses/PP/SpanLengthPhraseProperty.h"
+#include "moses/PP/RuleLengthPhraseProperty.h"
 #include "moses/PP/NonTermContextProperty.h"
 #include "moses/PP/NonTermContextTargetProperty.h"
 #include "moses/PP/OrientationPhraseProperty.h"
@@ -60,6 +61,7 @@ PhrasePropertyFactory::PhrasePropertyFactory()
   MOSES_PNAME2("SourceLabels", SourceLabelsPhraseProperty);
   MOSES_PNAME2("Tree",TreeStructurePhraseProperty);
   MOSES_PNAME2("SpanLength", SpanLengthPhraseProperty);
+  MOSES_PNAME2("RuleLength", RuleLengthPhraseProperty);
   MOSES_PNAME2("NonTermContext", NonTermContextProperty);
   MOSES_PNAME2("NonTermContextTarget", NonTermContextTargetProperty);
   MOSES_PNAME2("Orientation", OrientationPhraseProperty);

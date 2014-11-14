@@ -48,6 +48,7 @@
 #include "MaxSpanFreeNonTermSource.h"
 #include "NieceTerminal.h"
 #include "SpanLength.h"
+#include "RuleLength.h"
 #include "SyntaxRHS.h"
 #include "RuleBackoff.h"
 #include "NonTermContext.h"
@@ -223,6 +224,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(NieceTerminal);
   MOSES_FNAME(SparseHieroReorderingFeature);
   MOSES_FNAME(SpanLength);
+  MOSES_FNAME(RuleLength);
   MOSES_FNAME(SyntaxRHS);
   MOSES_FNAME(RuleBackoff);
   MOSES_FNAME(NonTermContext);
