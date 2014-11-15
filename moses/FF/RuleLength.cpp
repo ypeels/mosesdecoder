@@ -6,6 +6,7 @@
 #include "moses/WordsRange.h"
 #include "moses/StackVec.h"
 #include "moses/TargetPhrase.h"
+#include "moses/InputPath.h"
 #include "moses/PP/PhraseProperty.h"
 #include "moses/PP/RuleLengthPhraseProperty.h"
 
@@ -36,30 +37,19 @@ void RuleLength::EvaluateWithSourceContext(const InputType &input
                                    , ScoreComponentCollection &scoreBreakdown
                                    , ScoreComponentCollection *estimatedFutureScore) const
 {
-  assert(stackVec);
+  if (targetPhrase.GetNumNonTerminals() == 0) {
+	  return;
+  }
 
   const PhraseProperty *property = targetPhrase.GetProperty("RuleLength");
   if (property == NULL) {
 	  return;
   }
+  const RuleLengthPhraseProperty *rlProp = static_cast<const RuleLengthPhraseProperty*>(property);
 
-  const RuleLengthPhraseProperty *slProp = static_cast<const RuleLengthPhraseProperty*>(property);
-
-  float score = 0;
-  for (size_t i = 0; i < stackVec->size(); ++i) {
-	  const ChartCellLabel &cell = *stackVec->at(i);
-	  const WordsRange &ntRange = cell.GetCoverage();
-	  size_t sourceWidth = ntRange.GetNumWordsCovered();
-	  float prob = slProp->GetProb(i, sourceWidth, m_const);
-	  score += TransformScore(prob);
-  }
-
-  if (score < -100.0f) {
-    float weight = StaticData::Instance().GetWeight(this);
-    if (weight < 0) {
-    	score = -100;
-    }
-  }
+  size_t sourceWidth = inputPath.GetWordsRange().GetNumWordsCovered();
+  float prob = rlProp->GetProb(sourceWidth, m_const);
+  float score = FloorScore(TransformScore(prob));
 
   scoreBreakdown.PlusEquals(this, score);
 

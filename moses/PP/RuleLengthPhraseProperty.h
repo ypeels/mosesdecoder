@@ -17,19 +17,14 @@ public:
 
     void ProcessValue(const std::string &value);
 
-	float GetProb(size_t ntInd, size_t sourceWidth, float smoothing) const;
-	bool OnlyContainSpanLength(size_t ntInd, size_t spanLength) const;
+	float GetProb(size_t sourceWidth, float smoothing) const;
 protected:
 	// fractional counts
 	typedef std::map<size_t, float> Map;
-	typedef std::vector<std::pair<Map, float> > Vec;
-	Vec m_source, m_target;
+	Map m_counts;
+	float m_total;
 
-	void Populate(const std::set< std::vector<std::string> > &indices, float count);
-	void Populate(const std::vector<size_t> &toks, float count);
-	void Populate(Map &map, size_t span, float count);
-
-	void CalcTotals(Vec &vec);
+	void CalcTotal();
 };
 
 } // namespace Moses
