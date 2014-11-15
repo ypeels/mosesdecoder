@@ -1587,6 +1587,7 @@ sub score_phrase_phrase_extract {
     my $SOURCE_LABEL_COUNTS_LHS = (defined($_SCORE_OPTIONS) && $_SCORE_OPTIONS =~ /SourceLabelCountsLHS/);
     my $SOURCE_LABEL_SET = (defined($_SCORE_OPTIONS) && $_SCORE_OPTIONS =~ /SourceLabelSet/);
     my $SPAN_LENGTH = (defined($_SCORE_OPTIONS) && $_SCORE_OPTIONS =~ /SpanLength/);
+    my $RULE_LENGTH = (defined($_SCORE_OPTIONS) && $_SCORE_OPTIONS =~ /RuleLength/);
     my $NonTermContext = (defined($_SCORE_OPTIONS) && $_SCORE_OPTIONS =~ /NonTermContext/);
     my $NonTermContextTarget = (defined($_SCORE_OPTIONS) && $_SCORE_OPTIONS =~ /NonTermContextTarget/);
     
@@ -1632,6 +1633,7 @@ sub score_phrase_phrase_extract {
         $cmd .= " --KneserNey" if $KNESER_NEY;
         $cmd .= " --GoodTuring" if $GOOD_TURING && $inverse eq "";
         $cmd .= " --SpanLength" if $SPAN_LENGTH && $inverse eq "";
+        $cmd .= " --RuleLength" if $RULE_LENGTH && $inverse eq "";
         $cmd .= " --NonTermContext" if $NonTermContext && $inverse eq "";
         $cmd .= " --NonTermContextTarget" if $NonTermContextTarget && $inverse eq "";
         $cmd .= " --UnalignedPenalty" if $UNALIGNED_COUNT;
