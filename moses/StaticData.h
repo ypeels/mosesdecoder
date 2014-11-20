@@ -269,6 +269,10 @@ public:
     return m_parameter->GetParam(paramName);
   }
 
+  const Parameter &GetParameter() const {
+    return *m_parameter;
+  }
+
   const std::vector<FactorType> &GetInputFactorOrder() const {
     return m_inputFactorOrder;
   }

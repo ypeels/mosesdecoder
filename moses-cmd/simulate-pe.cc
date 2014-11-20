@@ -1,4 +1,5 @@
-// $Id: MainMT.cpp 3045 2010-04-05 13:07:29Z hieuhoang1972 $
+// Fork of Main.cpp, to simulate post-editing sessions.
+// Written by Ulrich Germann.
 
 /***********************************************************************
 Moses - factored phrase-based language decoder

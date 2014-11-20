@@ -98,6 +98,10 @@ IOWrapper::IOWrapper(const std::vector<FactorType>	&inputFactorOrder
   ,m_detailTreeFragmentsOutputCollector(NULL)
 
   ,m_surpressSingleBestOutput(false)
+
+  ,spe_src(NULL)
+  ,spe_trg(NULL)
+  ,spe_aln(NULL)
 {
   const StaticData &staticData = StaticData::Instance();
 
@@ -202,6 +206,11 @@ IOWrapper::IOWrapper(const std::vector<FactorType>	&inputFactorOrder
     m_singleBestOutputCollector = new Moses::OutputCollector(&std::cout);
   }
 
+  if (staticData.GetParam("spe-src").size()) {
+	spe_src = new ifstream(staticData.GetParam("spe-src")[0].c_str());
+    spe_trg = new ifstream(staticData.GetParam("spe-trg")[0].c_str());
+    spe_aln = new ifstream(staticData.GetParam("spe-aln")[0].c_str());
+  }
 }
 
 IOWrapper::~IOWrapper()
