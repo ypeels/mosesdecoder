@@ -75,7 +75,9 @@ void MaxNonTerm::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLi
 	//cerr << "ChartTranslationOptionList:" << endl;
 	for (size_t i = 0; i < transOptList.GetSize(); ++i) {
 		ChartTranslationOptions &transOpts = transOptList.Get(i);
-		UTIL_THROW_IF2(transOpts.GetSize() == 0, "transOpts can't be empty");
+		if (transOpts.GetSize() == 0) {
+			continue;
+		}
 
 		const ChartTranslationOption &transOpt = transOpts.Get(0);
 		const TargetPhrase &tp = transOpt.GetPhrase();

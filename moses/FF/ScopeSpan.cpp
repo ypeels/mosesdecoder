@@ -95,7 +95,9 @@ void ScopeSpan::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 		}
 		*/
 
-		UTIL_THROW_IF2(transOpts.GetSize() == 0, "transOpts can't be empty");
+		if (transOpts.GetSize() == 0) {
+			continue;
+		}
 
 		assert(transOpts.GetSize());
 		// get scope
