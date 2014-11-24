@@ -57,17 +57,6 @@ void MaxNonTerm::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLi
 		return;
 	}
 
-	// only prune for a particular pt
-	if (m_pt) {
-  	  ChartTranslationOptions &transOpts = transOptList.Get(0);
-		const ChartTranslationOption &transOpt = transOpts.Get(0);
-		const TargetPhrase &tp = transOpt.GetPhrase();
-		const PhraseDictionary *tpPt = tp.GetContainer();
-		if (tpPt != m_pt) {
-			return;
-		}
-	}
-
 	// transopts to be deleted
 	typedef set<ChartTranslationOptions*> Coll;
 	Coll transOptsToDelete;
@@ -77,6 +66,16 @@ void MaxNonTerm::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLi
 		ChartTranslationOptions &transOpts = transOptList.Get(i);
 		if (transOpts.GetSize() == 0) {
 			continue;
+		}
+
+		// only prune for a particular pt
+		if (m_pt) {
+			const ChartTranslationOption &transOpt = transOpts.Get(0);
+			const TargetPhrase &tp = transOpt.GetPhrase();
+			const PhraseDictionary *tpPt = tp.GetContainer();
+			if (tpPt != m_pt) {
+				return;
+			}
 		}
 
 		const ChartTranslationOption &transOpt = transOpts.Get(0);

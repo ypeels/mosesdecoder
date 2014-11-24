@@ -59,17 +59,6 @@ void ScopeSpan::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 		return;
 	}
 
-	// only prune for a particular pt
-	if (m_pt) {
-  	  ChartTranslationOptions &transOpts = transOptList.Get(0);
-		const ChartTranslationOption &transOpt = transOpts.Get(0);
-		const TargetPhrase &tp = transOpt.GetPhrase();
-		const PhraseDictionary *tpPt = tp.GetContainer();
-		if (tpPt != m_pt) {
-			return;
-		}
-	}
-
 	// transopts to be deleted
 	typedef set<ChartTranslationOptions*> Coll;
 	Coll transOptsToDelete;
@@ -82,6 +71,16 @@ void ScopeSpan::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 		if (range.GetStartPos() == 0) {
 		  // glue rule. ignore
 		  continue;
+		}
+
+		// only prune for a particular pt
+		if (m_pt) {
+			const ChartTranslationOption &transOpt = transOpts.Get(0);
+			const TargetPhrase &tp = transOpt.GetPhrase();
+			const PhraseDictionary *tpPt = tp.GetContainer();
+			if (tpPt != m_pt) {
+				return;
+			}
 		}
 
 		size_t width = range.GetNumWordsCovered();
