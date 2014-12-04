@@ -163,10 +163,6 @@ bool StaticData::LoadData(Parameter *parameter)
     m_needAlignmentInfo = true;
   }
 
-  if(m_parameter->GetParam("sort-word-alignment").size()) {
-    m_wordAlignmentSort = (WordAlignmentSort) Scan<size_t>(m_parameter->GetParam("sort-word-alignment")[0]);
-  }
-
   // n-best
   params = m_parameter->GetParam("n-best-list");
   if (params) {
