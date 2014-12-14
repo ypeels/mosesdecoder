@@ -7,6 +7,7 @@
 #include "moses/Manager.h"
 #include "moses/TranslationOption.h"
 #include "moses/Util.h"
+#include "moses/FF/DistortionScoreProducer.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ FeatureFunction::
 FeatureFunction(const std::string& line)
   : m_tuneable(true)
   , m_requireSortingAfterSourceContext(false)
-  , m_verbosity(1)
+  , m_verbosity(std::numeric_limits<std::size_t>::max())
   , m_numScoreComponents(1)
 {
   Initialize(line);
@@ -57,7 +58,7 @@ FeatureFunction(size_t numScoreComponents,
                 const std::string& line)
   : m_tuneable(true)
   , m_requireSortingAfterSourceContext(false)
-  , m_verbosity(0)
+  , m_verbosity(std::numeric_limits<std::size_t>::max())
   , m_numScoreComponents(numScoreComponents)
 {
   Initialize(line);

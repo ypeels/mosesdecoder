@@ -26,12 +26,7 @@ class TranslationTask : public Moses::Task
 
 public:
 
-  TranslationTask(Moses::InputType* source, Moses::IOWrapper &ioWrapper,
-                  bool outputSearchGraphSLF,
-                  boost::shared_ptr<Moses::HypergraphOutput<Moses::Manager> > hypergraphOutput);
-
-  TranslationTask(Moses::InputType *source, IOWrapper &ioWrapper,
-    boost::shared_ptr<Moses::HypergraphOutput<Moses::ChartManager> > hypergraphOutputChart);
+  TranslationTask(Moses::InputType* source, Moses::IOWrapper &ioWrapper, int pbOrChart);
 
   ~TranslationTask();
 
@@ -45,10 +40,6 @@ private:
   Moses::InputType* m_source;
   Moses::IOWrapper &m_ioWrapper;
 
-  bool m_outputSearchGraphSLF;
-  boost::shared_ptr<Moses::HypergraphOutput<Moses::Manager> > m_hypergraphOutput;
-  boost::shared_ptr<Moses::HypergraphOutput<Moses::ChartManager> > m_hypergraphOutputChart;
-
   void RunPb();
   void RunChart();
 
@@ -60,23 +51,16 @@ private:
     Syntax::S2T::Manager<Parser> manager(*m_source);
     manager.Decode();
     // 1-best
-    const Syntax::SHyperedge *best = manager.GetBestSHyperedge();
-    m_ioWrapper.OutputBestHypo(best, translationId);
+    manager.OutputBest(m_ioWrapper.GetSingleBestOutputCollector());
+
     // n-best
-    if (staticData.GetNBestSize() > 0) {
-      Syntax::KBestExtractor::KBestVec nBestList;
-      manager.ExtractKBest(staticData.GetNBestSize(), nBestList,
-                           staticData.GetDistinctNBest());
-      m_ioWrapper.OutputNBestList(nBestList, translationId);
-    }
+    manager.OutputNBest(m_ioWrapper.GetNBestOutputCollector());
+
     // Write 1-best derivation (-translation-details / -T option).
-    if (staticData.IsDetailedTranslationReportingEnabled()) {
-      m_ioWrapper.OutputDetailedTranslationReport(best, translationId);
-    }
-    // Write unknown words file (-output-unknowns option)
-    if (!staticData.GetOutputUnknownsFile().empty()) {
-      m_ioWrapper.OutputUnknowns(manager.GetUnknownWords(), translationId);
-    }
+
+    manager.OutputDetailedTranslationReport(m_ioWrapper.GetDetailedTranslationCollector());
+
+    manager.OutputUnknowns(m_ioWrapper.GetUnknownsCollector());
   }
 
 };

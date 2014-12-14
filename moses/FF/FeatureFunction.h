@@ -48,6 +48,7 @@ public:
   static const std::vector<FeatureFunction*>& GetFeatureFunctions() {
     return s_staticColl;
   }
+
   static FeatureFunction &FindFeatureFunction(const std::string& name);
   static void Destroy();
 
