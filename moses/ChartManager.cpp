@@ -93,7 +93,7 @@ void ChartManager::Decode()
 
       // decode
       ChartCell &cell = m_hypoStackColl.Get(range);
-      cell.ProcessSentence(m_translationOptionList, m_hypoStackColl);
+      cell.Decode(m_translationOptionList, m_hypoStackColl);
 
       m_translationOptionList.Clear();
       cell.PruneToSize();
@@ -174,9 +174,9 @@ const ChartHypothesis *ChartManager::GetBestHypothesis() const
  * \param onlyDistinct whether to check for distinct output sentence or not (default - don't check, just return top n-paths)
  */
 void ChartManager::CalcNBest(
-    std::size_t n,
-    std::vector<boost::shared_ptr<ChartKBestExtractor::Derivation> > &nBestList,
-    bool onlyDistinct) const
+  std::size_t n,
+  std::vector<boost::shared_ptr<ChartKBestExtractor::Derivation> > &nBestList,
+  bool onlyDistinct) const
 {
   nBestList.clear();
   if (n == 0 || m_source.GetSize() == 0) {
@@ -187,7 +187,7 @@ void ChartManager::CalcNBest(
   WordsRange range(0, m_source.GetSize()-1);
   const ChartCell &lastCell = m_hypoStackColl.Get(range);
   boost::scoped_ptr<const std::vector<const ChartHypothesis*> > topLevelHypos(
-      lastCell.GetAllSortedHypotheses());
+    lastCell.GetAllSortedHypotheses());
   if (!topLevelHypos) {
     return;
   }
@@ -365,7 +365,7 @@ void ChartManager::OutputNBestList(OutputCollector *collector,
     out << translationId << " ||| ";
     OutputSurface(out, outputPhrase, outputFactorOrder, false);
     out << " ||| ";
-    OutputAllFeatureScores(derivation.scoreBreakdown, out);
+    derivation.scoreBreakdown.OutputAllFeatureScores(out);
     out << " ||| " << derivation.score;
 
     // optionally, print word alignments

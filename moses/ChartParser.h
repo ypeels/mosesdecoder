@@ -48,7 +48,9 @@ public:
 
   void Process(const Word &sourceWord, const WordsRange &range, ChartParserCallback &to);
 
-  const std::vector<Phrase*> &GetUnknownSources() const { return m_unksrcs; }
+  const std::vector<Phrase*> &GetUnknownSources() const {
+    return m_unksrcs;
+  }
 
 private:
   std::vector<Phrase*> m_unksrcs;
