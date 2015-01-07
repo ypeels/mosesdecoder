@@ -143,7 +143,7 @@ vector< vector<const Word*> > MosesDecoder::runDecoder(const std::string& source
     string filename)
 {
   // run the decoder
-  m_manager = new Moses::Manager(*m_sentence, search);
+  m_manager = new Moses::Manager(*m_sentence);
   m_manager->Decode();
   TrellisPathList nBestList;
   m_manager->CalcNBest(nBestSize, nBestList, distinct);
@@ -280,7 +280,7 @@ void MosesDecoder::initialize(StaticData& staticData, const std::string& source,
 
   // set weight of BleuScoreFeature
   //cerr << "Reload Bleu feature weight: " << bleuObjectiveWeight*bleuScoreWeight << " (" << bleuObjectiveWeight << "*" << bleuScoreWeight << ")" << endl;
-  staticData.ReLoadBleuScoreFeatureParameter(bleuObjectiveWeight*bleuScoreWeight);
+  //staticData.ReLoadBleuScoreFeatureParameter(bleuObjectiveWeight*bleuScoreWeight);
 
   m_bleuScoreFeature->SetCurrSourceLength((*m_sentence).GetSize());
   if (chartDecoding)

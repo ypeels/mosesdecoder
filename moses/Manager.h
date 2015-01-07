@@ -129,6 +129,9 @@ protected:
 
   // output
   // nbest
+  mutable std::ostringstream m_latticeNBestOut;
+  mutable std::ostringstream m_alignmentOut;
+
   void OutputNBest(std::ostream& out
                    , const Moses::TrellisPathList &nBestList
                    , const std::vector<Moses::FactorType>& outputFactorOrder
@@ -145,8 +148,10 @@ protected:
 
   void OutputWordGraph(std::ostream &outputWordGraphStream, const Hypothesis *hypo, size_t &linkId) const;
 
+  void OutputAlignment(std::ostringstream &out, const TrellisPath &path) const;
+
 public:
-  Manager(InputType const& source, SearchAlgorithm searchAlgorithm);
+  Manager(InputType const& source);
   ~Manager();
   const  TranslationOptionCollection* getSntTranslationOptions();
 

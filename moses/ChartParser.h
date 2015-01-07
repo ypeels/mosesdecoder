@@ -71,7 +71,9 @@ public:
   size_t GetSize() const;
   const InputPath &GetInputPath(size_t startPos, size_t endPos) const;
   const InputPath &GetInputPath(const WordsRange &range) const;
-  const std::vector<Phrase*> &GetUnknownSources() const { return m_unknown.GetUnknownSources(); }
+  const std::vector<Phrase*> &GetUnknownSources() const {
+    return m_unknown.GetUnknownSources();
+  }
 
 private:
   ChartParserUnknown m_unknown;
