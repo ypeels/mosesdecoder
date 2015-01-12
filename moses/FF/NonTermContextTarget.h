@@ -61,6 +61,10 @@ public:
     int /* featureID - used to index the state in the previous hypotheses */,
     ScoreComponentCollection* accumulator) const;
 
+  void EvaluateTranslationOptionListWithSourceContext(const InputType &input
+                        , const TranslationOptionList &translationOptionList) const
+  {}
+
   //! return the state associated with the empty hypothesis for a given sentence
   const FFState* EmptyHypothesisState(const InputType &input) const;
 

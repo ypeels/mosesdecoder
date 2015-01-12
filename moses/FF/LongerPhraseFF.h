@@ -5,13 +5,11 @@
 
 namespace Moses
 {
-class ChartCellLabel;
-class NonTermContextProperty;
 
-class NonTermContext : public StatelessFeatureFunction
+class LongerPhraseFF : public StatelessFeatureFunction
 {
 public:
-  NonTermContext(const std::string &line);
+  LongerPhraseFF(const std::string &line);
 
   bool IsUseable(const FactorMask &mask) const {
     return true;
@@ -27,28 +25,17 @@ public:
                 , const StackVec *stackVec
                 , ScoreComponentCollection &scoreBreakdown
                 , ScoreComponentCollection *estimatedFutureScore = NULL) const;
+
+  void EvaluateTranslationOptionListWithSourceContext(const InputType &input
+                , const TranslationOptionList &translationOptionList) const;
+
   void EvaluateWhenApplied(const Hypothesis& hypo,
                 ScoreComponentCollection* accumulator) const;
   void EvaluateWhenApplied(const ChartHypothesis &hypo,
                      ScoreComponentCollection* accumulator) const;
-  void EvaluateTranslationOptionListWithSourceContext(const InputType &input
-                        , const TranslationOptionList &translationOptionList) const
-  {}
+
 
   void SetParameter(const std::string& key, const std::string& value);
-
-protected:
-  float m_smoothConst;
-  FactorType m_factor;
-  int m_type; // 0 = indie. 1 = joint
-  bool m_doInner, m_doOuter;
-  bool m_onlyAmbiguousNT;
-
-  void SetScores(size_t ntInd, const InputType &input,
-		  	  const NonTermContextProperty &ntContextProp,
-		  	  const ChartCellLabel &cell,
-		  	  const TargetPhrase &targetPhrase,
-		  	  ScoreComponentCollection &scoreBreakdown) const;
 
 };
 

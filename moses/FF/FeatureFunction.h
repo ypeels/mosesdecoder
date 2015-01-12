@@ -147,8 +147,7 @@ public:
   // For pb models, stackvec is NULL.
   // No FF should set estimatedFutureScore in both overloads!
   virtual void EvaluateTranslationOptionListWithSourceContext(const InputType &input
-                        , const TranslationOptionList &translationOptionList) const
-  {}
+                        , const TranslationOptionList &translationOptionList) const = 0;
 
   virtual void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
   {}

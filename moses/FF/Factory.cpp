@@ -73,6 +73,7 @@
 #include "moses/TranslationModel/SkeletonPT.h"
 #include "moses/Syntax/RuleTableFF.h"
 #include "moses/FF/HyperParam/HyperCountNonTerms.h"
+#include "LongerPhraseFF.h"
 
 #ifdef HAVE_VW
 #include "moses/FF/VW/VW.h"
@@ -257,6 +258,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(MaxNonTerm);
 
   MOSES_FNAME(HyperCountNonTerms);
+	MOSES_FNAME(LongerPhraseFF);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);

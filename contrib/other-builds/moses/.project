@@ -1246,6 +1246,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>FF/LongerPhraseFF.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LongerPhraseFF.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/LongerPhraseFF.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LongerPhraseFF.h</locationURI>
+		</link>
+		<link>
 			<name>FF/MaxNonTerm.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxNonTerm.cpp</locationURI>
