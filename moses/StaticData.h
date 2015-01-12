@@ -614,6 +614,8 @@ public:
     return m_continuePartialTranslation;
   }
 
+  void ReLoadBleuScoreFeatureParameter(float weight);
+
   Parameter* GetParameter() {
     return m_parameter;
   }

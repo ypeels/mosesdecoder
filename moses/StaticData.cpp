@@ -637,7 +637,7 @@ void StaticData::LoadDecodeGraphs()
 
 void StaticData::LoadDecodeGraphsOld(const vector<string> &mappingVector, const vector<size_t> &maxChartSpans)
 {
-  const vector<PhraseDictionary*>& pts = PhraseDictionary::GetCollExclOOVPt();
+  const vector<PhraseDictionary*>& pts = PhraseDictionary::GetColl();
   const vector<GenerationDictionary*>& gens = GenerationDictionary::GetColl();
 
   const std::vector<FeatureFunction*> *featuresRemaining = &FeatureFunction::GetFeatureFunctions();
@@ -803,6 +803,21 @@ void StaticData::LoadDecodeGraphsNew(const std::vector<std::string> &mappingVect
 		}
 	  }
 
+}
+
+void StaticData::ReLoadBleuScoreFeatureParameter(float weight)
+{
+  //loop over ScoreProducers to update weights of BleuScoreFeature
+  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions();
+  for(size_t i=0; i<producers.size(); ++i) {
+	FeatureFunction *ff = producers[i];
+    std::string ffName = ff->GetScoreProducerDescription();
+
+    if (ffName == "BleuScoreFeature") {
+      SetWeight(ff, weight);
+      break;
+    }
+  }
 }
 
 // ScoreComponentCollection StaticData::GetAllWeightsScoreComponentCollection() const {}
