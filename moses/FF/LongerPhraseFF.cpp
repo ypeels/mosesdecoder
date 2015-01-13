@@ -40,7 +40,7 @@ void LongerPhraseFF::EvaluateTranslationOptionListWithSourceContext(const InputT
 void LongerPhraseFF::EvaluateGivenAllOtherTransOpts(const InputType &input
 		  	  	  	    , const WordsRange &range
 		  	  	  	  	, const TranslationOptionCollection &transOptColl
-                        , const TranslationOptionList &translationOptionList) const
+                        , TranslationOptionList &translationOptionList) const
 {
 	int inputSize = input.GetSize();
 	int startPos = range.GetStartPos();
@@ -48,6 +48,12 @@ void LongerPhraseFF::EvaluateGivenAllOtherTransOpts(const InputType &input
 
 	float maxTransProb = GetMax(inputSize, startPos, width, transOptColl);
 
+	TranslationOptionList::iterator iter;
+	for (iter = translationOptionList.begin(); iter != translationOptionList.end(); ++iter) {
+		TranslationOption &transOpt = **iter;
+		ScoreComponentCollection &scores = transOpt.GetScoreBreakdown();
+		scores.PlusEquals(this, maxTransProb);
+	}
 }
 
 float LongerPhraseFF::GetMax(int inputSize, int startPos, int width

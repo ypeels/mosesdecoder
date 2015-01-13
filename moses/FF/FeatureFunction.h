@@ -153,7 +153,7 @@ public:
   virtual void EvaluateGivenAllOtherTransOpts(const InputType &input
 		  	  	  	    , const WordsRange &range
 		  	  	  	  	, const TranslationOptionCollection &transOptColl
-                        , const TranslationOptionList &translationOptionList) const
+                        , TranslationOptionList &translationOptionList) const
   {}
 
   virtual void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
