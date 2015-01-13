@@ -60,8 +60,13 @@ float LongerPhraseFF::GetMax(int inputSize, int startPos, int width
 		,const TranslationOptionCollection &transOptColl) const
 {
 	float ret = - std::numeric_limits<float>::infinity();
+  size_t maxSizePhrase = StaticData::Instance().GetMaxPhraseLength();
 
 	for (int currWidth = width + 1; currWidth <= inputSize; ++currWidth) {
+    if (currWidth > maxSizePhrase) {
+      break;
+    }
+
 		for (int currStartPos = 0; currStartPos <= startPos; ++currStartPos) {
 			int currEndPos = currStartPos + currWidth - 1;
 
@@ -69,7 +74,9 @@ float LongerPhraseFF::GetMax(int inputSize, int startPos, int width
 				break;
 			}
 
-			const TranslationOptionList &currTransOpts = transOptColl.GetTranslationOptionList(WordsRange(currStartPos, currEndPos));
+      WordsRange range(currStartPos, currEndPos);
+
+			const TranslationOptionList &currTransOpts = transOptColl.GetTranslationOptionList(range);
 			float currMax = GetMax(currTransOpts);
 			if (currMax > ret) {
 				ret = currMax;
