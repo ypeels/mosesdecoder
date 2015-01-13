@@ -24,6 +24,7 @@ class FactorMask;
 class InputPath;
 class StackVec;
 class ChartTranslationOptionList;
+class TranslationOptionCollection;
 
 /** base class for all feature functions.
  */
@@ -148,6 +149,12 @@ public:
   // No FF should set estimatedFutureScore in both overloads!
   virtual void EvaluateTranslationOptionListWithSourceContext(const InputType &input
                         , const TranslationOptionList &translationOptionList) const = 0;
+
+  virtual void EvaluateGivenAllOtherTransOpts(const InputType &input
+		  	  	  	    , const WordsRange &range
+		  	  	  	  	, const TranslationOptionCollection &transOptColl
+                        , const TranslationOptionList &translationOptionList) const
+  {}
 
   virtual void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
   {}

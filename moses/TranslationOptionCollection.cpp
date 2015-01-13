@@ -424,9 +424,7 @@ void TranslationOptionCollection::CreateTranslationOptions()
 
   EvaluateWithSourceContext();
 
-  // Prune
   Prune();
-
   Sort();
 
   // future score matrix
@@ -571,7 +569,23 @@ void TranslationOptionCollection::EvaluateWithSourceContext()
       }
       
       EvaluateTranslatonOptionListWithSourceContext(transOptList);
-    }
+
+      WordsRange range(startPos, endPos);
+      EvaluateGivenAllOtherTransOpts(transOptList, range);
+}
+  }
+}
+
+void TranslationOptionCollection::EvaluateGivenAllOtherTransOpts(
+		TranslationOptionList &translationOptionList, const WordsRange &range)
+{
+  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
+  const StaticData &staticData = StaticData::Instance();
+  for (size_t i = 0; i < ffs.size(); ++i) {
+	const FeatureFunction &ff = *ffs[i];
+	if (! staticData.IsFeatureFunctionIgnored(ff)) {
+	  ff.EvaluateGivenAllOtherTransOpts(m_source, range, *this, translationOptionList);
+	}
   }
 }
 

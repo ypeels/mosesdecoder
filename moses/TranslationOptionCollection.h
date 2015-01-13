@@ -99,7 +99,9 @@ protected:
   void EvaluateWithSourceContext();
 
   void EvaluateTranslatonOptionListWithSourceContext(TranslationOptionList&);
-  
+
+  void EvaluateGivenAllOtherTransOpts(TranslationOptionList&, const WordsRange &range);
+
   void CacheLexReordering();
 
   void GetTargetPhraseCollectionBatch();

@@ -28,6 +28,10 @@ public:
 
   void EvaluateTranslationOptionListWithSourceContext(const InputType &input
                 , const TranslationOptionList &translationOptionList) const;
+  void EvaluateGivenAllOtherTransOpts(const InputType &input
+		  	  	  	    , const WordsRange &range
+		  	  	  	  	, const TranslationOptionCollection &transOptColl
+                        , const TranslationOptionList &translationOptionList) const;
 
   void EvaluateWhenApplied(const Hypothesis& hypo,
                 ScoreComponentCollection* accumulator) const;
@@ -36,6 +40,11 @@ public:
 
 
   void SetParameter(const std::string& key, const std::string& value);
+
+protected:
+  float GetMax(int inputSize, int startPos, int width
+		  , const TranslationOptionCollection &transOptColl) const;
+  float GetMax(const TranslationOptionList &currTransOpts) const;
 
 };
 
