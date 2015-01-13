@@ -1086,11 +1086,7 @@ split-input
 	pass-unless: input-splitter
 	template: $input-splitter -model IN1.$input-extension < IN > OUT
 filter
-<<<<<<< HEAD
 	in: input TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table TRAINING:corpus-mml-prefilter=OR=TRAINING:corpus-mml-postfilter=OR=TRAINING:domains TRAINING:transliteration-table TRAINING:config
-=======
-	in: input TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table TRAINING:corpus-mml-prefilter=OR=TRAINING:corpus-mml-postfilter=OR=TRAINING:domains TRAINING:transliteration-table
->>>>>>> ff7fbd55ee7105e2d4930336b236744c708003b6
 	out: filtered-dir 
 	default-name: evaluation/filtered
 	rerun-on-change: filter-settings report-precision-by-coverage ttable-binarizer
