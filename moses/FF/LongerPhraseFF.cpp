@@ -90,6 +90,9 @@ float LongerPhraseFF::GetMax(size_t inputSize, const WordsRange &range
 
   }
 
+  if (ret == - std::numeric_limits<float>::infinity()) {
+	  ret = 0;
+  }
   return ret;
 }
 
