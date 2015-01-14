@@ -13,7 +13,8 @@ namespace Moses
 LongerPhraseFF::LongerPhraseFF(const std::string &line)
   :StatelessFeatureFunction(1, line)
 {
-  ReadParameters();
+	 m_requireSortingAfterSourceContext = true;
+	 ReadParameters();
 }
 
 void LongerPhraseFF::EvaluateInIsolation(const Phrase &source
