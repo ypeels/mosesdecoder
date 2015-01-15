@@ -127,4 +127,3 @@ bool SyntaxRHS::IsGlueRule(const TargetPhrase &targetPhrase) const
 }
 
 }
-

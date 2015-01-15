@@ -137,12 +137,11 @@ int main(int argc, char* argv[])
       bool done = false;
       while (!done) {
         string single_setting;
-	size_t pos;
+        size_t pos;
         if ((pos = setting.find(",")) != std::string::npos) {
           single_setting = setting.substr(0, pos);
           setting.erase(0, pos + 1);
-        }
-        else {
+        } else {
           single_setting = setting;
           done = true;
         }
@@ -155,12 +154,10 @@ int main(int argc, char* argv[])
         if (field == 0) {
           minScore0 = threshold;
           cerr << "setting minScore0 to " << threshold << endl;
-        }
-        else if (field == 2) {
+        } else if (field == 2) {
           minScore2 = threshold;
           cerr << "setting minScore2 to " << threshold << endl;
-        }
-        else {
+        } else {
           cerr << "ERROR: MinScore currently only supported for indirect (0) and direct (2) phrase translation probabilities" << endl;
           exit(1);
         }
@@ -249,7 +246,7 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
     exit(1);
   }
 
-  // create properties consolidator 
+  // create properties consolidator
   // (in case any additional phrase property requires further processing)
   MosesTraining::PropertiesConsolidator propertiesConsolidator = MosesTraining::PropertiesConsolidator();
   if (sourceLabelsFlag) {
@@ -327,7 +324,7 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
         (minScore2 > 0 && adjustedCountEF         /countF < minScore2)) {
       continue;
     }
-    
+
     // output hierarchical phrase pair (with separated labels)
     fileConsolidated << itemDirect[0] << " ||| " << itemDirect[1] << " |||";
 
@@ -405,7 +402,7 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
     if (countsProperty) {
     	fileConsolidated << " {{Counts " << countE << " " << countF << " " << countEF << "}}";
       //if (sourceLabelsFlag) {
-        fileConsolidated << propertiesConsolidator.ProcessPropertiesString(itemDirect[5]);
+      fileConsolidated << propertiesConsolidator.ProcessPropertiesString(itemDirect[5]);
       //} else {
       //  fileConsolidated << itemDirect[5];
       //}

@@ -23,41 +23,41 @@ SpanLength::SpanLength(const std::string &line)
 }
 
 void SpanLength::EvaluateInIsolation(const Phrase &source
-						, const TargetPhrase &targetPhrase
-						, ScoreComponentCollection &scoreBreakdown
-						, ScoreComponentCollection &estimatedFutureScore) const
+                                     , const TargetPhrase &targetPhrase
+                                     , ScoreComponentCollection &scoreBreakdown
+                                     , ScoreComponentCollection &estimatedFutureScore) const
 {
 }
 
 void SpanLength::EvaluateWithSourceContext(const InputType &input
-                                   , const InputPath &inputPath
-                                   , const TargetPhrase &targetPhrase
-                                   , const StackVec *stackVec
-                                   , ScoreComponentCollection &scoreBreakdown
-                                   , ScoreComponentCollection *estimatedFutureScore) const
+    , const InputPath &inputPath
+    , const TargetPhrase &targetPhrase
+    , const StackVec *stackVec
+    , ScoreComponentCollection &scoreBreakdown
+    , ScoreComponentCollection *estimatedFutureScore) const
 {
   assert(stackVec);
 
   const PhraseProperty *property = targetPhrase.GetProperty("SpanLength");
   if (property == NULL) {
-	  return;
+    return;
   }
 
   const SpanLengthPhraseProperty *slProp = static_cast<const SpanLengthPhraseProperty*>(property);
 
   float score = 0;
   for (size_t i = 0; i < stackVec->size(); ++i) {
-	  const ChartCellLabel &cell = *stackVec->at(i);
-	  const WordsRange &ntRange = cell.GetCoverage();
-	  size_t sourceWidth = ntRange.GetNumWordsCovered();
-	  float prob = slProp->GetProb(i, sourceWidth, m_const);
-	  score += TransformScore(prob);
+    const ChartCellLabel &cell = *stackVec->at(i);
+    const WordsRange &ntRange = cell.GetCoverage();
+    size_t sourceWidth = ntRange.GetNumWordsCovered();
+    float prob = slProp->GetProb(i, sourceWidth, m_const);
+    score += TransformScore(prob);
   }
 
   if (score < -100.0f) {
     float weight = StaticData::Instance().GetWeight(this);
     if (weight < 0) {
-    	score = -100;
+      score = -100;
     }
   }
 
@@ -68,20 +68,16 @@ void SpanLength::EvaluateWithSourceContext(const InputType &input
 void SpanLength::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "smoothing") {
-	  if (value == "plus-constant") {
-		  m_smoothingMethod = PlusConst;
-	  }
-	  else if (value == "none") {
-		  m_smoothingMethod = None;
-	  }
-	  else {
-		  UTIL_THROW(util::Exception, "Unknown smoothing type " << value);
-	  }
-  }
-  else if (key == "constant") {
-	  m_const = Scan<float>(value);
-  }
-  else {
+    if (value == "plus-constant") {
+      m_smoothingMethod = PlusConst;
+    } else if (value == "none") {
+      m_smoothingMethod = None;
+    } else {
+      UTIL_THROW(util::Exception, "Unknown smoothing type " << value);
+    }
+  } else if (key == "constant") {
+    m_const = Scan<float>(value);
+  } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }

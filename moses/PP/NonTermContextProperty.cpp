@@ -246,4 +246,3 @@ float NonTermContextProperty::GetProb(size_t ntInd,
 
 
 } // namespace Moses
-

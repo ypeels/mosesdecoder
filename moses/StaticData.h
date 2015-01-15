@@ -663,7 +663,7 @@ public:
       return false;
     }
     std::map< std::string, std::set< std::string > >::const_iterator lookupIgnoreFF
-      =  m_weightSettingIgnoreFF.find( m_currentWeightSetting );
+    =  m_weightSettingIgnoreFF.find( m_currentWeightSetting );
     if (lookupIgnoreFF == m_weightSettingIgnoreFF.end()) {
       return false;
     }
@@ -681,7 +681,7 @@ public:
       return false;
     }
     std::map< std::string, std::set< size_t > >::const_iterator lookupIgnoreDP
-      =  m_weightSettingIgnoreDP.find( m_currentWeightSetting );
+    =  m_weightSettingIgnoreDP.find( m_currentWeightSetting );
     if (lookupIgnoreDP == m_weightSettingIgnoreDP.end()) {
       return false;
     }
@@ -712,7 +712,7 @@ public:
     // if not found, resort to default
     if (i == m_weightSetting.end()) {
       std::cerr << "Warning: Specified weight setting " << settingName
-            << " does not exist in model, using default weight setting instead";
+                << " does not exist in model, using default weight setting instead";
       i = m_weightSetting.find( "default" );
       m_currentWeightSetting = "default";
     }
@@ -779,8 +779,9 @@ public:
     m_treeStructure = treeStructure;
   }
 
-  bool GetDefaultNonTermOnlyForEmptyRange() const
-  { return m_defaultNonTermOnlyForEmptyRange; }
+  bool GetDefaultNonTermOnlyForEmptyRange() const {
+    return m_defaultNonTermOnlyForEmptyRange;
+  }
 
   bool RequireSortingAfterSourceContext() const
   { return m_requireSortingAfterSourceContext; }
