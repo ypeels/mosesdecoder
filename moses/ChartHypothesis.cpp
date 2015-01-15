@@ -153,24 +153,19 @@ void ChartHypothesis::GetOutputPhrase(size_t leftRightMost, size_t numWords, Phr
 {
   FactorType placeholderFactor = StaticData::Instance().GetPlaceholderFactor();
 
-  for (size_t pos = 0; pos < GetCurrTargetPhrase().GetSize(); ++pos) 
-  {
+  for (size_t pos = 0; pos < GetCurrTargetPhrase().GetSize(); ++pos) {
     const Word &word = GetCurrTargetPhrase().GetWord(pos);
-    if (word.IsNonTerminal()) 
-    {
+    if (word.IsNonTerminal()) {
       // non-term. fill out with prev hypo
       size_t nonTermInd = GetCurrTargetPhrase().GetAlignNonTerm().GetNonTermIndexMap()[pos];
       const ChartHypothesis *prevHypo = m_prevHypos[nonTermInd];
       prevHypo->GetOutputPhrase(outPhrase);
-    }
-    else {
+    } else {
       outPhrase.AddWord(word);
 
-      if (placeholderFactor != NOT_FOUND) 
-      {
+      if (placeholderFactor != NOT_FOUND) {
         std::set<size_t> sourcePosSet = GetCurrTargetPhrase().GetAlignTerm().GetAlignmentsForTarget(pos);
-        if (sourcePosSet.size() == 1) 
-        {
+        if (sourcePosSet.size() == 1) {
           const std::vector<const Word*> *ruleSourceFromInputPath = GetTranslationOption().GetSourceRuleFromInputPath();
           UTIL_THROW_IF2(ruleSourceFromInputPath == NULL,
                          "No source rule");
@@ -180,8 +175,7 @@ void ChartHypothesis::GetOutputPhrase(size_t leftRightMost, size_t numWords, Phr
           UTIL_THROW_IF2(sourceWord == NULL,
                          "No source word");
           const Factor *factor = sourceWord->GetFactor(placeholderFactor);
-          if (factor) 
-          {
+          if (factor) {
             outPhrase.Back()[0] = factor;
           }
         }

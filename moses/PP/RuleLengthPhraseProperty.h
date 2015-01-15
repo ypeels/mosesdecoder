@@ -13,18 +13,18 @@ namespace Moses
 class RuleLengthPhraseProperty : public PhraseProperty
 {
 public:
-	RuleLengthPhraseProperty();
+  RuleLengthPhraseProperty();
 
-    void ProcessValue(const std::string &value);
+  void ProcessValue(const std::string &value);
 
-	float GetProb(size_t sourceWidth, float smoothing) const;
+  float GetProb(size_t sourceWidth, float smoothing) const;
 protected:
-	// fractional counts
-	typedef std::map<size_t, float> Map;
-	Map m_counts;
-	float m_total;
+  // fractional counts
+  typedef std::map<size_t, float> Map;
+  Map m_counts;
+  float m_total;
 
-	void CalcTotal();
+  void CalcTotal();
 };
 
 } // namespace Moses

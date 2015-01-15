@@ -14,9 +14,9 @@ using namespace std;
 namespace Moses
 {
 SpanLength::SpanLength(const std::string &line)
-:StatelessFeatureFunction(1, line)
-,m_smoothingMethod(PlusConst)
-,m_const(1)
+  :StatelessFeatureFunction(1, line)
+  ,m_smoothingMethod(PlusConst)
+  ,m_const(1)
 {
   m_requireSortingAfterSourceContext = true;
   ReadParameters();

@@ -18,35 +18,34 @@ int NonTermContextTargetState::Compare(const FFState& other) const
   const NonTermContextTargetState &otherState = static_cast<const NonTermContextTargetState&>(other);
 
   if (m_leftRight == otherState.m_leftRight) {
-	  return 0;
-  }
-  else {
-	  int ret = (m_leftRight < otherState.m_leftRight) ? -1 : +1;
-	  return ret;
+    return 0;
+  } else {
+    int ret = (m_leftRight < otherState.m_leftRight) ? -1 : +1;
+    return ret;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 NonTermContextTarget::NonTermContextTarget(const std::string &line)
-:StatefulFeatureFunction(1, line)
-,m_smoothConst(1)
+  :StatefulFeatureFunction(1, line)
+  ,m_smoothConst(1)
 {
   ReadParameters();
 }
 
 void NonTermContextTarget::EvaluateInIsolation(const Phrase &source
-                                   , const TargetPhrase &targetPhrase
-                                   , ScoreComponentCollection &scoreBreakdown
-                                   , ScoreComponentCollection &estimatedFutureScore) const
+    , const TargetPhrase &targetPhrase
+    , ScoreComponentCollection &scoreBreakdown
+    , ScoreComponentCollection &estimatedFutureScore) const
 {}
 
 void NonTermContextTarget::EvaluateWithSourceContext(const InputType &input
-                                   , const InputPath &inputPath
-                                   , const TargetPhrase &targetPhrase
-                                   , const StackVec *stackVec
-                                   , ScoreComponentCollection &scoreBreakdown
-                                   , ScoreComponentCollection *estimatedFutureScore) const
+    , const InputPath &inputPath
+    , const TargetPhrase &targetPhrase
+    , const StackVec *stackVec
+    , ScoreComponentCollection &scoreBreakdown
+    , ScoreComponentCollection *estimatedFutureScore) const
 {
 }
 
@@ -63,45 +62,45 @@ FFState* NonTermContextTarget::EvaluateWhenApplied(
   int featureID /* used to index the state in the previous hypotheses */,
   ScoreComponentCollection* accumulator) const
 {
-	// property
-	const TargetPhrase &targetPhrase = hypo.GetTranslationOption().GetPhrase();
-	const PhraseProperty *prop = targetPhrase.GetProperty("NonTermContextTarget");
-	if (prop == NULL) {
-		return new NonTermContextTargetState(NULL, NULL);
-	}
-	const NonTermContextTargetProperty &ntContextProp = *static_cast<const NonTermContextTargetProperty*>(prop);
+  // property
+  const TargetPhrase &targetPhrase = hypo.GetTranslationOption().GetPhrase();
+  const PhraseProperty *prop = targetPhrase.GetProperty("NonTermContextTarget");
+  if (prop == NULL) {
+    return new NonTermContextTargetState(NULL, NULL);
+  }
+  const NonTermContextTargetProperty &ntContextProp = *static_cast<const NonTermContextTargetProperty*>(prop);
 
-	//typedef std::vector< const std::pair<size_t,size_t>* > AlignVec;
-	//AlignVec ntAlignments = targetPhrase.GetAlignNonTerm().GetSortedAlignments(1);
+  //typedef std::vector< const std::pair<size_t,size_t>* > AlignVec;
+  //AlignVec ntAlignments = targetPhrase.GetAlignNonTerm().GetSortedAlignments(1);
 
-	// go thru each prev hypo & work out score
-	const std::vector<const ChartHypothesis*> &prevHypos = hypo.GetPrevHypos();
-	//assert(ntAlignments.size() == prevHypos.size());
+  // go thru each prev hypo & work out score
+  const std::vector<const ChartHypothesis*> &prevHypos = hypo.GetPrevHypos();
+  //assert(ntAlignments.size() == prevHypos.size());
 
-	for (size_t i = 0; i < prevHypos.size(); ++i) {
-		const ChartHypothesis &prevHypo = *prevHypos[i];
-		const FFState *temp = prevHypo.GetFFState(featureID);
-		const NonTermContextTargetState *state = static_cast<const NonTermContextTargetState*>(temp);
-		assert(state);
+  for (size_t i = 0; i < prevHypos.size(); ++i) {
+    const ChartHypothesis &prevHypo = *prevHypos[i];
+    const FFState *temp = prevHypo.GetFFState(featureID);
+    const NonTermContextTargetState *state = static_cast<const NonTermContextTargetState*>(temp);
+    assert(state);
 
-		size_t ntInd = i; // TODO have to change. Sorted by source
-		const std::vector<const Factor*> &ntContext = state->GetWords();
-		SetScores(ntInd, ntContextProp, ntContext, *accumulator);
-	}
+    size_t ntInd = i; // TODO have to change. Sorted by source
+    const std::vector<const Factor*> &ntContext = state->GetWords();
+    SetScores(ntInd, ntContextProp, ntContext, *accumulator);
+  }
 
-	Phrase leftMost, rightMost;
-	hypo.GetOutputPhrase(1, 1, leftMost);
-	hypo.GetOutputPhrase(2, 1, rightMost);
-	assert(leftMost.GetSize() == 1);
-	assert(rightMost.GetSize() == 1);
+  Phrase leftMost, rightMost;
+  hypo.GetOutputPhrase(1, 1, leftMost);
+  hypo.GetOutputPhrase(2, 1, rightMost);
+  assert(leftMost.GetSize() == 1);
+  assert(rightMost.GetSize() == 1);
 
-	// calc state
-	const WordsRange &range = hypo.GetCurrSourceRange();
-	const ChartManager &mgr = hypo.GetManager();
-	const InputType &input = mgr.GetSource();
+  // calc state
+  const WordsRange &range = hypo.GetCurrSourceRange();
+  const ChartManager &mgr = hypo.GetManager();
+  const InputType &input = mgr.GetSource();
 
-	NonTermContextTargetState *state = new NonTermContextTargetState(leftMost.GetFactor(0, 0), rightMost.GetFactor(0, 0));
-	return state;
+  NonTermContextTargetState *state = new NonTermContextTargetState(leftMost.GetFactor(0, 0), rightMost.GetFactor(0, 0));
+  return state;
 }
 
 //! return the state associated with the empty hypothesis for a given sentence
@@ -113,17 +112,16 @@ const FFState* NonTermContextTarget::EmptyHypothesisState(const InputType &input
 void NonTermContextTarget::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "constant") {
-	  m_smoothConst = Scan<float>(value);
-  }
-  else {
+    m_smoothConst = Scan<float>(value);
+  } else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
 }
 
 void NonTermContextTarget::SetScores(size_t ntInd,
-							const NonTermContextTargetProperty &ntContextProp,
-							const std::vector<const Factor*> &ntContext,
-							ScoreComponentCollection &scoreBreakdown) const
+                                     const NonTermContextTargetProperty &ntContextProp,
+                                     const std::vector<const Factor*> &ntContext,
+                                     ScoreComponentCollection &scoreBreakdown) const
 {
   float prob = ntContextProp.GetProb(ntInd, 1, ntContext[0], m_smoothConst);
   float prob2 = ntContextProp.GetProb(ntInd, 1, ntContext[1], m_smoothConst);

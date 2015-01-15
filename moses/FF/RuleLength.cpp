@@ -15,35 +15,35 @@ using namespace std;
 namespace Moses
 {
 RuleLength::RuleLength(const std::string &line)
-:StatelessFeatureFunction(1, line)
-,m_smoothingMethod(PlusConst)
-,m_const(1)
+  :StatelessFeatureFunction(1, line)
+  ,m_smoothingMethod(PlusConst)
+  ,m_const(1)
 {
   m_requireSortingAfterSourceContext = true;
   ReadParameters();
 }
 
 void RuleLength::EvaluateInIsolation(const Phrase &source
-						, const TargetPhrase &targetPhrase
-						, ScoreComponentCollection &scoreBreakdown
-						, ScoreComponentCollection &estimatedFutureScore) const
+                                     , const TargetPhrase &targetPhrase
+                                     , ScoreComponentCollection &scoreBreakdown
+                                     , ScoreComponentCollection &estimatedFutureScore) const
 {
 }
 
 void RuleLength::EvaluateWithSourceContext(const InputType &input
-                                   , const InputPath &inputPath
-                                   , const TargetPhrase &targetPhrase
-                                   , const StackVec *stackVec
-                                   , ScoreComponentCollection &scoreBreakdown
-                                   , ScoreComponentCollection *estimatedFutureScore) const
+    , const InputPath &inputPath
+    , const TargetPhrase &targetPhrase
+    , const StackVec *stackVec
+    , ScoreComponentCollection &scoreBreakdown
+    , ScoreComponentCollection *estimatedFutureScore) const
 {
   if (targetPhrase.GetNumNonTerminals() == 0) {
-	  return;
+    return;
   }
 
   const PhraseProperty *property = targetPhrase.GetProperty("RuleLength");
   if (property == NULL) {
-	  return;
+    return;
   }
   const RuleLengthPhraseProperty *rlProp = static_cast<const RuleLengthPhraseProperty*>(property);
 
@@ -58,20 +58,16 @@ void RuleLength::EvaluateWithSourceContext(const InputType &input
 void RuleLength::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "smoothing") {
-	  if (value == "plus-constant") {
-		  m_smoothingMethod = PlusConst;
-	  }
-	  else if (value == "none") {
-		  m_smoothingMethod = None;
-	  }
-	  else {
-		  UTIL_THROW(util::Exception, "Unknown smoothing type " << value);
-	  }
-  }
-  else if (key == "constant") {
-	  m_const = Scan<float>(value);
-  }
-  else {
+    if (value == "plus-constant") {
+      m_smoothingMethod = PlusConst;
+    } else if (value == "none") {
+      m_smoothingMethod = None;
+    } else {
+      UTIL_THROW(util::Exception, "Unknown smoothing type " << value);
+    }
+  } else if (key == "constant") {
+    m_const = Scan<float>(value);
+  } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }

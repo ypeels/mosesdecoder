@@ -92,7 +92,7 @@ public:
   }
 
   virtual bool RequireSortingAfterSourceContext() const {
-      return m_requireSortingAfterSourceContext;
+    return m_requireSortingAfterSourceContext;
   }
 
   virtual std::vector<float> DefaultWeights() const;
@@ -151,9 +151,9 @@ public:
       , const TranslationOptionList &translationOptionList) const = 0;
 
   virtual void EvaluateGivenAllOtherTransOpts(const InputType &input
-		  	  	  	    , const WordsRange &range
-		  	  	  	  	, const TranslationOptionCollection &transOptColl
-                        , TranslationOptionList &translationOptionList) const
+      , const WordsRange &range
+      , const TranslationOptionCollection &transOptColl
+      , TranslationOptionList &translationOptionList) const
   {}
 
   virtual void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const

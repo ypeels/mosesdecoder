@@ -415,27 +415,27 @@ size_t Phrase::Find(const Phrase &sought, int maxUnknown) const
 
 size_t Phrase::GetScope() const
 {
-	size_t scope = 0;
-	bool previousIsAmbiguous = false;
+  size_t scope = 0;
+  bool previousIsAmbiguous = false;
 
-	if (GetWord(0).IsNonTerminal()) {
-		scope++;
-		previousIsAmbiguous = true;
-	}
+  if (GetWord(0).IsNonTerminal()) {
+    scope++;
+    previousIsAmbiguous = true;
+  }
 
-	for (size_t i = 1; i < GetSize(); ++i) {
-		bool isAmbiguous = GetWord(i).IsNonTerminal();
-		if (isAmbiguous && previousIsAmbiguous) {
-			scope++;
-		}
-		previousIsAmbiguous = isAmbiguous;
-	}
+  for (size_t i = 1; i < GetSize(); ++i) {
+    bool isAmbiguous = GetWord(i).IsNonTerminal();
+    if (isAmbiguous && previousIsAmbiguous) {
+      scope++;
+    }
+    previousIsAmbiguous = isAmbiguous;
+  }
 
-	if (previousIsAmbiguous) {
-		scope++;
-	}
+  if (previousIsAmbiguous) {
+    scope++;
+  }
 
-	return scope;
+  return scope;
 }
 
 TO_STRING_BODY(Phrase);

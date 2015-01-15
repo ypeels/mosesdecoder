@@ -120,16 +120,12 @@ void FeatureFunction::SetParameter(const std::string& key, const std::string& va
 {
   if (key == "tuneable") {
     m_tuneable = Scan<bool>(value);
-  }
-  else if (key == "require-sorting-after-source-context") {
+  } else if (key == "require-sorting-after-source-context") {
     m_requireSortingAfterSourceContext = Scan<bool>(value);
-  }
-  else if (key == "filterable") { //ignore
-  }
-  else if (key == "verbosity") {
+  } else if (key == "filterable") { //ignore
+  } else if (key == "verbosity") {
     m_verbosity = Scan<size_t>(value);
-  }
-  else {
+  } else {
     UTIL_THROW(util::Exception, "Unknown argument " << key << "=" << value);
   }
 }

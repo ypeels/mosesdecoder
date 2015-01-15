@@ -17,8 +17,8 @@ public:
 
   void ProcessValue(const std::string &value);
 
-	float GetProb(size_t ntInd, size_t sourceWidth, float smoothing) const;
-	bool OnlyContainSpanLength(size_t ntInd, size_t spanLength) const;
+  float GetProb(size_t ntInd, size_t sourceWidth, float smoothing) const;
+  bool OnlyContainSpanLength(size_t ntInd, size_t spanLength) const;
 
 protected:
   // fractional counts

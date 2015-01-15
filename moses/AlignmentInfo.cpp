@@ -145,16 +145,15 @@ std::vector< const std::pair<size_t,size_t>* > AlignmentInfo::GetSortedAlignment
 
 bool AlignmentInfo::Cross(const std::pair<size_t,size_t> &align) const
 {
-       AlignmentInfo::const_iterator iter;
-       for (iter = begin(); iter != end(); ++iter) {
-               const std::pair<size_t,size_t> &currAlign = *iter;
-               if ( (align.first > currAlign.first && align.second < currAlign.second)
-                 && (align.first < currAlign.first && align.second > currAlign.second))
-               {
-                       return true;
-               }
-       }
-       return false;
+  AlignmentInfo::const_iterator iter;
+  for (iter = begin(); iter != end(); ++iter) {
+    const std::pair<size_t,size_t> &currAlign = *iter;
+    if ( (align.first > currAlign.first && align.second < currAlign.second)
+         && (align.first < currAlign.first && align.second > currAlign.second)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::vector<size_t> AlignmentInfo::GetSourceIndex2PosMap() const

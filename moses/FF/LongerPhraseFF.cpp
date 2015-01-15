@@ -13,8 +13,8 @@ namespace Moses
 LongerPhraseFF::LongerPhraseFF(const std::string &line)
   :StatelessFeatureFunction(1, line)
 {
-	 m_requireSortingAfterSourceContext = true;
-	 ReadParameters();
+  m_requireSortingAfterSourceContext = true;
+  ReadParameters();
 }
 
 void LongerPhraseFF::EvaluateInIsolation(const Phrase &source
@@ -92,7 +92,7 @@ float LongerPhraseFF::GetMax(size_t inputSize, const WordsRange &range
   }
 
   if (ret == - std::numeric_limits<float>::infinity()) {
-	  ret = 0;
+    ret = 0;
   }
   return ret;
 }

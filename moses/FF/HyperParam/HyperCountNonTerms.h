@@ -10,25 +10,26 @@ class HyperCountNonTerms : public StatelessFeatureFunction
 {
 public:
   HyperCountNonTerms(const std::string &line);
-  bool IsUseable(const FactorMask &mask) const
-  { return true; }
+  bool IsUseable(const FactorMask &mask) const {
+    return true;
+  }
 
   void EvaluateInIsolation(const Phrase &source
-                , const TargetPhrase &targetPhrase
-                , ScoreComponentCollection &scoreBreakdown
-                , ScoreComponentCollection &estimatedFutureScore) const
+                           , const TargetPhrase &targetPhrase
+                           , ScoreComponentCollection &scoreBreakdown
+                           , ScoreComponentCollection &estimatedFutureScore) const
   {}
 
   void EvaluateWithSourceContext(const InputType &input
-                , const InputPath &inputPath
-                , const TargetPhrase &targetPhrase
-                , const StackVec *stackVec
-                , ScoreComponentCollection &scoreBreakdown
-                , ScoreComponentCollection *estimatedFutureScore = NULL) const
+                                 , const InputPath &inputPath
+                                 , const TargetPhrase &targetPhrase
+                                 , const StackVec *stackVec
+                                 , ScoreComponentCollection &scoreBreakdown
+                                 , ScoreComponentCollection *estimatedFutureScore = NULL) const
   {}
 
   void EvaluateWhenApplied(const Hypothesis& hypo,
-                ScoreComponentCollection* accumulator) const
+                           ScoreComponentCollection* accumulator) const
   {}
 
   void EvaluateWhenApplied(
@@ -37,7 +38,7 @@ public:
   {}
 
   void EvaluateTranslationOptionListWithSourceContext(const InputType &input
-                        , const TranslationOptionList &translationOptionList) const
+      , const TranslationOptionList &translationOptionList) const
   {}
 
   void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const;

@@ -783,11 +783,13 @@ public:
     return m_defaultNonTermOnlyForEmptyRange;
   }
 
-  bool RequireSortingAfterSourceContext() const
-  { return m_requireSortingAfterSourceContext; }
+  bool RequireSortingAfterSourceContext() const {
+    return m_requireSortingAfterSourceContext;
+  }
 
-  bool PrintNBestTrees() const
-  { return m_printNBestTrees; }
+  bool PrintNBestTrees() const {
+    return m_printNBestTrees;
+  }
 
   bool UseS2TDecoder() const {
     return m_useS2TDecoder;

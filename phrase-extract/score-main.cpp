@@ -876,26 +876,26 @@ void outputPhrasePair(const ExtractionPhrasePair &phrasePair,
   }
 
   if (ruleLength && !inverseFlag) {
-	  string propValue = phrasePair.CollectAllPropertyValues("RuleLength");
-	  if (!propValue.empty()) {
-  	    phraseTableFile << " {{RuleLength " << propValue << "}}";
-	  }
+    string propValue = phrasePair.CollectAllPropertyValues("RuleLength");
+    if (!propValue.empty()) {
+      phraseTableFile << " {{RuleLength " << propValue << "}}";
+    }
   }
 
   if (nonTermContext && !inverseFlag) {
-	  string propValue = phrasePair.CollectAllPropertyValues("NonTermContext");
-	  if (!propValue.empty() && propValue.size() < 50000) {
-		size_t nNTs = NumNonTerminal(phraseSource);
-  	    phraseTableFile << " {{NonTermContext " << nNTs << " " << propValue << "}}";
-	  }
+    string propValue = phrasePair.CollectAllPropertyValues("NonTermContext");
+    if (!propValue.empty() && propValue.size() < 50000) {
+      size_t nNTs = NumNonTerminal(phraseSource);
+      phraseTableFile << " {{NonTermContext " << nNTs << " " << propValue << "}}";
+    }
   }
 
   if (nonTermContextTarget && !inverseFlag) {
-	  string propValue = phrasePair.CollectAllPropertyValues("NonTermContextTarget");
-	  if (!propValue.empty() && propValue.size() < 50000) {
-		size_t nNTs = NumNonTerminal(phraseSource);
-  	    phraseTableFile << " {{NonTermContextTarget " << nNTs << " " << propValue << "}}";
-	  }
+    string propValue = phrasePair.CollectAllPropertyValues("NonTermContextTarget");
+    if (!propValue.empty() && propValue.size() < 50000) {
+      size_t nNTs = NumNonTerminal(phraseSource);
+      phraseTableFile << " {{NonTermContextTarget " << nNTs << " " << propValue << "}}";
+    }
   }
 
   phraseTableFile << std::endl;
@@ -903,12 +903,12 @@ void outputPhrasePair(const ExtractionPhrasePair &phrasePair,
 
 size_t NumNonTerminal(const PHRASE *phraseSource)
 {
-    size_t nNTs = 0;
-    for(size_t j=0; j<phraseSource->size()-1; ++j) {
-      if (isNonTerminal(vcbS.getWord( phraseSource->at(j) )))
-        ++nNTs;
-    }
-    return nNTs;
+  size_t nNTs = 0;
+  for(size_t j=0; j<phraseSource->size()-1; ++j) {
+    if (isNonTerminal(vcbS.getWord( phraseSource->at(j) )))
+      ++nNTs;
+  }
+  return nNTs;
 }
 
 void loadOrientationPriors(const std::string &fileNamePhraseOrientationPriors,

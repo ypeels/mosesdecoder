@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
       logProbFlag = true;
       cerr << "using log-probabilities\n";
     } else if (strcmp(argv[i],"--Counts") == 0) {
-    	countsProperty = true;
+      countsProperty = true;
       cerr << "output counts as a property\n";
     } else if (strcmp(argv[i],"--SourceLabels") == 0) {
       sourceLabelsFlag = true;
@@ -396,11 +396,11 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
     // arbitrary key-value pairs
     fileConsolidated << " |||";
     if (itemDirect.size() >= 6) {
-    	fileConsolidated << " " << itemDirect[5];
+      fileConsolidated << " " << itemDirect[5];
     }
 
     if (countsProperty) {
-    	fileConsolidated << " {{Counts " << countE << " " << countF << " " << countEF << "}}";
+      fileConsolidated << " {{Counts " << countE << " " << countF << " " << countEF << "}}";
       //if (sourceLabelsFlag) {
       fileConsolidated << propertiesConsolidator.ProcessPropertiesString(itemDirect[5]);
       //} else {

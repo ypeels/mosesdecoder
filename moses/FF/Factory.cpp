@@ -258,7 +258,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(MaxNonTerm);
 
   MOSES_FNAME(HyperCountNonTerms);
-	MOSES_FNAME(LongerPhraseFF);
+  MOSES_FNAME(LongerPhraseFF);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);

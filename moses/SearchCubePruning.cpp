@@ -162,7 +162,7 @@ void SearchCubePruning::Decode()
     stackNo++;
   }
 
-  IFVERBOSE(1) { 
+  IFVERBOSE(1) {
     cerr << "Stack size: ";
     for (size_t i = 0; i < m_hypoStackColl.size(); ++i) {
       const HypothesisStack &stack = *m_hypoStackColl[i];

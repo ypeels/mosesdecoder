@@ -48,7 +48,7 @@ public:
   }
 
   ChartTranslationOptions &Get(size_t i) {
-	  return *m_collection[i];
+    return *m_collection[i];
   }
 
   //! number of translation options

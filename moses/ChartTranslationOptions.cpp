@@ -56,11 +56,10 @@ class ChartTranslationOptionScoreOrderer
 {
 public:
   bool operator()(const boost::shared_ptr<ChartTranslationOption> &transOptA
-		  	    , const boost::shared_ptr<ChartTranslationOption> &transOptB) const
-  {
-	  const ScoreComponentCollection &scoresA = transOptA->GetScores();
-	  const ScoreComponentCollection &scoresB = transOptB->GetScores();
-	  return scoresA.GetWeightedScore() > scoresB.GetWeightedScore();
+                  , const boost::shared_ptr<ChartTranslationOption> &transOptB) const {
+    const ScoreComponentCollection &scoresA = transOptA->GetScores();
+    const ScoreComponentCollection &scoresB = transOptB->GetScores();
+    return scoresA.GetWeightedScore() > scoresB.GetWeightedScore();
   }
 };
 
@@ -97,8 +96,8 @@ void ChartTranslationOptions::EvaluateWithSourceContext(const InputType &input, 
   const StaticData &staticData = StaticData::Instance();
   if (staticData.RequireSortingAfterSourceContext()) {
     std::sort(m_collection.begin()
-    		, m_collection.begin() + newSize
-    		, ChartTranslationOptionScoreOrderer());
+              , m_collection.begin() + newSize
+              , ChartTranslationOptionScoreOrderer());
   }
 }
 

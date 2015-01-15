@@ -881,7 +881,7 @@ void StaticData::LoadFeatureFunctions()
     bool doLoad = true;
 
     if (ff->RequireSortingAfterSourceContext()) {
-    	m_requireSortingAfterSourceContext = true;
+      m_requireSortingAfterSourceContext = true;
     }
 
     // if (PhraseDictionary *ffCast = dynamic_cast<PhraseDictionary*>(ff)) {

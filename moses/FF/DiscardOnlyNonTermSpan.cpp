@@ -20,56 +20,55 @@ DiscardOnlyNonTermSpan::DiscardOnlyNonTermSpan(const std::string &line)
 }
 
 void DiscardOnlyNonTermSpan::EvaluateInIsolation(const Phrase &source
-                                   , const TargetPhrase &targetPhrase
-                                   , ScoreComponentCollection &scoreBreakdown
-                                   , ScoreComponentCollection &estimatedFutureScore) const
+    , const TargetPhrase &targetPhrase
+    , ScoreComponentCollection &scoreBreakdown
+    , ScoreComponentCollection &estimatedFutureScore) const
 {
 }
 
 void DiscardOnlyNonTermSpan::EvaluateWithSourceContext(const InputType &input
-                                   , const InputPath &inputPath
-                                   , const TargetPhrase &targetPhrase
-                                   , const StackVec *stackVec
-                                   , ScoreComponentCollection &scoreBreakdown
-                                   , ScoreComponentCollection *estimatedFutureScore) const
+    , const InputPath &inputPath
+    , const TargetPhrase &targetPhrase
+    , const StackVec *stackVec
+    , ScoreComponentCollection &scoreBreakdown
+    , ScoreComponentCollection *estimatedFutureScore) const
 {
-	  assert(stackVec);
+  assert(stackVec);
 
-	  const PhraseProperty *property = targetPhrase.GetProperty("SpanLength");
-	  if (property == NULL) {
-		  return;
-	  }
-	  const SpanLengthPhraseProperty *slProp = static_cast<const SpanLengthPhraseProperty*>(property);
+  const PhraseProperty *property = targetPhrase.GetProperty("SpanLength");
+  if (property == NULL) {
+    return;
+  }
+  const SpanLengthPhraseProperty *slProp = static_cast<const SpanLengthPhraseProperty*>(property);
 
-	  for (size_t i = 0; i < stackVec->size(); ++i) {
-		  const ChartCellLabel &cell = *stackVec->at(i);
-		  const WordsRange &ntRange = cell.GetCoverage();
-		  size_t sourceWidth = ntRange.GetNumWordsCovered();
-		  bool onlyContainSpanLength = slProp->OnlyContainSpanLength(i, sourceWidth);
+  for (size_t i = 0; i < stackVec->size(); ++i) {
+    const ChartCellLabel &cell = *stackVec->at(i);
+    const WordsRange &ntRange = cell.GetCoverage();
+    size_t sourceWidth = ntRange.GetNumWordsCovered();
+    bool onlyContainSpanLength = slProp->OnlyContainSpanLength(i, sourceWidth);
 
-		  if (onlyContainSpanLength) {
-			  float score = - std::numeric_limits<float>::infinity();
-			  scoreBreakdown.PlusEquals(this, score);
-			  return;
-		  }
-	  }
+    if (onlyContainSpanLength) {
+      float score = - std::numeric_limits<float>::infinity();
+      scoreBreakdown.PlusEquals(this, score);
+      return;
+    }
+  }
 
 }
 
 void DiscardOnlyNonTermSpan::EvaluateWhenApplied(const Hypothesis& hypo,
-                                   ScoreComponentCollection* accumulator) const
+    ScoreComponentCollection* accumulator) const
 {}
 
 void DiscardOnlyNonTermSpan::EvaluateWhenApplied(const ChartHypothesis &hypo,
-                                        ScoreComponentCollection* accumulator) const
+    ScoreComponentCollection* accumulator) const
 {}
 
 void DiscardOnlyNonTermSpan::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "span") {
-	  m_span = Scan<size_t>(value);
-  }
-  else {
+    m_span = Scan<size_t>(value);
+  } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }
@@ -77,7 +76,7 @@ void DiscardOnlyNonTermSpan::SetParameter(const std::string& key, const std::str
 std::vector<float> DiscardOnlyNonTermSpan::DefaultWeights() const
 {
   UTIL_THROW_IF2(m_numScoreComponents != 1,
-          "DiscardOnlyNonTermSpan must only have 1 score");
+                 "DiscardOnlyNonTermSpan must only have 1 score");
   vector<float> ret(1, 1);
   return ret;
 }

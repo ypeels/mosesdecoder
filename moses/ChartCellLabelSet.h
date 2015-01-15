@@ -46,10 +46,10 @@ public:
   typedef MapType::iterator iterator;
 
   ChartCellLabelSet(const ChartParser &parser, const WordsRange &coverage)
-  : m_parser(parser)
-  , m_coverage(coverage)
-  , m_map(FactorCollection::Instance().GetNumNonTerminals(), NULL)
-  , m_size(0) { }
+    : m_parser(parser)
+    , m_coverage(coverage)
+    , m_map(FactorCollection::Instance().GetNumNonTerminals(), NULL)
+    , m_size(0) { }
 
   ~ChartCellLabelSet() {
     RemoveAllInColl(m_map);

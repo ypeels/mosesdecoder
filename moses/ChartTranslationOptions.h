@@ -63,8 +63,9 @@ public:
     return *(m_collection[i].get());
   }
 
-  size_t GetSize() const
-  { return m_collection.size(); }
+  size_t GetSize() const {
+    return m_collection.size();
+  }
 
   //! @todo dunno
   const StackVec &GetStackVec() const {
@@ -95,9 +96,8 @@ public:
 
   void CreateSourceRuleFromInputPath();
 
-  void Clear()
-  {
-	  m_collection.clear();
+  void Clear() {
+    m_collection.clear();
   }
 
 private:
