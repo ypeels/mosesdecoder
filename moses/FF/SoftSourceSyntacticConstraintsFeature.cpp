@@ -314,7 +314,7 @@ void SoftSourceSyntacticConstraintsFeature::EvaluateWithSourceContext(const Inpu
               = m_sourceLabelIndexesByFactor.find((*prevTreeInputLabelsIt)[0]);
               if (foundPrevTreeInputLabel != m_sourceLabelIndexesByFactor.end()) {
                 size_t prevTreeInputLabelIndex = foundPrevTreeInputLabel->second;
-                treeInputLabelsRHS[nonTerminalNumber].insert(prevTreeInputLabelIndex);
+                treeInputLabelsRHS[nonTermIndex].insert(prevTreeInputLabelIndex);
               }
             }
           }
@@ -531,7 +531,7 @@ void SoftSourceSyntacticConstraintsFeature::EvaluateWithSourceContext(const Inpu
     break;
 
   case 1:
-    newScores[0] = ( (hasCompleteTreeInputMatch || isGlueGrammarRule || isUnkRule) ? 0 : std::numeric_limits<float>::min() );
+    newScores[0] = ( (hasCompleteTreeInputMatch || isGlueGrammarRule || isUnkRule) ? 0 : -std::numeric_limits<float>::infinity() );
     break;
 
   default:
