@@ -799,6 +799,10 @@ public:
   }
 
 
+  bool RequireSortingAfterSourceContext() const {
+    return m_requireSortingAfterSourceContext;
+  }
+
 };
 
 }
