@@ -783,10 +783,6 @@ public:
     return m_defaultNonTermOnlyForEmptyRange;
   }
 
-  bool RequireSortingAfterSourceContext() const {
-    return m_requireSortingAfterSourceContext;
-  }
-
   bool PrintNBestTrees() const {
     return m_printNBestTrees;
   }
