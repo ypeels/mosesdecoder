@@ -453,8 +453,11 @@ int Rule::GetScope(const Parameter &params) const
   bool previousIsAmbiguous = false;
 
   if (m_source[0]->IsNonTerm()) {
-    scope++;
-    previousIsAmbiguous = true;
+    const NonTerm *nt = static_cast<const NonTerm*>(m_source[0]);
+    previousIsAmbiguous = nt->IsHiero(Moses::Input, params);
+    if (previousIsAmbiguous) {
+      scope++;
+    }
   }
 
   for (size_t i = 1; i < m_source.GetSize(); ++i) {
