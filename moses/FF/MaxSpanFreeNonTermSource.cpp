@@ -16,15 +16,9 @@ namespace Moses
 MaxSpanFreeNonTermSource::MaxSpanFreeNonTermSource(const std::string &line)
   :StatelessFeatureFunction(1, line)
   ,m_maxSpan(2)
-  ,m_glueTargetLHSStr("S")
-  ,m_glueTargetLHS(true)
 {
   m_tuneable = false;
   ReadParameters();
-
-  FactorCollection &fc = FactorCollection::Instance();
-  const Factor *factor = fc.AddFactor(m_glueTargetLHSStr, true);
-  m_glueTargetLHS.SetFactor(0, factor);
 }
 
 void MaxSpanFreeNonTermSource::EvaluateInIsolation(const Phrase &source
@@ -42,9 +36,8 @@ void MaxSpanFreeNonTermSource::EvaluateWithSourceContext(const InputType &input
     , ScoreComponentCollection &scoreBreakdown
     , ScoreComponentCollection *estimatedFutureScore) const
 {
-  const Word &targetLHS = targetPhrase.GetTargetLHS();
-
-  if (targetLHS == m_glueTargetLHS) {
+  const WordsRange &range = inputPath.GetWordsRange();
+  if (range.GetStartPos() == 0) {
     // don't delete glue rules
     return;
   }

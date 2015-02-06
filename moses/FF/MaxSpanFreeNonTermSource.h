@@ -45,8 +45,6 @@ public:
 
 protected:
   int m_maxSpan;
-  std::string m_glueTargetLHSStr;
-  Word m_glueTargetLHS;
 };
 
 }
