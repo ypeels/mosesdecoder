@@ -28,6 +28,10 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
     , ScoreComponentCollection &scoreBreakdown
     , ScoreComponentCollection &estimatedFutureScore) const
 {
+  if (IsGlueRule(targetPhrase)) {
+	return;
+  }
+
   bool left = false, right = false, middle = false;
 
   if (source.Front().IsNonTerminal()) {
@@ -125,5 +129,21 @@ std::vector<float> DiscardLeftRightNonTerm::DefaultWeights() const
   return ret;
 }
 
+bool DiscardLeftRightNonTerm::IsGlueRule(const TargetPhrase &targetPhrase) const
+{
+  const Phrase *source = targetPhrase.GetRuleSource();
+  assert(source);
+
+  string sourceStr = source->ToString();
+  if (sourceStr == "<s> " || sourceStr == "X </s> " || sourceStr == "X X ") {
+    // don't score glue rule
+    //cerr << "sourceStr=" << sourceStr << endl;
+    return true;
+  } else {
+    return false;
+  }
+
 }
+
+} // namespace
 
