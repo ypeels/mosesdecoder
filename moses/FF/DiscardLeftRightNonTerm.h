@@ -39,6 +39,8 @@ public:
 protected:
   bool m_doLeft, m_doRight, m_doMiddle;
   bool m_hardConstraint;
+
+  bool IsGlueRule(const TargetPhrase &targetPhrase) const;
 };
 
 }
