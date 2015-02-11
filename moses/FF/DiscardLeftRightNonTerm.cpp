@@ -17,7 +17,7 @@ DiscardLeftRightNonTerm::DiscardLeftRightNonTerm(const std::string &line)
   ,m_doLeft(false)
   ,m_doRight(false)
   ,m_doMiddle(false)
-
+  ,m_useTarget(false)
 {
   m_tuneable = false;
   ReadParameters();
@@ -32,17 +32,19 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
 	return;
   }
 
+  const Phrase *phrase = m_useTarget ? &targetPhrase : &source;
+
   bool left = false, right = false, middle = false;
 
-  if (source.Front().IsNonTerminal()) {
+  if (phrase->Front().IsNonTerminal()) {
 	  left = true;
   }
-  if (source.Back().IsNonTerminal()) {
+  if (phrase->Back().IsNonTerminal()) {
 	  right = true;
   }
 
-  for (size_t i = 1; i < source.GetSize() - 1; ++i) {
-	const Word &word = source.GetWord(i);
+  for (size_t i = 1; i < phrase->GetSize() - 1; ++i) {
+	const Word &word = phrase->GetWord(i);
 	if (word.IsNonTerminal()) {
 		middle = true;
 		break;
@@ -115,6 +117,9 @@ void DiscardLeftRightNonTerm::SetParameter(const std::string& key, const std::st
   }
   else if (key == "hard-constraint") {
     m_hardConstraint = Scan<bool>(value);
+  }
+  else if (key == "use-target") {
+	  m_useTarget = Scan<bool>(value);
   }
   else {
     StatelessFeatureFunction::SetParameter(key, value);
