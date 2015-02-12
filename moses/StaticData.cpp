@@ -112,7 +112,7 @@ bool StaticData::LoadData(Parameter *parameter)
   // to cube or not to cube
   m_parameter->SetParameter(m_searchAlgorithm, "search-algorithm", Normal);
 
-  if (IsChart())
+  if (IsSyntax())
     LoadChartDecodingParameters();
 
   // input type has to be specified BEFORE loading the phrase tables!
@@ -699,7 +699,7 @@ void StaticData::LoadDecodeGraphsOld(const vector<string> &mappingVector, const 
     UTIL_THROW_IF2(decodeStep == NULL, "Null decode step");
     if (m_decodeGraphs.size() < decodeGraphInd + 1) {
       DecodeGraph *decodeGraph;
-      if (IsChart()) {
+      if (IsSyntax()) {
         size_t maxChartSpan = (decodeGraphInd < maxChartSpans.size()) ? maxChartSpans[decodeGraphInd] : DEFAULT_MAX_CHART_SPAN;
         VERBOSE(1,"max-chart-span: " << maxChartSpans[decodeGraphInd] << endl);
         decodeGraph = new DecodeGraph(m_decodeGraphs.size(), maxChartSpan);
@@ -766,7 +766,7 @@ void StaticData::LoadDecodeGraphsNew(const std::vector<std::string> &mappingVect
     UTIL_THROW_IF2(decodeStep == NULL, "Null decode step");
     if (m_decodeGraphs.size() < decodeGraphInd + 1) {
       DecodeGraph *decodeGraph;
-      if (IsChart()) {
+      if (IsSyntax()) {
         size_t maxChartSpan = (decodeGraphInd < maxChartSpans.size()) ? maxChartSpans[decodeGraphInd] : DEFAULT_MAX_CHART_SPAN;
         VERBOSE(1,"max-chart-span: " << maxChartSpans[decodeGraphInd] << endl);
         decodeGraph = new DecodeGraph(m_decodeGraphs.size(), maxChartSpan);
