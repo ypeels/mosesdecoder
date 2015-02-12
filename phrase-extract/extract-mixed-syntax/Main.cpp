@@ -58,8 +58,9 @@ int main(int argc, char** argv)
   ("ScopeSpan", po::value<string>()->default_value(params.scopeSpanStr), "Min and max span for rules of each scope. Format is min,max:min,max...")
 
   ("NonTermConsecSource", "Allow consecutive non-terms on the source side")
-  ("NonTermConsecSourceMixedSyntax", po::value<int>()->default_value(params.nonTermConsecSourceMixedSyntax), "In mixed syntax mode, what nt can be consecutive. 0=don't allow consec nt. 1(default)=allow hiero+syntax,syntax+syntax. 2=allow syntax+syntax. 3=always allow");
+  ("NonTermConsecSourceMixedSyntax", po::value<int>()->default_value(params.nonTermConsecSourceMixedSyntax), "In mixed syntax mode, what nt can be consecutive. 0=don't allow consec nt. 1(default)=allow hiero+syntax,syntax+syntax. 2=allow syntax+syntax. 3=always allow")
 
+  ("DiscardNonTerm", po::value<int>()->default_value(params.discardNonTerm), "What rule patterns to discard. Or masked");
 
   po::variables_map vm;
   try {
@@ -119,6 +120,8 @@ int main(int argc, char** argv)
 
   if (vm.count("NonTermConsecSource")) params.nonTermConsecSource = true;
   if (vm.count("NonTermConsecSourceMixedSyntax")) params.nonTermConsecSourceMixedSyntax = vm["NonTermConsecSourceMixedSyntax"].as<int>();
+
+  if (vm.count("DiscardNonTerm")) params.discardNonTerm = (DiscardNonTerm) vm["DiscardNonTerm"].as<int>();
 
 
   // input files;

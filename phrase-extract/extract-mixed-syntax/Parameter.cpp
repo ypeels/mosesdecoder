@@ -48,6 +48,8 @@ Parameter::Parameter()
   ,numTargetFactors(1)
 
   ,nonTermConsecSourceMixedSyntax(1)
+
+  ,discardNonTerm(None)
 {}
 
 Parameter::~Parameter()

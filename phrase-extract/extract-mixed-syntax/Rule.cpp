@@ -445,6 +445,32 @@ void Rule::Prevalidate(const Parameter &params)
       }
     }
   }
+
+  if (params.discardNonTerm) {
+	  if (params.discardNonTerm | LeftSource) {
+		    const RuleSymbol *arc = m_source.Front();
+		    if (arc->IsNonTerm()) {
+		        m_isValid = false;
+		        m_canRecurse = false;
+		        return;
+		    }
+	  }
+
+	  if (params.discardNonTerm | RightSource) {
+		    const RuleSymbol *arc = m_source.Back();
+		    if (arc->IsNonTerm()) {
+		        m_isValid = false;
+		        m_canRecurse = false;
+		        return;
+		    }
+	  }
+
+	  if (params.discardNonTerm | MiddleSource) {
+		  cerr << "Not yet implemented" << endl;
+		  exit(1);
+	  }
+}
+
 }
 
 int Rule::GetScope(const Parameter &params) const
