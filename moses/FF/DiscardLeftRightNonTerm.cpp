@@ -18,6 +18,7 @@ DiscardLeftRightNonTerm::DiscardLeftRightNonTerm(const std::string &line)
   ,m_doRight(false)
   ,m_doMiddle(false)
   ,m_useTarget(false)
+  ,m_onlyNonReordered(false)
 {
   m_tuneable = false;
   ReadParameters();
@@ -32,15 +33,43 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
 	return;
   }
 
+  const AlignmentInfo &ntAlign = targetPhrase.GetAlignNonTerm();
+
   const Phrase *phrase = m_useTarget ? &targetPhrase : &source;
+
+  UTIL_THROW_IF2(m_onlyNonReordered && phrase != &source,
+                 "Discarding only non-reordered. Original phrase must be source");
 
   bool left = false, right = false, middle = false;
 
   if (phrase->Front().IsNonTerminal()) {
-	  left = true;
+	  if (m_onlyNonReordered) {
+		  std::set<size_t> targetAlign = ntAlign.GetAlignmentsForSource(0);
+		  UTIL_THROW_IF2(targetAlign.size() != 1,
+		                 "Can only be 1 NT alignment");
+		  size_t targetPos = *targetAlign.begin();
+		  if (targetPos == 0) {
+			  left = true;
+		  }
+	  }
+	  else {
+		  left = true;
+	  }
   }
+
   if (phrase->Back().IsNonTerminal()) {
-	  right = true;
+	  if (m_onlyNonReordered) {
+		  std::set<size_t> targetAlign = ntAlign.GetAlignmentsForSource(source.GetSize() - 1);
+		  UTIL_THROW_IF2(targetAlign.size() != 1,
+		                 "Can only be 1 NT alignment");
+		  size_t targetPos = *targetAlign.begin();
+		  if (targetPos == targetPhrase.GetSize() - 1) {
+			  right = true;
+		  }
+	  }
+	  else {
+		  right = true;
+	  }
   }
 
   for (size_t i = 1; i < phrase->GetSize() - 1; ++i) {
@@ -120,6 +149,9 @@ void DiscardLeftRightNonTerm::SetParameter(const std::string& key, const std::st
   }
   else if (key == "use-target") {
 	  m_useTarget = Scan<bool>(value);
+  }
+  else if (key == "only-non-reordered") {
+	  m_onlyNonReordered = Scan<bool>(value);
   }
   else {
     StatelessFeatureFunction::SetParameter(key, value);
