@@ -82,7 +82,7 @@ float LongerPhraseFF::GetMax(size_t inputSize, const WordsRange &range
 
       WordsRange range(currStartPos, currEndPos);
 
-      const TranslationOptionList &currTransOpts = transOptColl.GetTranslationOptionList(range);
+      const TranslationOptionList &currTransOpts = *transOptColl.GetTranslationOptionList(range);
       float currMax = GetMax(currTransOpts);
       if (currMax > ret) {
         ret = currMax;
