@@ -1,9 +1,12 @@
 #include <vector>
+#include <boost/functional/hash.hpp>
 #include "LM01.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
-#include "FactorCollection.h"
-#include "InputFileStream.h"
+#include "moses/FactorCollection.h"
+#include "moses/InputFileStream.h"
+#include "moses/TranslationOption.h"
+#include "moses/TargetPhrase.h"
 
 using namespace std;
 
@@ -20,7 +23,7 @@ int LM01State::Compare(const FFState& other) const
 
 ////////////////////////////////////////////////////////////////
 LM01::LM01(const std::string &line)
-  :StatefulFeatureFunction(3, line)
+  :StatefulFeatureFunction(1, line)
   ,m_beginFactor(0)
   ,m_endFactor(0)
   ,m_ignoreUnk(true)
@@ -46,9 +49,14 @@ void LM01::Load()
 	  UTIL_THROW_IF2(toks.size() != 2, "Expected 2 columns in vocab file");
 
 	  const Factor *factor = factorCollection.AddFactor(toks[0]);
+	  string str = factor->GetString().as_string();
+
+	  boost::hash<std::string> string_hash;
 	  size_t id = Scan<size_t>(toks[1]);
 
-	  m_word2id[factor] = id;
+	  int hash = string_hash(str);
+
+	  m_word2id[factor] = VocabValue(id, hash);
   }
 
   string dataPath = m_filePath + "/Data.dat";
@@ -90,18 +98,22 @@ FFState* LM01::EvaluateWhenApplied(
   const FFState* prev_state,
   ScoreComponentCollection* accumulator) const
 {
-  // dense scores
-  vector<float> newScores(m_numScoreComponents);
-  newScores[0] = 1.5;
-  newScores[1] = 0.3;
-  newScores[2] = 0.4;
-  accumulator->PlusEquals(this, newScores);
+  const TargetPhrase &tp = cur_hypo.GetTranslationOption().GetTargetPhrase();
+  if (tp.GetSize() == 0) {
+	  // initial trans opt. 0 size tp
+	  return new LM01State(0);
+  }
 
-  // sparse scores
-  accumulator->PlusEquals(this, "sparse-name", 2.4);
+  const Word &lastWord = tp.Back();
+  const VocabValue *vocabValue = GetVocabValue(lastWord, m_beginFactor);
 
-  // int targetLen = cur_hypo.GetCurrTargetPhrase().GetSize(); // ??? [UG]
-  return new LM01State(0);
+  if (vocabValue) {
+	  return new LM01State(vocabValue->second);
+  }
+  else {
+	  // UNK
+	  return new LM01State(1);
+  }
 }
 
 FFState* LM01::EvaluateWhenApplied(
@@ -110,6 +122,11 @@ FFState* LM01::EvaluateWhenApplied(
   ScoreComponentCollection* accumulator) const
 {
   return new LM01State(0);
+}
+
+const LM01::VocabValue *LM01::GetVocabValue(const Word &word, FactorType factorType) const
+{
+
 }
 
 void LM01::SetParameter(const std::string& key, const std::string& value)

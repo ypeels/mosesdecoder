@@ -63,8 +63,13 @@ protected:
   bool m_minCount;
   std::string m_filePath;
 
-  std::map<const Factor*, size_t> m_word2id;
+  typedef std::pair<size_t, int> VocabValue; // 1st = id, 2nd = hash
+
+  std::map<const Factor*, VocabValue> m_word2id;
+  //std::map<const Factor*, size_t> m_word2id;
   std::map<size_t, float> m_data;
+
+  const VocabValue *GetVocabValue(const Word &word, FactorType factorType) const;
 };
 
 
