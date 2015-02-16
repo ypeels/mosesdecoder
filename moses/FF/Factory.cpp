@@ -76,6 +76,7 @@
 #include "moses/FF/HyperParam/HyperCountNonTerms.h"
 #include "LongerPhraseFF.h"
 #include "DiscardLeftRightNonTerm.h"
+#include "LM01.h"
 
 #ifdef HAVE_VW
 #include "moses/FF/VW/VW.h"
@@ -263,6 +264,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(LongerPhraseFF);
   MOSES_FNAME(UnalignedWordCountFeature);
   MOSES_FNAME(DiscardLeftRightNonTerm);
+  MOSES_FNAME(LM01);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
