@@ -7,50 +7,41 @@
 using namespace std;
 using namespace Moses;
 
-void Process(const string &line, size_t beginFactor, size_t endFactor, OutputFileStream &outStrme);
-
 int main(int argc, char** argv)
 {
-  assert(argc == 5);
-	size_t beginFactor = Scan<size_t>(argv[1]);
-	size_t endFactor = Scan<size_t>(argv[2]);
+  cerr << "Starting...";
 
-	string inPath = argv[3];
-	string outPath = argv[4];
+  assert(argc == 3);
+
+	string inPath = argv[1];
+	string outPath = argv[2];
 
 	InputFileStream inStrme(inPath);
 	OutputFileStream outStrme(outPath);
 
-	string line;
+  int lineNum = 0;
+	string prevLine, line;
+	size_t count = 0;
   while (getline(inStrme, line)) {
-		Process(line, beginFactor, endFactor, outStrme);
+		++lineNum;
+    if (lineNum%10000 == 0) cerr << "." << flush;
+
+		if (prevLine != line) {
+			if (!prevLine.empty()) {
+				outStrme << count << " " << prevLine << endl;
+			}
+
+  		prevLine = line;
+			count = 0;
+		}
+
+		++count;
   }
-}
 
-void Process(const string &line, size_t beginFactor, size_t endFactor, OutputFileStream &outStrme)
-{
-  size_t maxFactor = max(beginFactor, endFactor);
+	// last
+	outStrme << count << " " << prevLine << endl;
 
-  // tokenize
-	vector<string> toks;
-  Tokenize(toks, line);
-
-	vector<vector<string> > tokToks(toks.size());
-
-	for (size_t i = 0; i < toks.size(); ++i) {
-    vector<string> factors = Tokenize(toks[i], "|");
-		assert(factors.size() - 1 <= maxFactor);
-
-		tokToks[i] = factors;
-	}
-
-	// output
-	for (size_t i = 1; i < toks.size(); ++i) {
-		const vector<string> &prevFactors = tokToks[i-1];
-		const vector<string> &thisFactors = tokToks[i];
-
-		outStrme << prevFactors[beginFactor] << " " << thisFactors[endFactor] << endl;
-  }
+  cerr << "Finished." << endl;
 }
 
 
