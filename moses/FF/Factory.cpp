@@ -76,13 +76,16 @@
 #include "moses/FF/HyperParam/HyperCountNonTerms.h"
 #include "LongerPhraseFF.h"
 #include "DiscardLeftRightNonTerm.h"
+#include "LM01.h"
 
 #ifdef HAVE_VW
 #include "moses/FF/VW/VW.h"
 #include "moses/FF/VW/VWFeatureSourceBagOfWords.h"
+#include "moses/FF/VW/VWFeatureSourceBigrams.h"
 #include "moses/FF/VW/VWFeatureSourceIndicator.h"
 #include "moses/FF/VW/VWFeatureSourcePhraseInternal.h"
 #include "moses/FF/VW/VWFeatureSourceWindow.h"
+#include "moses/FF/VW/VWFeatureTargetBigrams.h"
 #include "moses/FF/VW/VWFeatureTargetIndicator.h"
 #include "moses/FF/VW/VWFeatureSourceExternalFeatures.h"
 #include "moses/FF/VW/VWFeatureTargetPhraseInternal.h"
@@ -263,6 +266,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(LongerPhraseFF);
   MOSES_FNAME(UnalignedWordCountFeature);
   MOSES_FNAME(DiscardLeftRightNonTerm);
+  MOSES_FNAME(LM01);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
@@ -274,9 +278,11 @@ FeatureRegistry::FeatureRegistry()
 #ifdef HAVE_VW
   MOSES_FNAME(VW);
   MOSES_FNAME(VWFeatureSourceBagOfWords);
+  MOSES_FNAME(VWFeatureSourceBigrams);
   MOSES_FNAME(VWFeatureSourceIndicator);
   MOSES_FNAME(VWFeatureSourcePhraseInternal);
   MOSES_FNAME(VWFeatureSourceWindow);
+  MOSES_FNAME(VWFeatureTargetBigrams);
   MOSES_FNAME(VWFeatureTargetPhraseInternal);
   MOSES_FNAME(VWFeatureTargetIndicator);
   MOSES_FNAME(VWFeatureSourceExternalFeatures);

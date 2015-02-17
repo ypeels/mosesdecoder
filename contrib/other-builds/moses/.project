@@ -1271,6 +1271,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/KeepOnlyReordering.h</locationURI>
 		</link>
 		<link>
+			<name>FF/LM01.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LM01.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/LM01.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LM01.h</locationURI>
+		</link>
+		<link>
 			<name>FF/LexicalReordering</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
