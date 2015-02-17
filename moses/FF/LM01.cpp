@@ -16,9 +16,9 @@ int LM01State::Compare(const FFState& other) const
 {
   const LM01State &otherState = static_cast<const LM01State&>(other);
 
-  if (m_hash == otherState.m_hash)
+  if (m_id == otherState.m_id)
     return 0;
-  return (m_hash < otherState.m_hash) ? -1 : +1;
+  return (m_id < otherState.m_id) ? -1 : +1;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -26,12 +26,21 @@ LM01::LM01(const std::string &line)
   :StatefulFeatureFunction(1, line)
   ,m_beginFactor(0)
   ,m_endFactor(0)
-  ,m_ignoreUnk(true)
+  ,m_processUnk(false)
   ,m_minCount(1)
 {
+  m_tuneable = false;
   ReadParameters();
 
   UTIL_THROW_IF2(m_filePath.empty(), "Must specify data directory");
+}
+
+std::vector<float> LM01::DefaultWeights() const
+{
+  UTIL_THROW_IF2(m_numScoreComponents != 1,
+                 "LM01 must only have 1 score");
+  vector<float> ret(1, 1);
+  return ret;
 }
 
 void LM01::Load()
@@ -51,12 +60,9 @@ void LM01::Load()
 	  const Factor *factor = factorCollection.AddFactor(toks[0]);
 	  string str = factor->GetString().as_string();
 
-	  boost::hash<std::string> string_hash;
 	  size_t id = Scan<size_t>(toks[1]);
 
-	  int hash = string_hash(str);
-
-	  m_word2id[factor] = VocabValue(id, hash);
+	  m_word2id[factor] = id;
   }
 
   string dataPath = m_filePath + "/Data.dat";
@@ -104,16 +110,26 @@ FFState* LM01::EvaluateWhenApplied(
 	  return new LM01State(0);
   }
 
-  const Word &lastWord = tp.Back();
-  const VocabValue *vocabValue = GetVocabValue(lastWord, m_beginFactor);
+  size_t id;
 
-  if (vocabValue) {
-	  return new LM01State(vocabValue->second);
+  // 1st word from this hypo, last word from previous
+  const Word &firstWord = tp.Front();
+  id = GetVocab(firstWord, m_endFactor);
+
+  const LM01State *prevLMState = static_cast<const LM01State*>(prev_state);
+  size_t prevId = prevLMState->GetId();
+
+  if ((id && prevId) || m_processUnk) {
+	  float count = GetCount(id, prevId);
+	  if (count < m_minCount) {
+		  accumulator->PlusEquals(this, - std::numeric_limits<float>::infinity());
+	  }
   }
-  else {
-	  // UNK
-	  return new LM01State(1);
-  }
+
+  // state info
+  const Word &lastWord = tp.Back();
+  id = GetVocab(lastWord, m_beginFactor);
+  return new LM01State(id);
 }
 
 FFState* LM01::EvaluateWhenApplied(
@@ -124,9 +140,34 @@ FFState* LM01::EvaluateWhenApplied(
   return new LM01State(0);
 }
 
-const LM01::VocabValue *LM01::GetVocabValue(const Word &word, FactorType factorType) const
+size_t LM01::GetVocab(const Word &word, FactorType factorType) const
 {
+  const Factor *factor = word.GetFactor(factorType);
 
+  std::map<const Factor*, size_t>::const_iterator iter;
+  iter = m_word2id.find(factor);
+
+  if (iter == m_word2id.end()) {
+	  return 0;
+  }
+  else {
+	  return iter->second;
+  }
+}
+
+float LM01::GetCount(size_t id, size_t prevId) const
+{
+  size_t seed = id;
+  boost::hash_combine(seed, prevId);
+
+  std::map<size_t, float>::const_iterator iter;
+  iter = m_data.find(seed);
+  if (iter == m_data.end()) {
+	  return 0;
+  }
+  else {
+	  return iter->second;
+  }
 }
 
 void LM01::SetParameter(const std::string& key, const std::string& value)
@@ -140,6 +181,12 @@ void LM01::SetParameter(const std::string& key, const std::string& value)
   else if (key == "path") {
 	  m_filePath = value;
   }
+  else if (key == "min-count") {
+	  m_minCount = Scan<float>(value);
+   }
+  else if (key == "process-unk") {
+	  m_processUnk = Scan<bool>(value);
+   }
   else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
