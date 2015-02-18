@@ -94,9 +94,7 @@ FFState* LM01::EvaluateWhenApplied(
 	  return new LM01State();
   }
 
-  // info for new state object
-  const Word &lastWord = tp.Back();
-  Word newStateWord;
+  const LM01State *prevLMState = static_cast<const LM01State*>(prev_state);
 
   // 1st word from this hypo, last word from previous
   const Word &firstWord = tp.Front();
@@ -106,25 +104,29 @@ FFState* LM01::EvaluateWhenApplied(
 	  const Config &config = m_configs[i];
 
 	  const Factor *firstFactor = firstWord[config.endFactor];
-
-	  const LM01State *prevLMState = static_cast<const LM01State*>(prev_state);
 	  const Factor *prevFactor = prevLMState->m_word[config.beginFactor];
 
-	  if (m_processUnk || (InVocab(VocabKey(config.beginFactor, prevFactor))
-						  && InVocab(VocabKey(config.endFactor, firstFactor)))) {
-		  float count = GetCount(config, prevFactor, firstFactor);
-		  if (count > config.minCount) {
-			  doIt = false;
-			  break;
-		  }
+	  if (!m_processUnk && (!InVocab(VocabKey(config.beginFactor, prevFactor))
+				|| !InVocab(VocabKey(config.endFactor, firstFactor)))) {
+	    doIt = false;
+	    break;
+	  }
+
+	  float count = GetCount(config, prevFactor, firstFactor);
+	  if (count > config.minCount) {
+		  doIt = false;
+		  break;
 	  }
   }
 
   if (doIt) {
 	  accumulator->PlusEquals(this, 1);
+	  cerr << "Get rid:" << prevLMState->m_word << " " << firstWord << endl;
   }
 
   // state info
+  Word newStateWord;
+  const Word &lastWord = tp.Back();
   for (size_t i = 0; i < m_configs.size(); ++i) {
 	  const Config &config = m_configs[i];
 	  newStateWord[config.beginFactor] = lastWord[config.beginFactor];
