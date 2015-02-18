@@ -9,16 +9,23 @@ namespace Moses
 
 class LM01State : public FFState
 {
-  size_t m_id;
+	const Factor *m_factor;
 public:
-  LM01State(size_t id)
-    :m_id(id)
+  LM01State(const Factor *factor)
+    :m_factor(factor)
  {}
 
-  int Compare(const FFState& other) const;
+  int Compare(const FFState& other) const
+  {
+    const LM01State &otherState = static_cast<const LM01State&>(other);
 
-  size_t GetId() const
-  { return m_id; }
+    if (m_factor == otherState.m_factor)
+      return 0;
+    return (m_factor < otherState.m_factor) ? -1 : +1;
+  }
+
+  const Factor *GetFactor() const
+  { return m_factor; }
 };
 
 class LM01 : public StatefulFeatureFunction
@@ -67,18 +74,16 @@ protected:
   float m_minCount;
   std::string m_filePath;
 
-  // vocab
-  //typedef std::pair<size_t, int> VocabValue; // 1st = id, 2nd = hash
-  //std::map<const Factor*, VocabValue> m_word2id;
-  std::map<const Factor*, size_t> m_word2id;
-  	  // id = 0 - UNK
+  typedef std::pair<FactorType, const Factor*> VocabKey;
+  std::set<VocabKey> m_vocab;
 
   // LM data
   std::map<size_t, float> m_data;
 
-  size_t GetVocab(const Word &word, FactorType factorType) const;
-  float GetCount(size_t id, size_t prevId) const;
+  float GetCount(const Factor *prevFactor, const Factor *currFactor) const;
+  size_t GetHash(const Factor *factor1, const Factor *factor2) const;
 
+  bool InVocab(const VocabKey &key) const;
 };
 
 
