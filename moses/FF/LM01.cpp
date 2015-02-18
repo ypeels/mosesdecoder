@@ -98,8 +98,8 @@ FFState* LM01::EvaluateWhenApplied(
   const LM01State *prevLMState = static_cast<const LM01State*>(prev_state);
   const Factor *prevFactor = prevLMState->GetFactor();
 
-  if ((InVocab(VocabKey(m_beginFactor, prevFactor))
-		  && InVocab(VocabKey(m_endFactor, firstFactor))) || m_processUnk) {
+  if (m_processUnk || (InVocab(VocabKey(m_beginFactor, prevFactor))
+		  	  	  	  && InVocab(VocabKey(m_endFactor, firstFactor)))) {
 	  float count = GetCount(prevFactor, firstFactor);
 	  if (count < m_minCount) {
 		  accumulator->PlusEquals(this, 1);
