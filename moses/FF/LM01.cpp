@@ -12,14 +12,6 @@ using namespace std;
 
 namespace Moses
 {
-int LM01State::Compare(const FFState& other) const
-{
-  const LM01State &otherState = static_cast<const LM01State&>(other);
-
-  if (m_id == otherState.m_id)
-    return 0;
-  return (m_id < otherState.m_id) ? -1 : +1;
-}
 
 ////////////////////////////////////////////////////////////////
 LM01::LM01(const std::string &line)
@@ -32,14 +24,14 @@ LM01::LM01(const std::string &line)
   m_tuneable = false;
   ReadParameters();
 
-  UTIL_THROW_IF2(m_filePath.empty(), "Must specify data directory");
+  UTIL_THROW_IF2(m_filePath.empty(), "Must specify file path");
 }
 
 std::vector<float> LM01::DefaultWeights() const
 {
   UTIL_THROW_IF2(m_numScoreComponents != 1,
                  "LM01 must only have 1 score");
-  vector<float> ret(1, 1);
+  vector<float> ret(1, - std::numeric_limits<float>::infinity());
   return ret;
 }
 
@@ -47,35 +39,24 @@ void LM01::Load()
 {
   FactorCollection &factorCollection = FactorCollection::Instance();
 
+  InputFileStream dataStrme(m_filePath);
+
   string line;
-
-  string vocabPath = m_filePath + "/Vocab.dat";
-  InputFileStream vocabStrme(vocabPath);
-
-  while (getline(vocabStrme, line)) {
-	  vector<string> toks;
-	  Tokenize(toks, line);
-	  UTIL_THROW_IF2(toks.size() != 2, "Expected 2 columns in vocab file");
-
-	  const Factor *factor = factorCollection.AddFactor(toks[0]);
-	  string str = factor->GetString().as_string();
-
-	  size_t id = Scan<size_t>(toks[1]);
-
-	  m_word2id[factor] = id;
-  }
-
-  string dataPath = m_filePath + "/Data.dat";
-  InputFileStream dataStrme(dataPath);
-
   while (getline(dataStrme, line)) {
 	  vector<string> toks;
 	  Tokenize(toks, line);
-	  UTIL_THROW_IF2(toks.size() != 2, "Expected 2 columns in data file");
+	  UTIL_THROW_IF2(toks.size() != 3, "Expected 3 columns in data file");
 
-	  size_t hash = Scan<size_t>(toks[0]);
-	  float count = Scan<float>(toks[1]);
+	  float count = Scan<float>(toks[0]);
+	  const Factor *factor1 = factorCollection.AddFactor(toks[1]);
+	  const Factor *factor2 = factorCollection.AddFactor(toks[2]);
 
+	  VocabKey vocabKey1(m_beginFactor, factor1);
+	  m_vocab.insert(vocabKey1);
+	  VocabKey vocabKey2(m_endFactor, factor2);
+	  m_vocab.insert(vocabKey2);
+
+	  size_t hash = GetHash(factor1, factor2);
 	  m_data[hash] = count;
   }
 
@@ -107,29 +88,28 @@ FFState* LM01::EvaluateWhenApplied(
   const TargetPhrase &tp = cur_hypo.GetTranslationOption().GetTargetPhrase();
   if (tp.GetSize() == 0) {
 	  // initial trans opt. 0 size tp
-	  return new LM01State(0);
+	  return new LM01State(NULL);
   }
-
-  size_t id;
 
   // 1st word from this hypo, last word from previous
   const Word &firstWord = tp.Front();
-  id = GetVocab(firstWord, m_endFactor);
+  const Factor *firstFactor = firstWord[m_endFactor];
 
   const LM01State *prevLMState = static_cast<const LM01State*>(prev_state);
-  size_t prevId = prevLMState->GetId();
+  const Factor *prevFactor = prevLMState->GetFactor();
 
-  if ((id && prevId) || m_processUnk) {
-	  float count = GetCount(id, prevId);
+  if ((InVocab(VocabKey(m_beginFactor, prevFactor))
+		  && InVocab(VocabKey(m_endFactor, firstFactor))) || m_processUnk) {
+	  float count = GetCount(prevFactor, firstFactor);
 	  if (count < m_minCount) {
-		  accumulator->PlusEquals(this, - std::numeric_limits<float>::infinity());
+		  accumulator->PlusEquals(this, 1);
 	  }
   }
 
   // state info
   const Word &lastWord = tp.Back();
-  id = GetVocab(lastWord, m_beginFactor);
-  return new LM01State(id);
+  const Factor *lastFactor = lastWord[m_beginFactor];
+  return new LM01State(lastFactor);
 }
 
 FFState* LM01::EvaluateWhenApplied(
@@ -140,14 +120,13 @@ FFState* LM01::EvaluateWhenApplied(
   return new LM01State(0);
 }
 
-size_t LM01::GetVocab(const Word &word, FactorType factorType) const
+float LM01::GetCount(const Factor *prevFactor, const Factor *currFactor) const
 {
-  const Factor *factor = word.GetFactor(factorType);
+  size_t hash = GetHash(prevFactor, currFactor);
 
-  std::map<const Factor*, size_t>::const_iterator iter;
-  iter = m_word2id.find(factor);
-
-  if (iter == m_word2id.end()) {
+  std::map<size_t, float>::const_iterator iter;
+  iter = m_data.find(hash);
+  if (iter == m_data.end()) {
 	  return 0;
   }
   else {
@@ -155,19 +134,18 @@ size_t LM01::GetVocab(const Word &word, FactorType factorType) const
   }
 }
 
-float LM01::GetCount(size_t id, size_t prevId) const
+size_t LM01::GetHash(const Factor *factor1, const Factor *factor2) const
 {
-  size_t seed = id;
-  boost::hash_combine(seed, prevId);
+  size_t hash = (size_t)factor1;
+  boost::hash_combine(hash, (size_t)factor2);
+  return hash;
+}
 
-  std::map<size_t, float>::const_iterator iter;
-  iter = m_data.find(seed);
-  if (iter == m_data.end()) {
-	  return 0;
-  }
-  else {
-	  return iter->second;
-  }
+bool LM01::InVocab(const VocabKey &key) const
+{
+	std::set<VocabKey>::const_iterator iter;
+	iter = m_vocab.find(key);
+	return (iter != m_vocab.end());
 }
 
 void LM01::SetParameter(const std::string& key, const std::string& value)
