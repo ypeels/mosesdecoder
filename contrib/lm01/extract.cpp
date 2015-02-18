@@ -47,7 +47,7 @@ void Process(const string &line, size_t beginFactor, size_t endFactor, OutputFil
 
 	for (size_t i = 0; i < toks.size(); ++i) {
     vector<string> factors = Tokenize(toks[i], "|");
-		assert(factors.size() - 1 <= maxFactor);
+		assert(factors.size() - 1 >= maxFactor);
 
 		tokToks[i] = factors;
 	}
