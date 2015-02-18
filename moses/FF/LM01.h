@@ -9,27 +9,39 @@ namespace Moses
 
 class LM01State : public FFState
 {
-	const Factor *m_factor;
 public:
-  LM01State(const Factor *factor)
-    :m_factor(factor)
- {}
+  Word m_word;
+
+  LM01State()
+  {}
+
+  LM01State(Word &word)
+  :m_word(word)
+  {}
 
   int Compare(const FFState& other) const
   {
     const LM01State &otherState = static_cast<const LM01State&>(other);
-
-    if (m_factor == otherState.m_factor)
-      return 0;
-    return (m_factor < otherState.m_factor) ? -1 : +1;
+    int ret = Word::Compare(m_word, otherState.m_word);
+    return ret;
   }
 
-  const Factor *GetFactor() const
-  { return m_factor; }
 };
 
 class LM01 : public StatefulFeatureFunction
 {
+	struct Config
+	{
+	  FactorType beginFactor, endFactor;
+	  float minCount;
+
+	  Config(FactorType beginFactor, FactorType endFactor, float minCount) {
+		  this->beginFactor = beginFactor;
+		  this->endFactor = endFactor;
+		  this->minCount = minCount;
+	  }
+	};
+
 public:
   LM01(const std::string &line);
 
@@ -39,7 +51,7 @@ public:
     return true;
   }
   virtual const FFState* EmptyHypothesisState(const InputType &input) const {
-    return new LM01State(0);
+    return new LM01State();
   }
 
   void EvaluateInIsolation(const Phrase &source
@@ -69,9 +81,8 @@ public:
   std::vector<float> DefaultWeights() const;
 
 protected:
-  FactorType m_beginFactor, m_endFactor;
+  std::vector<Config> m_configs;
   bool m_processUnk;
-  float m_minCount;
   std::string m_filePath;
 
   typedef std::pair<FactorType, const Factor*> VocabKey;
@@ -80,10 +91,15 @@ protected:
   // LM data
   std::map<size_t, float> m_data;
 
-  float GetCount(const Factor *prevFactor, const Factor *currFactor) const;
-  size_t GetHash(const Factor *factor1, const Factor *factor2) const;
+  void AddCount(const Config &config, const Factor *factor1, const Factor *factor2, float count);
+
+  float GetCount(const Config &config, const Factor *prevFactor, const Factor *currFactor) const;
+  size_t GetHash(const Config &config, const Factor *factor1, const Factor *factor2) const;
 
   bool InVocab(const VocabKey &key) const;
+
+  void ParseConfig(const std::string &value);
+  void Parse1Config(const std::string &value);
 };
 
 
