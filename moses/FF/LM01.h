@@ -16,11 +16,10 @@ public:
   {}
 
   LM01State(Word &word)
-  :m_word(word)
+    :m_word(word)
   {}
 
-  int Compare(const FFState& other) const
-  {
+  int Compare(const FFState& other) const {
     const LM01State &otherState = static_cast<const LM01State&>(other);
     int ret = Word::Compare(m_word, otherState.m_word);
     return ret;
@@ -30,17 +29,16 @@ public:
 
 class LM01 : public StatefulFeatureFunction
 {
-	struct Config
-	{
-	  FactorType beginFactor, endFactor;
-	  float minCount;
+  struct Config {
+    FactorType beginFactor, endFactor;
+    float minCount;
 
-	  Config(FactorType beginFactor, FactorType endFactor, float minCount) {
-		  this->beginFactor = beginFactor;
-		  this->endFactor = endFactor;
-		  this->minCount = minCount;
-	  }
-	};
+    Config(FactorType beginFactor, FactorType endFactor, float minCount) {
+      this->beginFactor = beginFactor;
+      this->endFactor = endFactor;
+      this->minCount = minCount;
+    }
+  };
 
 public:
   LM01(const std::string &line);

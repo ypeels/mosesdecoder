@@ -12,12 +12,11 @@
 
 #define UNDEFINED	std::numeric_limits<int>::max()
 
-enum DiscardNonTerm
-{
-	None = 0,
-	LeftSource = 1,
-	RightSource = 2,
-	MiddleSource =4,
+enum DiscardNonTerm {
+  None = 0,
+  LeftSource = 1,
+  RightSource = 2,
+  MiddleSource =4,
 };
 
 class Parameter

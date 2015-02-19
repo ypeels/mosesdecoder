@@ -30,7 +30,7 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
     , ScoreComponentCollection &estimatedFutureScore) const
 {
   if (IsGlueRule(source)) {
-	return;
+    return;
   }
 
   const AlignmentInfo &ntAlign = targetPhrase.GetAlignNonTerm();
@@ -43,77 +43,74 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
   bool left = false, right = false, middle = false;
 
   if (phrase->Front().IsNonTerminal()) {
-	  if (m_onlyNonReordered) {
-		  std::set<size_t> targetAlign = ntAlign.GetAlignmentsForSource(0);
-		  UTIL_THROW_IF2(targetAlign.size() != 1,
-		                 "Can only be 1 NT alignment");
-		  size_t targetPos = *targetAlign.begin();
-		  if (targetPos == 0) {
-			  left = true;
-		  }
-	  }
-	  else {
-		  left = true;
-	  }
+    if (m_onlyNonReordered) {
+      std::set<size_t> targetAlign = ntAlign.GetAlignmentsForSource(0);
+      UTIL_THROW_IF2(targetAlign.size() != 1,
+                     "Can only be 1 NT alignment");
+      size_t targetPos = *targetAlign.begin();
+      if (targetPos == 0) {
+        left = true;
+      }
+    } else {
+      left = true;
+    }
   }
 
   if (phrase->Back().IsNonTerminal()) {
-	  if (m_onlyNonReordered) {
-		  std::set<size_t> targetAlign = ntAlign.GetAlignmentsForSource(source.GetSize() - 1);
-		  UTIL_THROW_IF2(targetAlign.size() != 1,
-		                 "Can only be 1 NT alignment");
-		  size_t targetPos = *targetAlign.begin();
-		  if (targetPos == targetPhrase.GetSize() - 1) {
-			  right = true;
-		  }
-	  }
-	  else {
-		  right = true;
-	  }
+    if (m_onlyNonReordered) {
+      std::set<size_t> targetAlign = ntAlign.GetAlignmentsForSource(source.GetSize() - 1);
+      UTIL_THROW_IF2(targetAlign.size() != 1,
+                     "Can only be 1 NT alignment");
+      size_t targetPos = *targetAlign.begin();
+      if (targetPos == targetPhrase.GetSize() - 1) {
+        right = true;
+      }
+    } else {
+      right = true;
+    }
   }
 
   for (size_t i = 1; i < phrase->GetSize() - 1; ++i) {
-	const Word &word = phrase->GetWord(i);
-	if (word.IsNonTerminal()) {
-		middle = true;
-		break;
-	}
+    const Word &word = phrase->GetWord(i);
+    if (word.IsNonTerminal()) {
+      middle = true;
+      break;
+    }
   }
 
   if (m_hardConstraint) {
-	  UTIL_THROW_IF2(m_numScoreComponents != 1, "Must have 1 score");
+    UTIL_THROW_IF2(m_numScoreComponents != 1, "Must have 1 score");
 
-	  if ((m_doLeft && left) ||
-		  (m_doRight && right) ||
-		  (m_doMiddle && middle)) {
-	      scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
-	  }
-  }
-  else {
-	  vector<float> scores(m_numScoreComponents, 0);
-	  size_t scoreInd = 0;
-	  if (m_doLeft) {
-		  if (left) {
-			  scores[scoreInd] = 1;
-			  ++scoreInd;
-		  }
-	  }
+    if ((m_doLeft && left) ||
+        (m_doRight && right) ||
+        (m_doMiddle && middle)) {
+      scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
+    }
+  } else {
+    vector<float> scores(m_numScoreComponents, 0);
+    size_t scoreInd = 0;
+    if (m_doLeft) {
+      if (left) {
+        scores[scoreInd] = 1;
+        ++scoreInd;
+      }
+    }
 
-	  if (m_doRight) {
-		  if (right) {
-			  scores[scoreInd] = 1;
-			  ++scoreInd;
-		  }
-	  }
+    if (m_doRight) {
+      if (right) {
+        scores[scoreInd] = 1;
+        ++scoreInd;
+      }
+    }
 
-	  if (m_doMiddle) {
-		  if (middle) {
-			  scores[scoreInd] = 1;
-			  ++scoreInd;
-		  }
-	  }
+    if (m_doMiddle) {
+      if (middle) {
+        scores[scoreInd] = 1;
+        ++scoreInd;
+      }
+    }
 
-      scoreBreakdown.PlusEquals(this, scores);
+    scoreBreakdown.PlusEquals(this, scores);
   }
 }
 
@@ -136,24 +133,18 @@ void DiscardLeftRightNonTerm::EvaluateWhenApplied(const ChartHypothesis &hypo,
 void DiscardLeftRightNonTerm::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "left") {
-	  m_doLeft = Scan<bool>(value);
-  }
-  else if (key == "right") {
-	  m_doRight = Scan<bool>(value);
-  }
-  else if (key == "middle") {
-	  m_doMiddle = Scan<bool>(value);
-  }
-  else if (key == "hard-constraint") {
+    m_doLeft = Scan<bool>(value);
+  } else if (key == "right") {
+    m_doRight = Scan<bool>(value);
+  } else if (key == "middle") {
+    m_doMiddle = Scan<bool>(value);
+  } else if (key == "hard-constraint") {
     m_hardConstraint = Scan<bool>(value);
-  }
-  else if (key == "use-target") {
-	  m_useTarget = Scan<bool>(value);
-  }
-  else if (key == "only-non-reordered") {
-	  m_onlyNonReordered = Scan<bool>(value);
-  }
-  else {
+  } else if (key == "use-target") {
+    m_useTarget = Scan<bool>(value);
+  } else if (key == "only-non-reordered") {
+    m_onlyNonReordered = Scan<bool>(value);
+  } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }
