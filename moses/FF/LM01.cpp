@@ -28,7 +28,7 @@ std::vector<float> LM01::DefaultWeights() const
 {
   UTIL_THROW_IF2(m_numScoreComponents != 1,
                  "LM01 must only have 1 score");
-  vector<float> ret(1, - std::numeric_limits<float>::infinity());
+  vector<float> ret(1, 1);
   return ret;
 }
 
@@ -120,7 +120,8 @@ FFState* LM01::EvaluateWhenApplied(
   }
 
   if (doIt) {
-	  accumulator->PlusEquals(this, 1);
+    float score = m_tuneable ? 1 : - std::numeric_limits<float>::infinity();
+	  accumulator->PlusEquals(this, score);
 	  cerr << "Get rid:" << prevLMState->m_word << " " << firstWord << endl;
   }
 
