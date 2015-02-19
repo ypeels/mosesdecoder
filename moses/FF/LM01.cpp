@@ -122,7 +122,7 @@ FFState* LM01::EvaluateWhenApplied(
   if (doIt) {
     float score = m_tuneable ? 1 : - std::numeric_limits<float>::infinity();
     accumulator->PlusEquals(this, score);
-    cerr << "Get rid:" << prevLMState->m_word << " " << firstWord << endl;
+    //cerr << "Get rid:" << prevLMState->m_word << " " << firstWord << endl;
   }
 
   // state info
