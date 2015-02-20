@@ -464,14 +464,15 @@ BitmapContainer::ProcessBestHypothesis()
   if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
 	  ret = false;
   }
+  else {
+	  // Add best hypothesis to hypothesis stack.
+	  const bool newstackentry = m_stack.AddPrune(hypo);
+	  if (newstackentry)
+		m_numStackInsertions++;
 
-  // Add best hypothesis to hypothesis stack.
-  const bool newstackentry = m_stack.AddPrune(hypo);
-  if (newstackentry)
-    m_numStackInsertions++;
-
-  IFVERBOSE(3) {
-    TRACE_ERR("new stack entry flag is " << newstackentry << std::endl);
+	  IFVERBOSE(3) {
+		TRACE_ERR("new stack entry flag is " << newstackentry << std::endl);
+	  }
   }
 
   // Create new hypotheses for the two successors of the hypothesis just added.
