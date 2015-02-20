@@ -433,6 +433,7 @@ bool
 BitmapContainer::ProcessBestHypothesis()
 {
   // return false if hypo score = -inf. True otherwise, even if pruned
+  bool ret = true;
 
   if (m_queue.empty()) {
     return true;
@@ -461,9 +462,7 @@ BitmapContainer::ProcessBestHypothesis()
   }
 
   if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
-	    VERBOSE(3,"discarded, constraint" << std::endl);
-	    FREEHYPO(hypo);
-	    return false;
+	  ret = false;
   }
 
   // Add best hypothesis to hypothesis stack.
@@ -481,7 +480,12 @@ BitmapContainer::ProcessBestHypothesis()
   // We are done with the queue item, we delete it.
   delete item;
 
-  return true;
+  if (!ret) {
+	VERBOSE(3,"discarded, constraint" << std::endl);
+	FREEHYPO(hypo);
+  }
+
+  return ret;
 }
 
 void
