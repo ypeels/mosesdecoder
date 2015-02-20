@@ -234,7 +234,7 @@ public:
   const BackwardsEdgeSet &GetBackwardsEdges();
 
   void InitializeEdges();
-  void ProcessBestHypothesis();
+  bool ProcessBestHypothesis();
   void EnsureMinStackHyps(const size_t minNumHyps);
   void AddHypothesis(Hypothesis *hypothesis);
   void AddBackwardsEdge(BackwardsEdge *edge);

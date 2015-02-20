@@ -429,11 +429,13 @@ BitmapContainer::EnsureMinStackHyps(const size_t minNumHyps)
   }
 }
 
-void
+bool
 BitmapContainer::ProcessBestHypothesis()
 {
+  // return false if hypo score = -inf. True otherwise, even if pruned
+
   if (m_queue.empty()) {
-    return;
+    return true;
   }
 
   // Get the currently best hypothesis from the queue.
@@ -451,13 +453,21 @@ BitmapContainer::ProcessBestHypothesis()
                    << check->GetHypothesis()->GetTotalScore());
   }
 
+  Hypothesis *hypo = item->GetHypothesis();
+
   // Logging for the criminally insane
   IFVERBOSE(3) {
-    item->GetHypothesis()->PrintHypothesis();
+    hypo->PrintHypothesis();
+  }
+
+  if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
+	    VERBOSE(3,"discarded, constraint" << std::endl);
+	    FREEHYPO(hypo);
+	    return false;
   }
 
   // Add best hypothesis to hypothesis stack.
-  const bool newstackentry = m_stack.AddPrune(item->GetHypothesis());
+  const bool newstackentry = m_stack.AddPrune(hypo);
   if (newstackentry)
     m_numStackInsertions++;
 
@@ -470,6 +480,8 @@ BitmapContainer::ProcessBestHypothesis()
 
   // We are done with the queue item, we delete it.
   delete item;
+
+  return true;
 }
 
 void

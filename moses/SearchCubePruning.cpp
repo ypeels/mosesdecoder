@@ -113,7 +113,8 @@ void SearchCubePruning::Decode()
     }
 
     // main search loop, pop k best hyps
-    for (size_t numpops = 1; numpops <= PopLimit && !BCQueue.empty(); numpops++) {
+    size_t numpops = 1;
+    while (numpops <= PopLimit && !BCQueue.empty()) {
       // get currently best hypothesis in queue
       m_manager.GetSentenceStats().StartTimeManageCubes();
       BitmapContainer *bc = BCQueue.top();
@@ -123,7 +124,9 @@ void SearchCubePruning::Decode()
         m_manager.GetSentenceStats().AddPopped();
       }
       // push on stack and create successors
-      bc->ProcessBestHypothesis();
+      if (bc->ProcessBestHypothesis()) {
+    	  ++numpops;
+      }
       // if there are any hypothesis left in this specific container, add back to queue
       m_manager.GetSentenceStats().StartTimeManageCubes();
       if (!bc->Empty())
