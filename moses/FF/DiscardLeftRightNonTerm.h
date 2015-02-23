@@ -38,7 +38,6 @@ public:
 
 protected:
   bool m_doLeft, m_doRight, m_doMiddle;
-  bool m_hardConstraint;
   bool m_useTarget; // false = source
   bool m_onlyNonReordered;
 
