@@ -13,7 +13,6 @@ namespace Moses
 {
 DiscardLeftRightNonTerm::DiscardLeftRightNonTerm(const std::string &line)
   :StatelessFeatureFunction(1, line)
-  ,m_hardConstraint(true)
   ,m_doLeft(false)
   ,m_doRight(false)
   ,m_doMiddle(false)
@@ -78,39 +77,40 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
     }
   }
 
-  if (m_hardConstraint) {
-    UTIL_THROW_IF2(m_numScoreComponents != 1, "Must have 1 score");
+  if (m_tuneable) {
+	vector<float> scores(m_numScoreComponents, 0);
+	size_t scoreInd = 0;
+	if (m_doLeft) {
+	  if (left) {
+		scores[scoreInd] = 1;
+		++scoreInd;
+	  }
+	}
 
-    if ((m_doLeft && left) ||
-        (m_doRight && right) ||
-        (m_doMiddle && middle)) {
-      scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
-    }
-  } else {
-    vector<float> scores(m_numScoreComponents, 0);
-    size_t scoreInd = 0;
-    if (m_doLeft) {
-      if (left) {
-        scores[scoreInd] = 1;
-        ++scoreInd;
-      }
-    }
+	if (m_doRight) {
+	  if (right) {
+		scores[scoreInd] = 1;
+		++scoreInd;
+	  }
+	}
 
-    if (m_doRight) {
-      if (right) {
-        scores[scoreInd] = 1;
-        ++scoreInd;
-      }
-    }
+	if (m_doMiddle) {
+	  if (middle) {
+		scores[scoreInd] = 1;
+		++scoreInd;
+	  }
+	}
 
-    if (m_doMiddle) {
-      if (middle) {
-        scores[scoreInd] = 1;
-        ++scoreInd;
-      }
-    }
+	scoreBreakdown.PlusEquals(this, scores);
+  }
+  else {
+	UTIL_THROW_IF2(m_numScoreComponents != 1, "Must have 1 score");
 
-    scoreBreakdown.PlusEquals(this, scores);
+	if ((m_doLeft && left) ||
+		(m_doRight && right) ||
+		(m_doMiddle && middle)) {
+	  scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
+	}
   }
 }
 
@@ -138,8 +138,6 @@ void DiscardLeftRightNonTerm::SetParameter(const std::string& key, const std::st
     m_doRight = Scan<bool>(value);
   } else if (key == "middle") {
     m_doMiddle = Scan<bool>(value);
-  } else if (key == "hard-constraint") {
-    m_hardConstraint = Scan<bool>(value);
   } else if (key == "use-target") {
     m_useTarget = Scan<bool>(value);
   } else if (key == "only-non-reordered") {
