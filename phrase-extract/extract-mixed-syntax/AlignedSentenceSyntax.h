@@ -24,7 +24,6 @@ public:
 
   //virtual std::string Debug() const;
 protected:
-  std::string m_sourceStr, m_targetStr, m_alignmentStr;
   SyntaxTree m_sourceTree, m_targetTree;
 
   void XMLParse(Phrase &output,

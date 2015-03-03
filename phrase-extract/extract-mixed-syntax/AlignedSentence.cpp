@@ -19,10 +19,10 @@ AlignedSentence::AlignedSentence(int lineNum,
                                  const std::string &target,
                                  const std::string &alignment)
   :m_lineNum(lineNum)
+  ,m_sourceStr(source)
+  ,m_targetStr(target)
+  ,m_alignmentStr(alignment)
 {
-  PopulateWordVec(m_source, source);
-  PopulateWordVec(m_target, target);
-  PopulateAlignment(alignment);
 }
 
 AlignedSentence::~AlignedSentence()
@@ -31,20 +31,52 @@ AlignedSentence::~AlignedSentence()
   Moses::RemoveAllInColl(m_target);
 }
 
-void AlignedSentence::PopulateWordVec(Phrase &vec, const std::string &line)
+void AlignedSentence::Create(const Parameter &params)
+{
+  PopulateWordVec(m_source, m_sourceStr, params.includeBOSEOS);
+  PopulateWordVec(m_target, m_targetStr, params.includeBOSEOS);
+  PopulateAlignment(m_alignmentStr, params.includeBOSEOS);
+
+  CreateConsistentPhrases(params);
+  m_consistentPhrases.AddHieroNonTerms(params);
+}
+
+void AlignedSentence::PopulateWordVec(Phrase &vec,
+		const std::string &line,
+		bool includeBOSEOS)
 {
   std::vector<string> toks;
   Moses::Tokenize(toks, line);
 
-  vec.resize(toks.size());
+  size_t wordPos;
+  if (includeBOSEOS) {
+	  vec.reserve(toks.size() + 2);
+
+	  Word *word = new Word(0, "<s>");
+      vec.push_back(word);
+
+	  wordPos = 1;
+  }
+  else {
+	  vec.reserve(toks.size());
+	  wordPos = 0;
+  }
+
   for (size_t i = 0; i < vec.size(); ++i) {
     const string &tok = toks[i];
-    Word *word = new Word(i, tok);
-    vec[i] = word;
+    Word *word = new Word(wordPos, tok);
+    vec.push_back(word);
+
+    ++wordPos;
+  }
+
+  if (includeBOSEOS) {
+	  Word *word = new Word(wordPos, "</s>");
+      vec.push_back(word);
   }
 }
 
-void AlignedSentence::PopulateAlignment(const std::string &line)
+void AlignedSentence::PopulateAlignment(const std::string &line, bool includeBOSEOS)
 {
   vector<string> alignStr;
   Moses::Tokenize(alignStr, line);
@@ -56,6 +88,11 @@ void AlignedSentence::PopulateAlignment(const std::string &line)
 
     int sourcePos = alignPair[0];
     int targetPos = alignPair[1];
+
+    if (includeBOSEOS) {
+    	++sourcePos;
+    	++targetPos;
+    }
 
     if (sourcePos >= m_source.size()) {
       cerr << "ERROR1:AlignedSentence=" << Debug() << endl;
@@ -69,6 +106,21 @@ void AlignedSentence::PopulateAlignment(const std::string &line)
 
     sourceWord->AddAlignment(targetWord);
     targetWord->AddAlignment(sourceWord);
+  }
+
+  if (includeBOSEOS) {
+	    // begin
+	    Word *sourceWord = m_source[0];
+	    Word *targetWord = m_target[0];
+	    sourceWord->AddAlignment(targetWord);
+	    targetWord->AddAlignment(sourceWord);
+
+	    sourceWord = m_source.back();
+	    targetWord = m_target.back();
+	    sourceWord->AddAlignment(targetWord);
+	    targetWord->AddAlignment(sourceWord);
+
+
   }
 }
 
@@ -103,12 +155,6 @@ std::vector<int> AlignedSentence::GetSourceAlignmentCount() const
     ret[i] = word.GetAlignmentIndex().size();
   }
   return ret;
-}
-
-void AlignedSentence::Create(const Parameter &params)
-{
-  CreateConsistentPhrases(params);
-  m_consistentPhrases.AddHieroNonTerms(params);
 }
 
 void AlignedSentence::CreateConsistentPhrases(const Parameter &params)

@@ -26,6 +26,7 @@ Parameter::Parameter()
   ,gzOutput(false)
 
   ,hieroNonTerm("[X]")
+  ,glueNonTerm("[S]")
   ,sourceSyntax(false)
   ,targetSyntax(false)
 
@@ -37,6 +38,7 @@ Parameter::Parameter()
   ,nieceTerminal(true)
   ,maxScope(UNDEFINED)
   ,minScope(0)
+  ,includeBOSEOS(false)
 
   ,spanLength(false)
   ,ruleLength(false)
