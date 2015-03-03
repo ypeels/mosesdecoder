@@ -43,6 +43,7 @@ int main(int argc, char** argv)
   ("NoNieceTerminal", "Don't extract rule if 1 of the non-term covers the same word as 1 of the terminals")
   ("MaxScope", po::value<int>()->default_value(params.maxScope), "maximum scope (see Hopkins and Langmead (2010)). Default is HIGH")
   ("MinScope", po::value<int>()->default_value(params.minScope), "min scope.")
+  ("IncludeBOSEOS", "Model <s> and </s>, (Dyer, ????)")
 
   ("SpanLength", "Property - span length of each LHS non-term")
   ("RuleLength", "Property - length of entire rule. Only for rules with NTs")
@@ -102,6 +103,7 @@ int main(int argc, char** argv)
   if (vm.count("NoNieceTerminal")) params.nieceTerminal = false;
   if (vm.count("MaxScope")) params.maxScope = vm["MaxScope"].as<int>();
   if (vm.count("MinScope")) params.minScope = vm["MinScope"].as<int>();
+  if (vm.count("IncludeBOSEOS")) params.includeBOSEOS = true;
 
   // properties
   if (vm.count("SpanLength")) params.spanLength = true;

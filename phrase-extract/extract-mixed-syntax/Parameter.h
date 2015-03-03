@@ -42,6 +42,8 @@ public:
   bool gzOutput;
 
   std::string hieroNonTerm;
+  std::string glueNonTerm;
+
   std::string gluePath;
 
   bool sourceSyntax, targetSyntax;
@@ -52,6 +54,7 @@ public:
   int maxSpanFreeNonTermSource;
   bool nieceTerminal;
   int maxScope, minScope;
+  bool includeBOSEOS;
 
   // properties
   bool spanLength;

@@ -17,9 +17,6 @@ class Parameter;
 class AlignedSentence
 {
 public:
-  AlignedSentence(int lineNum)
-    :m_lineNum(lineNum)
-  {}
 
   AlignedSentence(int lineNum,
                   const std::string &source,
@@ -40,14 +37,17 @@ public:
 
   int m_lineNum;
 protected:
+  const std::string &m_sourceStr, &m_targetStr, &m_alignmentStr;
   Phrase m_source, m_target;
   ConsistentPhrases m_consistentPhrases;
 
   void CreateConsistentPhrases(const Parameter &params);
-  void PopulateWordVec(Phrase &vec, const std::string &line);
+  void PopulateWordVec(Phrase &vec,
+		  const std::string &line,
+		  bool includeBOSEOS);
 
   // m_source and m_target MUST be populated before calling this
-  void PopulateAlignment(const std::string &line);
+  void PopulateAlignment(const std::string &line, bool includeBOSEOS);
   std::vector<int> GetSourceAlignmentCount() const;
 };
 

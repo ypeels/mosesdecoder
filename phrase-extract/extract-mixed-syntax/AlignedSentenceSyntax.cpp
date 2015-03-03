@@ -16,10 +16,7 @@ AlignedSentenceSyntax::AlignedSentenceSyntax(int lineNum,
     const std::string &source,
     const std::string &target,
     const std::string &alignment)
-  :AlignedSentence(lineNum)
-  ,m_sourceStr(source)
-  ,m_targetStr(target)
-  ,m_alignmentStr(alignment)
+  :AlignedSentence(lineNum, source, target, alignment)
 {
 }
 
@@ -44,7 +41,7 @@ void AlignedSentenceSyntax::Populate(bool isSyntax, int mixedSyntaxType, const P
       }
     }
   } else {
-    PopulateWordVec(phrase, line);
+    PopulateWordVec(phrase, line, params.includeBOSEOS);
     tree.SetHieroLabel(params.hieroNonTerm);
   }
 
@@ -57,7 +54,7 @@ void AlignedSentenceSyntax::Create(const Parameter &params)
   Populate(params.targetSyntax, params.mixedSyntaxType, params, m_targetStr,
            m_target, m_targetTree);
 
-  PopulateAlignment(m_alignmentStr);
+  PopulateAlignment(m_alignmentStr, params.includeBOSEOS);
   CreateConsistentPhrases(params);
 
   // create labels
