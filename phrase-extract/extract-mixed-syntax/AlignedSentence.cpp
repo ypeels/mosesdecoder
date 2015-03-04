@@ -62,7 +62,7 @@ void AlignedSentence::PopulateWordVec(Phrase &vec,
 	  wordPos = 0;
   }
 
-  for (size_t i = 0; i < vec.size(); ++i) {
+  for (size_t i = 0; i < toks.size(); ++i) {
     const string &tok = toks[i];
     Word *word = new Word(wordPos, tok);
     vec.push_back(word);
