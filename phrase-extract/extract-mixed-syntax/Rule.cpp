@@ -474,7 +474,7 @@ void Rule::Prevalidate(const Parameter &params)
   if (params.includeBOSEOS) {
 	  if (m_lhs.GetConsistentPhrase().corners[0] == 0) {
 		  // beginning to sentence
-		  if ((m_source[0]->IsNonTerm())
+		  if ((m_source.GetSize() == 1)
 				  || (m_source.GetSize() == 2 && m_source[1]->IsNonTerm())) {
 		        m_isValid = false;
 		        m_canRecurse = false;
@@ -484,7 +484,7 @@ void Rule::Prevalidate(const Parameter &params)
 
 	  if (m_lhs.GetConsistentPhrase().corners[1] == m_alignedSentence.GetPhrase(Moses::Input).size() - 1) {
 		  // end to sentence
-		  if ((m_source.Back()->IsNonTerm())
+		  if ((m_source.GetSize() ==1)
 				  || (m_source.GetSize() == 2 && m_source[0]->IsNonTerm())) {
 		        m_isValid = false;
 		        m_canRecurse = false;
