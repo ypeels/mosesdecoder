@@ -1707,12 +1707,9 @@ sub score_phrase_phrase_extract {
     $cmd .= " --GoodTuring $ttable_file.half.f2e.gz.coc" if $GOOD_TURING;
     $cmd .= " --KneserNey $ttable_file.half.f2e.gz.coc" if $KNESER_NEY;
     $cmd .= " --SourceLabels $_GHKM_SOURCE_LABELS_FILE" if $_GHKM_SOURCE_LABELS && defined($_GHKM_SOURCE_LABELS_FILE);
-<<<<<<< HEAD
     $cmd .= " ".$_CONSOLIDATE_OPTIONS if defined($_CONSOLIDATE_OPTIONS);
-=======
-    $cmd .= " --PartsOfSpeech $_GHKM_PARTS_OF_SPEECH_FILE" if $_GHKM_PARTS_OF_SPEECH && defined($_GHKM_PARTS_OF_SPEECH_FILE);
-    
->>>>>>> 2431f514dd59cdb7b3904ffae93c9de2f54787b1
+    $cmd .= " --PartsOfSpeech $_GHKM_PARTS_OF_SPEECH_FILE" if $_GHKM_PARTS_OF_SPEECH && defined($_GHKM_PARTS_OF_SPEECH_FILE);    
+
     $cmd .= " | $GZIP_EXEC -c > $ttable_file.gz";
     
     safesystem($cmd) or die "ERROR: Consolidating the two phrase table halves failed";
