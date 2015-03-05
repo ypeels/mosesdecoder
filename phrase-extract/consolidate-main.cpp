@@ -39,6 +39,7 @@ bool lowCountFlag = false;
 bool goodTuringFlag = false;
 bool kneserNeyFlag = false;
 bool sourceLabelsFlag = false;
+bool partsOfSpeechFlag = false;
 bool logProbFlag = false;
 bool countsProperty = false;
 float minScore0 = 0;
@@ -49,7 +50,7 @@ inline float maybeLogProb( float a )
   return logProbFlag ? log(a) : a;
 }
 
-void processFiles( char*, char*, char*, char*, char* );
+void processFiles( char*, char*, char*, char*, char*, char* );
 void loadCountOfCounts( char* );
 void breakdownCoreAndSparse( string combined, string &core, string &sparse );
 bool getLine( istream &fileP, vector< string > &item );
@@ -63,7 +64,7 @@ int main(int argc, char* argv[])
        << "consolidating direct and indirect rule tables\n";
 
   if (argc < 4) {
-    cerr << "syntax: consolidate phrase-table.direct phrase-table.indirect phrase-table.consolidated [--Hierarchical] [--OnlyDirect] [--PhraseCount] [--GoodTuring counts-of-counts-file] [--KneserNey counts-of-counts-file] [--LowCountFeature] [--SourceLabels source-labels-file] [--MinScore  id:threshold[,id:threshold]*]\n";
+    cerr << "syntax: consolidate phrase-table.direct phrase-table.indirect phrase-table.consolidated [--Hierarchical] [--OnlyDirect] [--PhraseCount] [--GoodTuring counts-of-counts-file] [--KneserNey counts-of-counts-file] [--LowCountFeature] [--SourceLabels source-labels-file]  [--PartsOfSpeech parts-of-speech-file] [--MinScore id:threshold[,id:threshold]*]\n";
     exit(1);
   }
   char* &fileNameDirect = argv[1];
@@ -71,6 +72,7 @@ int main(int argc, char* argv[])
   char* &fileNameConsolidated = argv[3];
   char* fileNameCountOfCounts = 0;
   char* fileNameSourceLabelSet = 0;
+  char* fileNamePartsOfSpeechVocabulary = 0;
 
   for(int i=4; i<argc; i++) {
     if (strcmp(argv[i],"--Hierarchical") == 0) {
@@ -132,6 +134,14 @@ int main(int argc, char* argv[])
       }
       fileNameSourceLabelSet = argv[++i];
       cerr << "processing source labels property\n";
+    } else if (strcmp(argv[i],"--PartsOfSpeech") == 0) {
+      partsOfSpeechFlag = true;
+      if (i+1==argc) {
+        cerr << "ERROR: specify parts-of-speech file!\n";
+        exit(1);
+      }
+      fileNamePartsOfSpeechVocabulary = argv[++i];
+      cerr << "processing parts-of-speech property\n";
     } else if (strcmp(argv[i],"--MinScore") == 0) {
       string setting = argv[++i];
       bool done = false;
@@ -168,7 +178,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  processFiles( fileNameDirect, fileNameIndirect, fileNameConsolidated, fileNameCountOfCounts, fileNameSourceLabelSet );
+  processFiles( fileNameDirect, fileNameIndirect, fileNameConsolidated, fileNameCountOfCounts, fileNameSourceLabelSet, fileNamePartsOfSpeechVocabulary );
 }
 
 vector< float > countOfCounts;
@@ -217,7 +227,7 @@ void loadCountOfCounts( char* fileNameCountOfCounts )
   if (kneserNey_D3 > 2.9) kneserNey_D3 = 2.9;
 }
 
-void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameConsolidated, char* fileNameCountOfCounts, char* fileNameSourceLabelSet )
+void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameConsolidated, char* fileNameCountOfCounts, char* fileNameSourceLabelSet, char* fileNamePartsOfSpeechVocabulary )
 {
   if (goodTuringFlag || kneserNeyFlag)
     loadCountOfCounts( fileNameCountOfCounts );
@@ -251,6 +261,9 @@ void processFiles( char* fileNameDirect, char* fileNameIndirect, char* fileNameC
   MosesTraining::PropertiesConsolidator propertiesConsolidator = MosesTraining::PropertiesConsolidator();
   if (sourceLabelsFlag) {
     propertiesConsolidator.ActivateSourceLabelsProcessing(fileNameSourceLabelSet);
+  }
+  if (partsOfSpeechFlag) {
+    propertiesConsolidator.ActivatePartsOfSpeechProcessing(fileNamePartsOfSpeechVocabulary);
   }
 
   // loop through all extracted phrase translations
