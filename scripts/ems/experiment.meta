@@ -956,14 +956,14 @@ filter
 	in: input TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table TRAINING:corpus-mml-prefilter=OR=TRAINING:corpus-mml-postfilter=OR=TRAINING:domains TRAINING:transliteration-table
 	out: filtered-dir
 	default-name: tuning/filtered
-	rerun-on-change: filter-settings ttable-binarizer TRAINING:no-glue-grammar
+	rerun-on-change: filter-settings ttable-binarizer TRAINING:no-glue-grammar TRAINING:config
 	ignore-if: TRAINING:binarize-all
 	error: already exists. Please delete
 filter-devtest
 	in: input-devtest TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table
 	out: filtered-dir-devtest
 	default-name: tuning/filtered.devtest
-	rerun-on-change: filter-settings ttable-binarizer TRAINING:no-glue-grammar
+	rerun-on-change: filter-settings ttable-binarizer TRAINING:no-glue-grammar TRAINING:config
 	ignore-if: TRAINING:binarize-all
 	ignore-unless: use-mira	
 	error: already exists. Please delete
@@ -1099,7 +1099,7 @@ filter
 	in: input TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table TRAINING:corpus-mml-prefilter=OR=TRAINING:corpus-mml-postfilter=OR=TRAINING:domains TRAINING:transliteration-table TRAINING:config
 	out: filtered-dir 
 	default-name: evaluation/filtered
-	rerun-on-change: filter-settings report-precision-by-coverage ttable-binarizer TRAINING:no-glue-grammar
+	rerun-on-change: filter-settings report-precision-by-coverage ttable-binarizer TRAINING:no-glue-grammar TRAINING:config
 	pass-if: TRAINING:binarize-all
 	ignore-if: use-hiero
 	error: already exists. Please delete
