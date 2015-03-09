@@ -1296,6 +1296,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LongerPhraseFF.h</locationURI>
 		</link>
 		<link>
+			<name>FF/ManualFF.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ManualFF.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/ManualFF.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ManualFF.h</locationURI>
+		</link>
+		<link>
 			<name>FF/MaxNonTerm.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxNonTerm.cpp</locationURI>
