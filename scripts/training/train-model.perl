@@ -106,6 +106,7 @@ my($_EXTERNAL_BINDIR,
    	$_ALT_DIRECT_RULE_SCORE_1, 
    	$_ALT_DIRECT_RULE_SCORE_2, 
    	$_UNKNOWN_WORD_SOFT_MATCHES_FILE,
+   	$_USE_SYNTAX_INPUT_WEIGHT_FEATURE,
    	$_OMIT_WORD_ALIGNMENT,
    	$_FORCE_FACTORED_FILENAMES,
    	$_MEMSCORE, 
@@ -219,6 +220,7 @@ $_HELP = 1
 		       'consolidate-options=s' => \@_CONSOLIDATE_OPTIONS,
 		       'source-syntax' => \$_SOURCE_SYNTAX,
 		       'target-syntax' => \$_TARGET_SYNTAX,
+		       'use-syntax-input-weight-feature' => \$_USE_SYNTAX_INPUT_WEIGHT_FEATURE,
 		       'xml' => \$_XML,
 		       'no-word-alignment' => \$_OMIT_WORD_ALIGNMENT,
 		       'config=s' => \$_CONFIG,
@@ -2160,6 +2162,12 @@ sub create_ini {
 
      $feature_spec .= "$feature_name name=TranslationModel$i num-features=1 path=$___GLUE_GRAMMAR_FILE input-factor=0 output-factor=0 tuneable=$tuneable\n";
      $weight_spec .= "TranslationModel$i= $glue_weight\n";
+   }
+
+   # SyntaxInputWeight FF
+   if ($_USE_SYNTAX_INPUT_WEIGHT_FEATURE) {
+     $feature_spec .= "SyntaxInputWeight name=SyntaxInputWeight$i\n";
+     $weight_spec .= "SyntaxInputWeight$i= 0.1\n";
    }
 
    # generation model
