@@ -74,6 +74,7 @@
 #include "moses/LM/BilingualLM.h"
 #include "SkeletonChangeInput.h"
 #include "moses/TranslationModel/SkeletonPT.h"
+#include "moses/Syntax/InputWeightFF.h"
 #include "moses/Syntax/RuleTableFF.h"
 #include "moses/FF/HyperParam/HyperCountNonTerms.h"
 #include "LongerPhraseFF.h"
@@ -216,6 +217,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(PhraseDictionaryDynamicCacheBased);
   MOSES_FNAME(PhraseDictionaryFuzzyMatch);
   MOSES_FNAME2("RuleTable", Syntax::RuleTableFF);
+  MOSES_FNAME2("SyntaxInputWeight", Syntax::InputWeightFF);
 
   MOSES_FNAME(GlobalLexicalModel);
   //MOSES_FNAME(GlobalLexicalModelUnlimited); This was commented out in the original
