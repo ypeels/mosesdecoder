@@ -91,9 +91,5 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out, const std::string &s
 	}
 
 	out << endl;
-
-	if (!zones.empty()) {
-		abort();
-	}
 }
 
