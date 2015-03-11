@@ -7,6 +7,7 @@
 #include "EnPhrasalVerb.h"
 #include "EnOpenNLPChunker.h"
 #include "LabelByInitialLetter.h"
+#include "ZonesAndWalls.h"
 
 using namespace std;
 
@@ -32,6 +33,8 @@ int main(int argc, char** argv)
     ("filter", po::value<string>(), "Only use labels from this comma-separated list")
 
     ("opennlp", po::value<string>()->default_value(""), "Path to Apache OpenNLP toolkit")
+
+    ("zones-and-walls", po::value<bool>()->default_value(false), "Annotate with zones and walls")
 
     ;
 
@@ -82,13 +85,32 @@ int main(int argc, char** argv)
 	  Moses::Tokenize(filterList, filter, ",");
   }
 
+  bool zonesAndWalls = false;
+  if (vm.count("zones-and-walls")) {
+	  zonesAndWalls = vm["zones-and-walls"].as<bool>();
+  }
+
   string sourceLang = vm["source-language"].as<string>();
   string targetLang = vm["target-language"].as<string>();
   int revision = vm["revision"].as<int>();
 
   cerr << sourceLang << " " << targetLang << " " << revision << endl;
 
-  if (sourceLang == "en" && revision == 2) {
+  if (zonesAndWalls) {
+	  string line;
+	  size_t lineNum = 1;
+	  while (getline(*inStrm, line)) {
+		//cerr << lineNum << ":" << line << endl;
+		if (lineNum % 1000 == 0) {
+		  cerr << lineNum << " ";
+		}
+
+		Phrase source = Tokenize(line);
+		ZonesAndWalls(source, *outStrm);
+
+	  }
+  }
+  else if (sourceLang == "en" && revision == 2) {
 	if (vm.count("opennlp") == 0) {
 		throw "Need path to openNLP toolkit";
 	}
