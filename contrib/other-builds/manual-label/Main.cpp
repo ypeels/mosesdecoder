@@ -104,6 +104,7 @@ int main(int argc, char** argv)
 		if (lineNum % 1000 == 0) {
 		  cerr << lineNum << " ";
 		}
+		cerr << line << endl;
 
 		Phrase source = Tokenize(line);
 		ZonesAndWalls(source, *outStrm);
