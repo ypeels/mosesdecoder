@@ -957,22 +957,14 @@ filter
 	in: input TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table TRAINING:corpus-mml-prefilter=OR=TRAINING:corpus-mml-postfilter=OR=TRAINING:domains TRAINING:transliteration-table
 	out: filtered-dir
 	default-name: tuning/filtered
-<<<<<<< HEAD
 	rerun-on-change: filter-settings ttable-binarizer TRAINING:config TRAINING:no-glue-grammar TRAINING:dont-tune-glue-grammar TRAINING:use-syntax-input-weight-feature
-=======
-	rerun-on-change: filter-settings ttable-binarizer TRAINING:no-glue-grammar TRAINING:dont-tune-glue-grammar TRAINING:use-syntax-input-weight-feature TRAINING:config
->>>>>>> 54304fd473f4c06a022956bca6cc545de62e735f
 	ignore-if: TRAINING:binarize-all
 	error: already exists. Please delete
 filter-devtest
 	in: input-devtest TRAINING:sigtest-filter-phrase-translation-table TRAINING:sigtest-filter-reordering-table
 	out: filtered-dir-devtest
 	default-name: tuning/filtered.devtest
-<<<<<<< HEAD
 	rerun-on-change: filter-settings ttable-binarizer TRAINING:config TRAINING:no-glue-grammar TRAINING:dont-tune-glue-grammar TRAINING:use-syntax-input-weight-feature
-=======
-	rerun-on-change: filter-settings ttable-binarizer TRAINING:no-glue-grammar TRAINING:dont-tune-glue-grammar TRAINING:use-syntax-input-weight-feature TRAINING:config
->>>>>>> 54304fd473f4c06a022956bca6cc545de62e735f
 	ignore-if: TRAINING:binarize-all
 	ignore-unless: use-mira	
 	error: already exists. Please delete
