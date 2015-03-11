@@ -1,33 +1,38 @@
 #include <cassert>
 #include <stack>
-#include <set>
 #include "ZonesAndWalls.h"
 
 using namespace std;
 
 void ZonesAndWalls(const Phrase &source, std::ostream &out)
 {
-	Zones zones;
+	Zones zonesAndWalls;
 
-	ZonesAndWalls(source, out, "&quot;", "&quot;", zones);
-	ZonesAndWalls(source, out, "(", ")", zones);
-	ZonesAndWalls(source, out, "&#91;", "&#93;", zones);
+	ZonesAndWalls(source, out, "&quot;", "&quot;", zonesAndWalls);
+	ZonesAndWalls(source, out, "(", ")", zonesAndWalls);
+	ZonesAndWalls(source, out, "&#91;", "&#93;", zonesAndWalls);
 
 	// output
 	size_t size = source.size();
 	for (size_t i = 0; i < size; ++i) {
 		// before outputting word
 		Zones::const_iterator iter;
-		for (iter = zones.begin(); iter != zones.end(); ++iter) {
-			const Zone &zone = *iter;
+		for (iter = zonesAndWalls.begin(); iter != zonesAndWalls.end(); ++iter) {
+			const RangeZoneWall &zone = *iter;
 
-			if (zone.first == i) {
-				out << "<zone> ";
+			if (!zone.doWall && zone.doZone) {
+				if (zone.range.first == i) {
+					out << "<zone> ";
+				}
 			}
-			if (zone.second == i) {
-				out << "<wall /> ";
+			else if (zone.doWall && zone.doZone) {
+				if (zone.range.first == i) {
+					out << "<zone> ";
+				}
+				if (zone.range.second == i) {
+					out << "<wall /> ";
+				}
 			}
-
 		}
 
 		const Word &word = source[i];
@@ -37,16 +42,22 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 		out << factor << " ";
 
 		// before outputting word
-		for (iter = zones.begin(); iter != zones.end(); ++iter) {
-			const Zone &zone = *iter;
+		for (iter = zonesAndWalls.begin(); iter != zonesAndWalls.end(); ++iter) {
+			const RangeZoneWall &zone = *iter;
 
-			if (zone.first == i) {
-				out << "<wall /> ";
+			if (!zone.doWall && zone.doZone) {
+				if (zone.range.second == i) {
+					out << "</zone> ";
+				}
 			}
-			if (zone.second == i) {
-				out << "</zone> ";
+			else if (zone.doWall && zone.doZone) {
+				if (zone.range.first == i) {
+					out << "<wall /> ";
+				}
+				if (zone.range.second == i) {
+					out << "</zone> ";
+				}
 			}
-
 		}
 
 	}
@@ -58,7 +69,7 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 void ZonesAndWalls(const Phrase &source, std::ostream &out,
 		const std::string &start,
 		const std::string &end,
-		Zones &zones)
+		Zones &zonesAndWalls)
 {
 	stack<size_t> startStack;
 
@@ -77,8 +88,8 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out,
 					size_t startPos = startStack.top();
 					startStack.pop();
 
-					Zone zone(startPos, i);
-					zones.insert(zone);
+					RangeZoneWall zone(startPos, i, true, true);
+					zonesAndWalls.push_back(zone);
 				}
 			}
 		}
@@ -91,8 +102,8 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out,
 					size_t startPos = startStack.top();
 					startStack.pop();
 
-					Zone zone(startPos, i);
-					zones.insert(zone);
+					RangeZoneWall zone(startPos, i, true, true);
+					zonesAndWalls.push_back(zone);
 				}
 			}
 		}

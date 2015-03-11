@@ -16,8 +16,8 @@ void LabelByInitialLetter(const Phrase &source, std::ostream &out)
 		  string endChar = endWord.substr(0,1);
 
 		  if (startChar == endChar) {
-				Range range(start, end, startChar + "-label");
-				ranges.push_back(range);
+			RangeWithLabel range(start, end, startChar + "-label");
+			ranges.push_back(range);
 		  }
 	  }
   }

@@ -196,7 +196,7 @@ void OutputWithLabels(const Phrase &source, const Ranges ranges, ostream &out)
   for (int pos = 0; pos < source.size(); ++pos) {
 	// output beginning of label
 	for (Ranges::const_iterator iter = ranges.begin(); iter != ranges.end(); ++iter) {
-	  const Range &range = *iter;
+	  const RangeWithLabel &range = *iter;
 	  if (range.range.first == pos) {
 		out << "<tree label=\"" + range.label + "\"> ";
 	  }
@@ -206,7 +206,7 @@ void OutputWithLabels(const Phrase &source, const Ranges ranges, ostream &out)
 	out << word[0] << " ";
 
 	for (Ranges::const_iterator iter = ranges.begin(); iter != ranges.end(); ++iter) {
-	  const Range &range = *iter;
+	  const RangeWithLabel &range = *iter;
 	  if (range.range.second == pos) {
 		out << "</tree> ";
 	  }

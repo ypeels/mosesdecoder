@@ -159,7 +159,7 @@ void EnPhrasalVerb(const Phrase &source, int revision, ostream &out)
 		}
 
 		if (add) {
-			Range range(start + 1, end - 1, "reorder-label");
+			RangeWithLabel range(start + 1, end - 1, "reorder-label");
 			ranges.push_back(range);
 		}
 	}
