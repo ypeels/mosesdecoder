@@ -8,9 +8,12 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 {
 	Zones zonesAndWalls;
 
-	ZonesAndWalls(source, out, "&quot;", "&quot;", zonesAndWalls);
-	ZonesAndWalls(source, out, "(", ")", zonesAndWalls);
-	ZonesAndWalls(source, out, "&#91;", "&#93;", zonesAndWalls);
+	Walls(source, ":", zonesAndWalls);
+	Walls(source, ";", zonesAndWalls);
+	Walls(source, "-", zonesAndWalls);
+	ZonesAndWalls(source, "&quot;", "&quot;", zonesAndWalls);
+	ZonesAndWalls(source, "(", ")", zonesAndWalls);
+	ZonesAndWalls(source, "&#91;", "&#93;", zonesAndWalls);
 
 	// output
 	size_t size = source.size();
@@ -20,7 +23,12 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 		for (iter = zonesAndWalls.begin(); iter != zonesAndWalls.end(); ++iter) {
 			const RangeZoneWall &zone = *iter;
 
-			if (!zone.doWall && zone.doZone) {
+			if (zone.doWall && !zone.doZone) {
+				if (zone.range.first == i) {
+					out << "<wall /> ";
+				}
+			}
+			else if (!zone.doWall && zone.doZone) {
 				if (zone.range.first == i) {
 					out << "<zone> ";
 				}
@@ -41,11 +49,16 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 
 		out << factor << " ";
 
-		// before outputting word
+		// after outputting word
 		for (iter = zonesAndWalls.begin(); iter != zonesAndWalls.end(); ++iter) {
 			const RangeZoneWall &zone = *iter;
 
-			if (!zone.doWall && zone.doZone) {
+			if (zone.doWall && !zone.doZone) {
+				if (zone.range.first == i) {
+					out << "<wall /> ";
+				}
+			}
+			else if (!zone.doWall && zone.doZone) {
 				if (zone.range.second == i) {
 					out << "</zone> ";
 				}
@@ -66,7 +79,26 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 
 }
 
-void ZonesAndWalls(const Phrase &source, std::ostream &out,
+void Walls(const Phrase &source,
+		const std::string &sought,
+		Zones &zonesAndWalls)
+{
+	stack<size_t> startStack;
+
+	size_t size = source.size();
+	for (size_t i = 0; i < size; ++i) {
+		const Word &word = source[i];
+		assert(word.size() == 1);
+		const string factor = word[0];
+
+		if (factor ==  sought) {
+			RangeZoneWall zone(i, i, true, false);
+			zonesAndWalls.push_back(zone);
+		}
+	}
+}
+
+void ZonesAndWalls(const Phrase &source,
 		const std::string &start,
 		const std::string &end,
 		Zones &zonesAndWalls)

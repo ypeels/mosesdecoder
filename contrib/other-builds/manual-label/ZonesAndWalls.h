@@ -16,7 +16,10 @@ struct RangeZoneWall : public Range
 typedef std::vector<RangeZoneWall> Zones;
 
 void ZonesAndWalls(const Phrase &source, std::ostream &out);
-void ZonesAndWalls(const Phrase &source, std::ostream &out,
+void ZonesAndWalls(const Phrase &source,
 		const std::string &start,
 		const std::string &end,
+		Zones &zonesAndWalls);
+void Walls(const Phrase &source,
+		const std::string &sought,
 		Zones &zonesAndWalls);
