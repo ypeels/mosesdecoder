@@ -6,21 +6,21 @@ using namespace std;
 
 void ZonesAndWalls(const Phrase &source, std::ostream &out)
 {
-	Zones zonesAndWalls;
+	AllRanges allRanges;
 
-	Walls(source, ":", zonesAndWalls);
-	Walls(source, ";", zonesAndWalls);
-	Walls(source, "-", zonesAndWalls);
-	ZonesAndWalls(source, "&quot;", "&quot;", zonesAndWalls);
-	ZonesAndWalls(source, "(", ")", zonesAndWalls);
-	ZonesAndWalls(source, "&#91;", "&#93;", zonesAndWalls);
+	Walls(source, ":", allRanges);
+	Walls(source, ";", allRanges);
+	Walls(source, "-", allRanges);
+	ZonesAndWalls(source, "&quot;", "&quot;", allRanges);
+	ZonesAndWalls(source, "(", ")", allRanges);
+	ZonesAndWalls(source, "&#91;", "&#93;", allRanges);
 
 	// output
 	size_t size = source.size();
 	for (size_t i = 0; i < size; ++i) {
 		// before outputting word
-		Zones::const_iterator iter;
-		for (iter = zonesAndWalls.begin(); iter != zonesAndWalls.end(); ++iter) {
+		AllRanges::const_iterator iter;
+		for (iter = allRanges.begin(); iter != allRanges.end(); ++iter) {
 			const RangeZoneWall &zone = *iter;
 
 			if (zone.doWall && !zone.doZone) {
@@ -50,7 +50,7 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 		out << factor << " ";
 
 		// after outputting word
-		for (iter = zonesAndWalls.begin(); iter != zonesAndWalls.end(); ++iter) {
+		for (iter = allRanges.begin(); iter != allRanges.end(); ++iter) {
 			const RangeZoneWall &zone = *iter;
 
 			if (zone.doWall && !zone.doZone) {
@@ -81,7 +81,7 @@ void ZonesAndWalls(const Phrase &source, std::ostream &out)
 
 void Walls(const Phrase &source,
 		const std::string &sought,
-		Zones &zonesAndWalls)
+		AllRanges &allRanges)
 {
 	stack<size_t> startStack;
 
@@ -93,15 +93,22 @@ void Walls(const Phrase &source,
 
 		if (factor ==  sought) {
 			RangeZoneWall zone(i, i, true, false);
-			zonesAndWalls.push_back(zone);
+			allRanges.push_back(zone);
 		}
 	}
+}
+
+void Zones(const Phrase &source,
+		const std::string &sought,
+		AllRanges &zonesAndWalls)
+{
+
 }
 
 void ZonesAndWalls(const Phrase &source,
 		const std::string &start,
 		const std::string &end,
-		Zones &zonesAndWalls)
+		AllRanges &allRanges)
 {
 	stack<size_t> startStack;
 
@@ -121,7 +128,7 @@ void ZonesAndWalls(const Phrase &source,
 					startStack.pop();
 
 					RangeZoneWall zone(startPos, i, true, true);
-					zonesAndWalls.push_back(zone);
+					allRanges.push_back(zone);
 				}
 			}
 		}
@@ -135,7 +142,7 @@ void ZonesAndWalls(const Phrase &source,
 					startStack.pop();
 
 					RangeZoneWall zone(startPos, i, true, true);
-					zonesAndWalls.push_back(zone);
+					allRanges.push_back(zone);
 				}
 			}
 		}

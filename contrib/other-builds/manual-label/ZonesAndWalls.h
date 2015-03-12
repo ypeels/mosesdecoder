@@ -13,13 +13,16 @@ struct RangeZoneWall : public Range
 	bool doWall, doZone;
 };
 
-typedef std::vector<RangeZoneWall> Zones;
+typedef std::vector<RangeZoneWall> AllRanges;
 
 void ZonesAndWalls(const Phrase &source, std::ostream &out);
 void ZonesAndWalls(const Phrase &source,
 		const std::string &start,
 		const std::string &end,
-		Zones &zonesAndWalls);
+		AllRanges &zonesAndWalls);
 void Walls(const Phrase &source,
 		const std::string &sought,
-		Zones &zonesAndWalls);
+		AllRanges &zonesAndWalls);
+void Zones(const Phrase &source,
+		const std::string &sought,
+		AllRanges &zonesAndWalls);
