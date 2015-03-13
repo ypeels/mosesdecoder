@@ -19,6 +19,9 @@ class DistortionScoreProducer : public StatefulFeatureFunction
 protected:
   static std::vector<const DistortionScoreProducer*> s_staticColl;
 
+  size_t m_function;
+  	  // 0 = none, 1=log(+1)
+
 public:
   static const std::vector<const DistortionScoreProducer*>& GetDistortionFeatureFunctions() {
     return s_staticColl;
@@ -64,6 +67,9 @@ public:
                            , ScoreComponentCollection &scoreBreakdown
                            , ScoreComponentCollection &estimatedFutureScore) const {
   }
+
+  void SetParameter(const std::string& key, const std::string& value);
+
 };
 }
 
