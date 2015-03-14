@@ -106,7 +106,7 @@ FFState* DistortionScoreProducer::EvaluateWhenApplied(
   switch (m_function)
   {
   case 1:
-	  distortionScore = log(distortionScore + 1.0f);
+	  distortionScore = log(- distortionScore + 1.0f);
 	  break;
   }
 
