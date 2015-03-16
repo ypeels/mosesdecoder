@@ -21,12 +21,22 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
                                     , ScoreComponentCollection &scoreBreakdown
                                     , ScoreComponentCollection &estimatedFutureScore) const
 {
-  // adjacent non-term count as 1 ammbiguity, rather than 2 as in rule scope
-  // source can't be empty, right?
+  if (IsGlueRule(source)) {
+	return;
+  }
+
   float score = 0;
 
+  if (source.GetSize() > 0 && source.Front().IsNonTerminal()) {
+	++score;
+  }
+  if (source.GetSize() > 1 && source.Back().IsNonTerminal()) {
+	++score;
+  }
+
+  /*
   int count = 0;
-  for (size_t i = 0; i < source.GetSize() - 0; ++i) {
+  for (size_t i = 0; i < source.GetSize(); ++i) {
     const Word &word = source.GetWord(i);
     bool ambiguous = IsAmbiguous(word, m_sourceSyntax);
     if (ambiguous) {
@@ -44,6 +54,7 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
   if (count > 0) {
     score += count;
   }
+  */
 
   scoreBreakdown.PlusEquals(this, score);
 }
@@ -55,6 +66,19 @@ void RuleScope::SetParameter(const std::string& key, const std::string& value)
   } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
+}
+
+bool DiscardLeftRightNonTerm::IsGlueRule(const Phrase &source) const
+{
+  string sourceStr = source.ToString();
+  if (sourceStr == "<s> " || sourceStr == "X </s> " || sourceStr == "X X ") {
+    // don't score glue rule
+    //cerr << "sourceStr=" << sourceStr << endl;
+    return true;
+  } else {
+    return false;
+  }
+
 }
 
 }

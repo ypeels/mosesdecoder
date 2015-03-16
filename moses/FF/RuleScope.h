@@ -45,6 +45,9 @@ public:
 
 protected:
   bool m_sourceSyntax;
+
+  bool IsGlueRule(const Phrase &source) const;
+
 };
 
 }
