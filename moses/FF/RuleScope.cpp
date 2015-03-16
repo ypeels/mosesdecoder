@@ -2,11 +2,14 @@
 #include "moses/StaticData.h"
 #include "moses/Word.h"
 
+using namespace std;
+
 namespace Moses
 {
 RuleScope::RuleScope(const std::string &line)
   :StatelessFeatureFunction(1, line)
   ,m_sourceSyntax(true)
+  ,m_perScope(false)
 {
 }
 
@@ -56,19 +59,32 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
   }
   */
 
-  scoreBreakdown.PlusEquals(this, score);
+  if (m_perScope) {
+	  UTIL_THROW_IF2(m_numScoreComponents <= score,
+	                 "Insufficient number of score components. Scope=" << score << ". NUmber of score components=" << score);
+	  vector<float> scores(m_numScoreComponents, 0);
+	  scores[score] = 1;
+	  scoreBreakdown.PlusEquals(this, scores);
+  }
+  else {
+	  scoreBreakdown.PlusEquals(this, score);
+  }
 }
 
 void RuleScope::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "source-syntax") {
     m_sourceSyntax = Scan<bool>(value);
-  } else {
+  }
+  else if (key == "per-scope") {
+	  m_perScope = Scan<bool>(value);
+  }
+  else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }
 
-bool DiscardLeftRightNonTerm::IsGlueRule(const Phrase &source) const
+bool RuleScope::IsGlueRule(const Phrase &source) const
 {
   string sourceStr = source.ToString();
   if (sourceStr == "<s> " || sourceStr == "X </s> " || sourceStr == "X X ") {
