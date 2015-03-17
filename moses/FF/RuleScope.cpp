@@ -10,6 +10,7 @@ RuleScope::RuleScope(const std::string &line)
   :StatelessFeatureFunction(1, line)
   ,m_sourceSyntax(true)
   ,m_perScope(false)
+  ,m_futureCostOnly(false)
 {
 }
 
@@ -64,10 +65,19 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
 	                 "Insufficient number of score components. Scope=" << score << ". NUmber of score components=" << score);
 	  vector<float> scores(m_numScoreComponents, 0);
 	  scores[score] = 1;
-	  scoreBreakdown.PlusEquals(this, scores);
+
+	  if (m_futureCostOnly) {
+		  estimatedFutureScore.PlusEquals(this, scores);
+	  }
+	  else {
+		  scoreBreakdown.PlusEquals(this, scores);	  
+	  }
+  }
+  else if (m_futureCostOnly) {
+	estimatedFutureScore.PlusEquals(this, score);	  
   }
   else {
-	  scoreBreakdown.PlusEquals(this, score);
+	scoreBreakdown.PlusEquals(this, score);
   }
 }
 
@@ -78,6 +88,9 @@ void RuleScope::SetParameter(const std::string& key, const std::string& value)
   }
   else if (key == "per-scope") {
 	  m_perScope = Scan<bool>(value);
+  }
+  else if ("future-cost-only") {
+	m_futureCostOnly = Scan<bool>(value);
   }
   else {
     StatelessFeatureFunction::SetParameter(key, value);
