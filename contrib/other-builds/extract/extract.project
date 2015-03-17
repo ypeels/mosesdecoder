@@ -26,11 +26,11 @@
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="LLDB Debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder"/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder/boost/include"/>
+        <IncludePath Value="../../.."/>
+        <IncludePath Value="../../../boost/include"/>
       </Compiler>
       <Linker Options="" Required="yes">
-        <LibraryPath Value="/Users/hieu/workspace/github/mosesdecoder/boost/lib64"/>
+        <LibraryPath Value="../../../boost/lib64"/>
         <Library Value="boost_iostreams"/>
         <Library Value="z"/>
       </Linker>

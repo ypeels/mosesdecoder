@@ -40,9 +40,9 @@
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="LLDB Debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder"/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder/phrase-extract"/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder/boost/include"/>
+        <IncludePath Value="../../.."/>
+        <IncludePath Value="../../../phrase-extract"/>
+        <IncludePath Value="../../../boost/include"/>
         <Preprocessor Value="KENLM_MAX_ORDER=7"/>
       </Compiler>
       <Linker Options="" Required="yes"/>

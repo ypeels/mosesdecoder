@@ -56,13 +56,13 @@
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="LLDB Debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder"/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder/phrase-extract"/>
-        <IncludePath Value="/Users/hieu/workspace/github/mosesdecoder/boost/include"/>
+        <IncludePath Value="../../.."/>
+        <IncludePath Value="../../../phrase-extract"/>
+        <IncludePath Value="../../../boost/include"/>
       </Compiler>
       <Linker Options="" Required="yes">
-        <LibraryPath Value="/Users/hieu/workspace/github/mosesdecoder/boost/lib64"/>
-        <LibraryPath Value="/Users/hieu/workspace/github/mosesdecoder/contrib/other-builds/util/Debug"/>
+        <LibraryPath Value="../../../boost/lib64"/>
+        <LibraryPath Value="../../../contrib/other-builds/util/Debug"/>
         <Library Value="util"/>
         <Library Value="boost_iostreams"/>
         <Library Value="boost_program_options"/>
