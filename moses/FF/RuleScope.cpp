@@ -90,10 +90,10 @@ void RuleScope::SetParameter(const std::string& key, const std::string& value)
   else if (key == "per-scope") {
 	  m_perScope = Scan<bool>(value);
   }
-  else if ("future-cost-only") {
+  else if (key == "future-cost-only") {
 	m_futureCostOnly = Scan<bool>(value);
   }
-  else if ("multiplier") {
+  else if (key == "multiplier") {
 	m_multiplier = Scan<float>(value);
   }
   else {
