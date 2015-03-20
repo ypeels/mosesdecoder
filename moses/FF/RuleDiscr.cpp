@@ -13,6 +13,7 @@ namespace Moses
 RuleDiscr::RuleDiscr(const std::string &line)
   :StatelessFeatureFunction(1, line)
 {
+  m_requireSortingAfterSourceContext = true;
   ReadParameters();
 }
 
