@@ -41,6 +41,10 @@ public:
     m_ruleSourceFromInputPath = obj;
   }
 
+  ScoreComponentCollection &GetScores() {
+    return m_scoreBreakdown;
+  }
+
   const ScoreComponentCollection &GetScores() const {
     return m_scoreBreakdown;
   }

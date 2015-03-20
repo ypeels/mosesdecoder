@@ -588,6 +588,8 @@
     <File Name="../../../moses/FF/LM01.h"/>
     <File Name="../../../moses/FF/ScopeSpan.cpp"/>
     <File Name="../../../moses/FF/ScopeSpan.h"/>
+    <File Name="../../../moses/FF/RuleDiscr.cpp"/>
+    <File Name="../../../moses/FF/RuleDiscr.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
