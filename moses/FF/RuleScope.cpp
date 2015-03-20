@@ -13,6 +13,7 @@ RuleScope::RuleScope(const std::string &line)
   ,m_futureCostOnly(false)
   ,m_multiplier(1)
 {
+  ReadParameters();
 }
 
 bool IsAmbiguous(const Word &word, bool sourceSyntax)
@@ -91,7 +92,7 @@ void RuleScope::SetParameter(const std::string& key, const std::string& value)
 	  m_perScope = Scan<bool>(value);
   }
   else if (key == "future-cost-only") {
-	m_futureCostOnly = Scan<float>(value);
+	m_futureCostOnly = Scan<bool>(value);
   }
   else if (key == "multiplier") {
 	m_multiplier = Scan<float>(value);
