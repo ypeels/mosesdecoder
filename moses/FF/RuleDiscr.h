@@ -1,5 +1,12 @@
 #pragma once
 
+#ifdef WITH_THREADS
+#include <boost/thread/tss.hpp>
+#else
+#include <boost/scoped_ptr.hpp>
+#include <time.h>
+#endif
+
 #include <string>
 #include "StatelessFeatureFunction.h"
 
@@ -38,7 +45,22 @@ public:
 
   std::vector<float> DefaultWeights() const;
 
-protected:
+  protected:
+
+  // cache
+  size_t m_maxCacheSize; // 0 = no caching
+
+  typedef boost::unordered_map<size_t, std::pair<float, clock_t> > MaxProbCache;
+#ifdef WITH_THREADS
+  //reader-writer lock
+  mutable boost::thread_specific_ptr<MaxProbCache> m_maxProbCache;
+#else
+  mutable boost::scoped_ptr<MaxProbCache> m_maxProbCache;
+#endif
+
+  MaxProbCache &GetMaxProbCache() const;
+  void ReduceCache() const;
+
 };
 
 }
