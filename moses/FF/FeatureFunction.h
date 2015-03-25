@@ -1,3 +1,4 @@
+// -*- c++ -*-
 #ifndef moses_FeatureFunction_h
 #define moses_FeatureFunction_h
 
@@ -6,6 +7,8 @@
 #include <string>
 #include "moses/FeatureVector.h"
 #include "moses/TypeDef.h"
+
+#include <boost/shared_ptr.hpp>
 
 namespace Moses
 {
@@ -25,6 +28,8 @@ class InputPath;
 class StackVec;
 class ChartTranslationOptionList;
 class TranslationOptionCollection;
+class DistortionScoreProducer;
+class TranslationTask; 
 
 /** base class for all feature functions.
  */
@@ -56,7 +61,8 @@ public:
   static FeatureFunction &FindFeatureFunction(const std::string& name);
   static void Destroy();
 
-  static void CallChangeSource(InputType *&input);
+  static void CallChangeSource(InputType * const&input);
+  // see my note in FeatureFunction.cpp --- UG
 
   FeatureFunction(const std::string &line);
   FeatureFunction(size_t numScoreComponents, const std::string &line);
@@ -136,8 +142,11 @@ public:
                                    , ScoreComponentCollection &estimatedFutureScore) const = 0;
 
   // override this method if you want to change the input before decoding
-  virtual void ChangeSource(InputType *&input) const {
-  }
+  virtual void ChangeSource(InputType * const&input) const { }
+
+  // for context-dependent processing
+  static void SetupAll(TranslationTask const& task);
+  virtual void Setup(TranslationTask const& task) const { };
 
   // This method is called once all the translation options are retrieved from the phrase table, and
   // just before search.
