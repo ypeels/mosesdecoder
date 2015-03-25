@@ -82,7 +82,7 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
       
       for (size_t j = 0; j < transOpts.GetSize(); ++j) {
         const ChartTranslationOption &transOpt = transOpts.Get(j);
-        cerr << "   " << transOpt << endl;
+        //cerr << "   " << transOpt << endl;
 
         std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
         float pef = scores[2];
@@ -117,7 +117,7 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 
     for (size_t j = 0; j < transOpts.GetSize(); ++j) {
     	ChartTranslationOption &transOpt = transOpts.Get(j);
-    	cerr << "   " << transOpt << endl;
+    	//cerr << "   " << transOpt << endl;
 
 		std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
 		float diff = maxPEF - scores[2];
