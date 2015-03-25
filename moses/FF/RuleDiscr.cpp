@@ -119,11 +119,11 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     	ChartTranslationOption &transOpt = transOpts.Get(j);
     	//cerr << "   " << transOpt << endl;
 
-		std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
-		float diff = maxPEF - scores[2];
+      std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
+      float diff = maxPEF - scores[2];
 
-		transOpt.GetScores().PlusEquals(this, diff);
-	}
+      transOpt.GetScores().PlusEquals(this, diff);
+    }
   }
 }
 
