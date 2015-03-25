@@ -2,7 +2,6 @@
 <CodeLite_Project Name="extract-mixed-syntax" InternalType="Console">
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="src"/>
   <VirtualDirectory Name="extract-mixed-syntax">
     <File Name="../../../phrase-extract/extract-mixed-syntax/AlignedSentence.cpp"/>
     <File Name="../../../phrase-extract/extract-mixed-syntax/AlignedSentence.h"/>
