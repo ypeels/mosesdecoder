@@ -82,5 +82,11 @@ while ($line = <HANDLE>) {
 }
 close (HANDLE);
 
+unlink $input;
+unlink $inputDeescaped;
+unlink $parseOut;
+unlink $outputLines;
+unlink $outputEscaped;
+
 #$cmd = "cat $parseOut";
 #`$cmd`;
