@@ -13,20 +13,25 @@ my $cmd;
 my $PARSERPATH;
 my $LANG;
 
-die("ERROR: syntax is: make-factor-candc -l [language=en] -f /path/to/candc \n")
+die("ERROR: syntax is: make-factor-candc -l [language=en] -f /path/to/candc in out tmpdir \n")
   unless &GetOptions
   ('f=s' => \$PARSERPATH,
    'l=s' => \$LANG
   )
   && defined($PARSERPATH) && defined($LANG);
 
+my $size = scalar @ARGV;
+my $input = $ARGV[$size-3];
+my $output = $ARGV[$size-2];
+my $tmpdir = $ARGV[$size-1];
+
 # store input in a file
-my $input = "/tmp/candc-in.$$";
-open (HANDLE,">$input");
-while (<STDIN>) {
-        print HANDLE $_;
-}
-close (HANDLE);
+#my $input = "/tmp/candc-in.$$";
+#open (HANDLE,">$input");
+#while (<STDIN>) {
+#        print HANDLE $_;
+#}
+#close (HANDLE);
 
 #unescape
 my $inputDeescaped = "/tmp/candc-in-deescaped.$$";
@@ -72,21 +77,20 @@ close (HANDLE);
 close (HANDLE_OUT_LINES);
 
 # escape output
-my $outputEscaped = "/tmp/candc-out-escaped.$$";
+my $outputEscaped = $output; # "/tmp/candc-out-escaped.$$";
 $cmd = "$RealBin/../../tokenizer/escape-special-chars.perl < $outputLines > $outputEscaped";
+print STDERR "Executing: $cmd \n";
 `$cmd`;
 
-open (HANDLE,"$outputEscaped");
-while ($line = <HANDLE>) {
-	print $line;
-}
-close (HANDLE);
+#open (HANDLE,"$outputEscaped");
+#while ($line = <HANDLE>) {
+#	print $line;
+#}
+#close (HANDLE);
 
-unlink $input;
-unlink $inputDeescaped;
-unlink $parseOut;
-unlink $outputLines;
-unlink $outputEscaped;
+#unlink $inputDeescaped;
+#unlink $parseOut;
+#unlink $outputLines;
+#unlink $outputEscaped;
 
-#$cmd = "cat $parseOut";
-#`$cmd`;
+

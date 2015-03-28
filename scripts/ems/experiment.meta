@@ -53,7 +53,7 @@ factorize
 	out: factorized-stem
 	rerun-on-change: TRAINING:input-factors TRAINING:output-factors
 	default-name: corpus/factored
-	pass-unless: TRAINING:input-factors
+	pass-unless: TRAINING:input-factors TRAINING:output-factors
 	parallelizable: yes
 	error: can't open
 	error: incompatible number of words in factor
@@ -574,7 +574,7 @@ build-translit-table
 extract-phrases
 	in: corpus-mml-postfilter=OR=word-alignment scored-corpus
 	out: extracted-phrases
-	rerun-on-change: max-phrase-length translation-factors reordering-factors hierarchical-rule-set extract-settings training-options script use-ghkm domain-features baseline-extract lexicalized-reordering
+	rerun-on-change: max-phrase-length translation-factors reordering-factors hierarchical-rule-set extract-settings training-options script use-ghkm domain-features baseline-extract lexicalized-reordering input-factors output-factors
         only-existence-matters: domain-features
 	default-name: model/extract
 build-reordering
