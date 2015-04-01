@@ -25,28 +25,20 @@ my $input = $ARGV[$size-3];
 my $output = $ARGV[$size-2];
 my $tmpdir = $ARGV[$size-1];
 
-# store input in a file
-#my $input = "/tmp/candc-in.$$";
-#open (HANDLE,">$input");
-#while (<STDIN>) {
-#        print HANDLE $_;
-#}
-#close (HANDLE);
-
 #unescape
-my $inputDeescaped = "/tmp/candc-in-deescaped.$$";
+my $inputDeescaped = "$tmpdir/candc-in-deescaped.$$";
 $cmd = "$RealBin/../../tokenizer/deescape-special-chars.perl < $input > $inputDeescaped";
 `$cmd`;
 
 # parse file
-my $parseOut = "/tmp/candc-out.$$";
+my $parseOut = "$tmpdir/candc-out.$$";
 
 $cmd = "$PARSERPATH/bin/candc --models $PARSERPATH/models --input $inputDeescaped --output $parseOut";
 print STDERR "Executing: $cmd \n";
 `$cmd`;
 
 # output
-my $outputLines = "/tmp/candc-out-lines.$$";
+my $outputLines = "$tmpdir/candc-out-lines.$$";
 open (HANDLE_OUT_LINES,">$outputLines");
 
 my $line;
@@ -77,20 +69,12 @@ close (HANDLE);
 close (HANDLE_OUT_LINES);
 
 # escape output
-my $outputEscaped = $output; # "/tmp/candc-out-escaped.$$";
-$cmd = "$RealBin/../../tokenizer/escape-special-chars.perl < $outputLines > $outputEscaped";
+$cmd = "$RealBin/../../tokenizer/escape-special-chars.perl < $outputLines > $output";
 print STDERR "Executing: $cmd \n";
 `$cmd`;
 
-#open (HANDLE,"$outputEscaped");
-#while ($line = <HANDLE>) {
-#	print $line;
-#}
-#close (HANDLE);
-
-#unlink $inputDeescaped;
-#unlink $parseOut;
-#unlink $outputLines;
-#unlink $outputEscaped;
+unlink $inputDeescaped;
+unlink $parseOut;
+unlink $outputLines;
 
 
