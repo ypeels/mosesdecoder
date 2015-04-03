@@ -22,6 +22,9 @@ public:
     return true;
   }
 
+  //! Called before search and collecting of translation options
+  virtual void InitializeForInput(InputType const& source);
+
   void EvaluateInIsolation(const Phrase &source
                            , const TargetPhrase &targetPhrase
                            , ScoreComponentCollection &scoreBreakdown
@@ -42,8 +45,6 @@ public:
   void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const;
 
   void SetParameter(const std::string& key, const std::string& value);
-
-  std::vector<float> DefaultWeights() const;
 
   protected:
 

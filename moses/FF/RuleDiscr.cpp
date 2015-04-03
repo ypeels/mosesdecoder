@@ -22,13 +22,11 @@ RuleDiscr::RuleDiscr(const std::string &line)
   ReadParameters();
 }
 
-std::vector<float> RuleDiscr::DefaultWeights() const
+void RuleDiscr::InitializeForInput(InputType const& source)
 {
-  UTIL_THROW_IF2(m_numScoreComponents != 1,
-                 "SyntaxRHS must only have 1 score");
-  vector<float> ret(1, 1);
-  return ret;
+  ReduceCache();
 }
+
 
 void RuleDiscr::EvaluateInIsolation(const Phrase &source
                                       , const TargetPhrase &targetPhrase
