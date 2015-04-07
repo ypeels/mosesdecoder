@@ -9,6 +9,9 @@
 #include "moses/PP/CountsPhraseProperty.h"
 #include "moses/Timer.h"
 #include "moses/StaticData.h"
+#include "moses/ChartCellLabel.h"
+#include "moses/ChartCell.h"
+#include "moses/ChartCellCollection.h"
 
 using namespace std;
 
@@ -17,6 +20,7 @@ namespace Moses
 RuleDiscr::RuleDiscr(const std::string &line)
   :StatelessFeatureFunction(1, line)
   ,m_maxCacheSize(DEFAULT_MAX_TRANS_OPT_CACHE_SIZE)
+  ,m_insideScores(false)
 {
   m_requireSortingAfterSourceContext = true;
   ReadParameters();
@@ -53,9 +57,9 @@ void RuleDiscr::EvaluateWhenApplied(const ChartHypothesis &hypo,
                                       ScoreComponentCollection* accumulator) const
 {}
 
-void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
+void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList, const ChartCellCollection &hypoStackColl) const
 {
-  FeatureFunction &pt = FeatureFunction::FindFeatureFunction("TranslationModel0");
+  const FeatureFunction &pt = FeatureFunction::FindFeatureFunction("TranslationModel0");
 	
   // find max p(e|f)
   float maxPEF = - std::numeric_limits<float>::infinity();
@@ -65,6 +69,11 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     //cerr << "ChartTranslationOptions " << i << "=" << transOpts.GetSize() << endl;
     
     if (transOpts.GetSize() == 0) continue;
+    
+    float bestHyposScore = 0;
+    if (m_insideScores) {
+      bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec(), pt);
+    }
     
     const TargetPhrase &tp = transOpts.Get(0).GetPhrase();
     const Phrase *sp = tp.GetRuleSource();
@@ -84,6 +93,7 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 
         std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
         float pef = scores[2];
+        pef += bestHyposScore;
         
         if (maxPEFTransOpts < pef) {
           maxPEFTransOpts = pef;
@@ -113,22 +123,57 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     ChartTranslationOptions &transOpts = transOptList.Get(i);
     //cerr << "ChartTranslationOptions " << i << "=" << transOpts.GetSize() << endl;
 
+    if (transOpts.GetSize() == 0) continue;
+    
+    float bestHyposScore = 0;
+    if (m_insideScores) {
+      bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec(), pt);
+    }
+
     for (size_t j = 0; j < transOpts.GetSize(); ++j) {
     	ChartTranslationOption &transOpt = transOpts.Get(j);
     	//cerr << "   " << transOpt << endl;
 
       std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
-      float diff = maxPEF - scores[2];
+      float pef = scores[2];
+      pef += bestHyposScore;
+
+      float diff = maxPEF - pef;
 
       transOpt.GetScores().PlusEquals(this, diff);
     }
   }
 }
 
+float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
+                                  , const StackVec &stackVec
+                                  , const FeatureFunction &pt) const
+{
+  float ret = 0;
+  
+  size_t numNT = stackVec.size();
+  for (size_t i = 0; i < numNT; ++i) {
+    const ChartCellLabel &label = *stackVec[i];
+    const WordsRange &range = label.GetCoverage();
+    const ChartCell &cell = hypoStackColl.Get(range);
+    const ChartHypothesis *hypo = cell.GetBestHypothesis();
+    
+    if (hypo == NULL){
+      return -100;
+    }
+    
+    std::vector<float> scores = hypo->GetScoreBreakdown().GetScoresForProducer(&pt);
+    float pef = scores[2];
+    ret += pef;
+  }
+  
+  return ret;
+}
+
 void RuleDiscr::SetParameter(const std::string& key, const std::string& value)
 {
-  if (key == "min-count") {
-    //m_minCount = Scan<float>(value);
+  if (key == "inside-score") {
+    m_insideScores = Scan<bool>(value);
   } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
