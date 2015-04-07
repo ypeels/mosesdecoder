@@ -158,10 +158,8 @@ float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
     const ChartCell &cell = hypoStackColl.Get(range);
     const ChartHypothesis *hypo = cell.GetBestHypothesis();
     
-    if (hypo == NULL){
-      return -100;
-    }
-    
+    UTIL_THROW_IF2(hypo == NULL, "No hypos at range " << range);
+
     std::vector<float> scores = hypo->GetScoreBreakdown().GetScoresForProducer(&pt);
     float pef = scores[2];
     ret += pef;
