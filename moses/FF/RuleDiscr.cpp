@@ -69,12 +69,7 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     //cerr << "ChartTranslationOptions " << i << "=" << transOpts.GetSize() << endl;
     
     if (transOpts.GetSize() == 0) continue;
-    
-    float bestHyposScore = 0;
-    if (m_insideScores) {
-      bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec(), pt);
-    }
-    
+        
     const TargetPhrase &tp = transOpts.Get(0).GetPhrase();
     const Phrase *sp = tp.GetRuleSource();
     assert(sp);
@@ -86,14 +81,17 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     float maxPEFTransOpts = - std::numeric_limits<float>::infinity();
     if (cacheIter == cache.end()) {
       // not in cache. find max pef
-      
+      float bestHyposScore = 0;
+      if (m_insideScores) {
+        bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec(), pt);
+      }
+  
       for (size_t j = 0; j < transOpts.GetSize(); ++j) {
         const ChartTranslationOption &transOpt = transOpts.Get(j);
         //cerr << "   " << transOpt << endl;
 
         std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
-        float pef = scores[2];
-        pef += bestHyposScore;
+        float pef = bestHyposScore + scores[2];
         
         if (maxPEFTransOpts < pef) {
           maxPEFTransOpts = pef;
@@ -135,8 +133,7 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     	//cerr << "   " << transOpt << endl;
 
       std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
-      float pef = scores[2];
-      pef += bestHyposScore;
+      float pef = bestHyposScore + scores[2];
 
       float diff = maxPEF - pef;
 

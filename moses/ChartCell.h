@@ -89,6 +89,7 @@ public:
 
 protected:
   MapType m_hypoColl;
+  mutable const ChartHypothesis *m_bestHypo;
 
   bool m_nBestIsEnabled; /**< flag to determine whether to keep track of old arcs */
   ChartManager &m_manager;
