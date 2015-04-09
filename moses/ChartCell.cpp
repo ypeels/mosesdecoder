@@ -51,6 +51,7 @@ ChartCellBase::~ChartCellBase() {}
  */
 ChartCell::ChartCell(size_t startPos, size_t endPos, ChartManager &manager) :
   ChartCellBase(startPos, endPos, manager.GetParser()), m_manager(manager)
+  ,m_bestHypo(NULL)
 {
   const StaticData &staticData = StaticData::Instance();
   m_nBestIsEnabled = staticData.IsNBestEnabled();
@@ -126,7 +127,8 @@ void ChartCell::SortHypotheses()
 /** Return the highest scoring hypothesis out of all the  hypo collection in this cell */
 const ChartHypothesis *ChartCell::GetBestHypothesis() const
 {
-  const ChartHypothesis *ret = NULL;
+  if (m_bestHypo) return m_bestHypo;
+  
   float bestScore = -std::numeric_limits<float>::infinity();
 
   MapType::const_iterator iter;
@@ -136,12 +138,12 @@ const ChartHypothesis *ChartCell::GetBestHypothesis() const
       const ChartHypothesis *hypo = sortedList[0];
       if (hypo->GetTotalScore() > bestScore) {
         bestScore = hypo->GetTotalScore();
-        ret = hypo;
+        m_bestHypo = hypo;
       }
     }
   }
 
-  return ret;
+  return m_bestHypo;
 }
 
 //! call CleanupArcList() in each hypo collection in this cell

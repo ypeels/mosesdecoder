@@ -69,7 +69,7 @@ public:
 
   void Clear();
   void ApplyThreshold();
-  void EvaluateWithSourceContext(const InputType &input, const InputPath &inputPath);
+  void EvaluateWithSourceContext(const InputType &input, const InputPath &inputPath, const ChartCellCollection &hypoStackColl);
 
 private:
   typedef std::vector<ChartTranslationOptions*> CollType;

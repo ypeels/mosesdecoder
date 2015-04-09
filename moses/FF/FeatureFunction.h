@@ -27,6 +27,7 @@ class FactorMask;
 class InputPath;
 class StackVec;
 class ChartTranslationOptionList;
+class ChartCellCollection;
 class TranslationOptionCollection;
 class DistortionScoreProducer;
 class TranslationTask; 
@@ -178,7 +179,7 @@ public:
       , TranslationOptionList &translationOptionList) const
   {}
 
-  virtual void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const
+  virtual void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList, const ChartCellCollection &hypoStackColl) const
   {}
 
   virtual void SetParameter(const std::string& key, const std::string& value);

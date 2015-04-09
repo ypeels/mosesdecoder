@@ -103,7 +103,7 @@ public:
     return vertex.BestChild();
   }
 
-  void EvaluateWithSourceContext(const InputType &input, const InputPath &inputPath) {
+  void EvaluateWithSourceContext(const InputType &input, const InputPath &inputPath, const ChartCellCollection &hypoStackColl) {
     // TODO for input lattice
   }
 private:

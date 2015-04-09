@@ -12,6 +12,7 @@
 
 namespace Moses
 {
+class StackVec;
 
 class RuleDiscr : public StatelessFeatureFunction
 {
@@ -42,12 +43,13 @@ public:
   void EvaluateTranslationOptionListWithSourceContext(const InputType &input
       , const TranslationOptionList &translationOptionList) const
   {}
-  void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList) const;
+  void EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList, const ChartCellCollection &hypoStackColl) const;
 
   void SetParameter(const std::string& key, const std::string& value);
 
-  protected:
-
+protected:
+  bool m_insideScores;
+  
   // cache
   size_t m_maxCacheSize; // 0 = no caching
 
@@ -61,6 +63,10 @@ public:
 
   MaxProbCache &GetMaxProbCache() const;
   void ReduceCache() const;
+
+  float GetBestHypoScores(const ChartCellCollection &hypoStackColl
+                        , const StackVec &stackVec
+                        , const FeatureFunction &pt) const;
 
 };
 

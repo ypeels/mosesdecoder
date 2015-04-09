@@ -89,7 +89,7 @@ void ChartManager::Decode()
       m_translationOptionList.ApplyThreshold();
 
       const InputPath &inputPath = m_parser.GetInputPath(range);
-      m_translationOptionList.EvaluateWithSourceContext(m_source, inputPath);
+      m_translationOptionList.EvaluateWithSourceContext(m_source, inputPath, m_hypoStackColl);
 
       // decode
       ChartCell &cell = m_hypoStackColl.Get(range);
