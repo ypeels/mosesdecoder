@@ -23,6 +23,14 @@ for (my $i = 2; $i < scalar(@ARGV); ++$i)
 }
 
 # split input file
+my $SPLIT_EXEC = `gsplit --help 2>/dev/null`; 
+if($SPLIT_EXEC) {
+  $SPLIT_EXEC = 'gsplit';
+}
+else {
+  $SPLIT_EXEC = 'split';
+}
+
 open (INPUT_ALL, "> $TMPDIR/input.all");
 binmode INPUT_ALL, ":utf8";
 while (my $line = <STDIN>)
@@ -32,7 +40,7 @@ while (my $line = <STDIN>)
 }
 close(INPUT_ALL);
 
-my $cmd2 = "split -l $NUM_SPLIT_LINES -a 5 -d  $TMPDIR/input.all $TMPDIR/x";
+my $cmd2 = "$SPLIT_EXEC -l $NUM_SPLIT_LINES -a 5 -d  $TMPDIR/input.all $TMPDIR/x";
 `$cmd2`;
 
 # create exec file
