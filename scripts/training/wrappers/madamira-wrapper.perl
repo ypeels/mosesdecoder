@@ -16,7 +16,7 @@ GetOptions(
   "tmpdir=s" => \$TMPDIR,
   "keep-tmp" => \$KEEP_TMP,
   "mada-dir=s" => \$MADA_DIR
-) or die("ERROR: unknown options");
+    ) or die("ERROR: unknown options");
 
 #binmode(STDIN, ":utf8");
 #binmode(STDOUT, ":utf8");
@@ -30,7 +30,7 @@ print STDERR $infile."\n";
 
 open(TMP,">$infile");
 while(<STDIN>) { 
-  print TMP $_;
+    print TMP $_;
 }
 close(TMP);
 
@@ -39,10 +39,10 @@ my $cmd;
 # split input file
 my $SPLIT_EXEC = `gsplit --help 2>/dev/null`; 
 if($SPLIT_EXEC) {
-  $SPLIT_EXEC = 'gsplit';
+    $SPLIT_EXEC = 'gsplit';
 }
 else {
-  $SPLIT_EXEC = 'split';
+    $SPLIT_EXEC = 'split';
 }
 
 $cmd = "$SPLIT_EXEC -l 10000 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
@@ -60,28 +60,28 @@ print STDERR "Executing: $cmd\n";
 open(MADA_OUT,"<$infile.mada");
 #binmode(MADA_OUT, ":utf8");
 while(my $line = <MADA_OUT>) { 
-  chop($line);
+    chop($line);
   #print STDERR "line=$line \n";
 
-  if (index($line, "SENTENCE BREAK") == 0) {
+    if (index($line, "SENTENCE BREAK") == 0) {
     # new sentence
     #print STDERR "BREAK\n";
-    print "\n";
-  }
-  elsif (index($line, ";;WORD") == 0) {
+	print "\n";
+    }
+    elsif (index($line, ";;WORD") == 0) {
     # word
-    my $word = substr($line, 7, length($line) - 8);
+	my $word = substr($line, 7, length($line) - 8);
     #print STDERR "FOund $word\n";
-    print "$word ";
-  }
-  else {
+	print "$word ";
+    }
+    else {
     #print STDERR "NADA\n";
-  }
+    }
 }
 close (MADA_OUT);
 
 
 if ($KEEP_TMP == 0) {
-  `rm -rf $TMPDIR`;
+    `rm -rf $TMPDIR`;
 }
 
