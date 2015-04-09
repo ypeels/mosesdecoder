@@ -18,8 +18,8 @@ GetOptions(
   "mada-dir=s" => \$MADA_DIR
 ) or die("ERROR: unknown options");
 
-#binmode(STDIN, ":utf8");
-#binmode(STDOUT, ":utf8");
+binmode(STDIN, ":utf8");
+binmode(STDOUT, ":utf8");
 
 $TMPDIR = "$TMPDIR/madamira.$$";
 `mkdir -p $TMPDIR`;
@@ -34,13 +34,13 @@ while(<STDIN>) {
 close(TMP);
 
 #`perl $MADA_DIR/MADA+TOKAN.pl >/dev/null 2>/dev/null config=$MADA_DIR/config-files/template.madaconfig file=$tmpfile TOKAN_SCHEME="SCHEME=$SCHEME"`;
-my $cmd = "$RealBin/../../generic/generic-parallel.perl 10000 /tmp/tmp.$$ java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput $infile -rawoutdir  $TMPDIR -rawconfig $MADA_DIR/samples/sampleConfigFile.xml";
+my $cmd = "java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput $infile -rawoutdir  $TMPDIR -rawconfig $MADA_DIR/samples/sampleConfigFile.xml >& /dev/null";
 print STDERR "$cmd\n";
 `$cmd`;
 
 # get stuff out of mada output
 open(MADA_OUT,"<$infile.mada");
-#binmode(MADA_OUT, ":utf8");
+binmode(MADA_OUT, ":utf8");
 while(my $line = <MADA_OUT>) { 
   chop($line);
   #print STDERR "line=$line \n";
