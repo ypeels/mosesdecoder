@@ -23,6 +23,7 @@ GetOptions(
 
 $TMPDIR = "$TMPDIR/madamira.$$";
 `mkdir -p $TMPDIR`;
+`mkdir -p $TMPDIR/split`;
 
 my $infile = "$TMPDIR/input";
 print STDERR $infile."\n";
@@ -33,9 +34,26 @@ while(<STDIN>) {
 }
 close(TMP);
 
-#`perl $MADA_DIR/MADA+TOKAN.pl >/dev/null 2>/dev/null config=$MADA_DIR/config-files/template.madaconfig file=$tmpfile TOKAN_SCHEME="SCHEME=$SCHEME"`;
-my $cmd = "$RealBin/../../generic/generic-parallel.perl 10000 /tmp/tmp.$$ java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput $infile -rawoutdir  $TMPDIR -rawconfig $MADA_DIR/samples/sampleConfigFile.xml";
-print STDERR "$cmd\n";
+my $cmd;
+
+# split input file
+my $SPLIT_EXEC = `gsplit --help 2>/dev/null`; 
+if($SPLIT_EXEC) {
+  $SPLIT_EXEC = 'gsplit';
+}
+else {
+  $SPLIT_EXEC = 'split';
+}
+
+$cmd = "$SPLIT_EXEC -l 10000 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
+`$cmd`;
+
+$cmd = "parallel java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/split -rawconfig $MADA_DIR/samples/sampleConfigFile.xml 2> /dev/null ::: $TMPDIR/split/x*";
+print STDERR "Executing: $cmd\n";
+`$cmd`;
+
+$cmd = "$TMPDIR/split/x*.mada > $infile.mada";
+print STDERR "Executing: $cmd\n";
 `$cmd`;
 
 # get stuff out of mada output
