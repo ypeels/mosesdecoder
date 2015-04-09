@@ -42,21 +42,21 @@ open(MADA_OUT,"<$infile.mada");
 binmode(MADA_OUT, ":utf8");
 while(my $line = <MADA_OUT>) { 
   chop($line);
-  print STDERR "line=$line \n";
+  #print STDERR "line=$line \n";
 
   if (index($line, "SENTENCE BREAK") == 0) {
     # new sentence
-    print STDERR "BREAK\n";
+    #print STDERR "BREAK\n";
     print "\n";
   }
   elsif (index($line, ";;WORD") == 0) {
     # word
     my $word = substr($line, 7, length($line) - 8);
-    print STDERR "FOund $word\n";
+    #print STDERR "FOund $word\n";
     print "$word ";
   }
   else {
-    print STDERR "NADA\n";
+    #print STDERR "NADA\n";
   }
 }
 close (MADA_OUT);
