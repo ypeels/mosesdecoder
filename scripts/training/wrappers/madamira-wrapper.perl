@@ -52,7 +52,7 @@ $cmd = "parallel java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
-$cmd = "$TMPDIR/split/x*.mada > $infile.mada";
+$cmd = "cat $TMPDIR/split/x*.mada > $infile.mada";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
