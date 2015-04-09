@@ -4,6 +4,7 @@ use strict;
 use File::Temp qw/tempfile/;
 use Getopt::Long "GetOptions";
 use File::Basename;
+use FindBin qw($RealBin);
 
 my $TMPDIR = "tmp";
 my $SCHEME = "D2";
@@ -33,7 +34,7 @@ while(<STDIN>) {
 close(TMP);
 
 #`perl $MADA_DIR/MADA+TOKAN.pl >/dev/null 2>/dev/null config=$MADA_DIR/config-files/template.madaconfig file=$tmpfile TOKAN_SCHEME="SCHEME=$SCHEME"`;
-my $cmd = "java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput $infile -rawoutdir  $TMPDIR -rawconfig $MADA_DIR/samples/sampleConfigFile.xml >& /dev/null";
+my $cmd = "$RealBin/../../generic/generic-parallel.perl 10000 /tmp/tmp.$$ java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput $infile -rawoutdir  $TMPDIR -rawconfig $MADA_DIR/samples/sampleConfigFile.xml";
 print STDERR "$cmd\n";
 `$cmd`;
 
