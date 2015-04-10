@@ -1,10 +1,11 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 
 use strict;
 use File::Temp qw/tempfile/;
 use Getopt::Long "GetOptions";
 use File::Basename;
 use FindBin qw($RealBin);
+use Cwd 'abs_path';
 
 my $TMPDIR = "tmp";
 my $SCHEME = "D2";
@@ -17,6 +18,9 @@ GetOptions(
   "keep-tmp" => \$KEEP_TMP,
   "mada-dir=s" => \$MADA_DIR
     ) or die("ERROR: unknown options");
+
+$TMPDIR = abs_path($TMPDIR);
+print STDERR "TMPDIR=$TMPDIR \n";
 
 #binmode(STDIN, ":utf8");
 #binmode(STDOUT, ":utf8");
@@ -48,7 +52,7 @@ else {
 $cmd = "$SPLIT_EXEC -l 10000 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
 `$cmd`;
 
-$cmd = "parallel --jobs 5 java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/split -rawconfig $MADA_DIR/samples/sampleConfigFile.xml  ::: $TMPDIR/split/x*";
+$cmd = "cd $MADA_DIR && parallel --jobs 5 java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/split -rawconfig $MADA_DIR/samples/sampleConfigFile.xml  ::: $TMPDIR/split/x*";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
