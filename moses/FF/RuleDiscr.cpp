@@ -1,5 +1,6 @@
 #include <vector>
 #include <queue>
+#include <boost/foreach.hpp>
 
 #include "RuleDiscr.h"
 #include "moses/ScoreComponentCollection.h"
@@ -21,6 +22,8 @@ RuleDiscr::RuleDiscr(const std::string &line)
   :StatelessFeatureFunction(1, line)
   ,m_maxCacheSize(DEFAULT_MAX_TRANS_OPT_CACHE_SIZE)
   ,m_insideScores(false)
+  ,m_whatScores(0)
+  ,m_pt(FeatureFunction::FindFeatureFunction("TranslationModel0"))
 {
   m_requireSortingAfterSourceContext = true;
   ReadParameters();
@@ -58,9 +61,7 @@ void RuleDiscr::EvaluateWhenApplied(const ChartHypothesis &hypo,
 {}
 
 void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList, const ChartCellCollection &hypoStackColl) const
-{
-  const FeatureFunction &pt = FeatureFunction::FindFeatureFunction("TranslationModel0");
-	
+{	
   // find max p(e|f)
   float maxPEF = - std::numeric_limits<float>::infinity();
   //cerr << "ChartTranslationOptionList:" << endl;
@@ -83,15 +84,14 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
       // not in cache. find max pef
       float bestHyposScore = 0;
       if (m_insideScores) {
-        bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec(), pt);
+        bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec());
       }
   
       for (size_t j = 0; j < transOpts.GetSize(); ++j) {
         const ChartTranslationOption &transOpt = transOpts.Get(j);
         //cerr << "   " << transOpt << endl;
 
-        std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
-        float pef = bestHyposScore + scores[2];
+        float pef = bestHyposScore + GetScore(transOpt);
         
         if (maxPEFTransOpts < pef) {
           maxPEFTransOpts = pef;
@@ -125,15 +125,14 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     
     float bestHyposScore = 0;
     if (m_insideScores) {
-      bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec(), pt);
+      bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec());
     }
 
     for (size_t j = 0; j < transOpts.GetSize(); ++j) {
     	ChartTranslationOption &transOpt = transOpts.Get(j);
     	//cerr << "   " << transOpt << endl;
 
-      std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&pt);
-      float pef = bestHyposScore + scores[2];
+      float pef = bestHyposScore + GetScore(transOpt);
 
       float diff = maxPEF - pef;
 
@@ -142,9 +141,42 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
   }
 }
 
+float RuleDiscr::GetScore(const ChartTranslationOption &transOpt) const
+{
+  float ret;
+  
+  switch (m_whatScores) {
+    case 0:
+    {
+      std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&m_pt);
+      ret = scores[2];
+      break;
+    }
+    case 1:
+    {
+      ScoreComponentCollection statelessScores;
+      
+      BOOST_FOREACH(const StatelessFeatureFunction *ff, StatelessFeatureFunction::GetStatelessFeatureFunctions()) {
+        statelessScores.PlusEquals(ff, transOpt.GetScores());
+      }
+      
+      ret = statelessScores.GetWeightedScore();
+      break;
+    }
+    case 2:
+    {
+      ret = transOpt.GetScores().GetWeightedScore();
+      break;
+    }
+    default:
+        UTIL_THROW2("Unknown what-score: " << m_whatScores);
+  }
+  
+  return ret;
+}
+
 float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
-                                  , const StackVec &stackVec
-                                  , const FeatureFunction &pt) const
+                                  , const StackVec &stackVec) const
 {
   float ret = 0;
   
@@ -157,7 +189,7 @@ float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
     
     UTIL_THROW_IF2(hypo == NULL, "No hypos at range " << range);
 
-    std::vector<float> scores = hypo->GetScoreBreakdown().GetScoresForProducer(&pt);
+    std::vector<float> scores = hypo->GetScoreBreakdown().GetScoresForProducer(&m_pt);
     float pef = scores[2];
     ret += pef;
   }
@@ -169,7 +201,11 @@ void RuleDiscr::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "inside-score") {
     m_insideScores = Scan<bool>(value);
-  } else {
+  }
+  else if (key == "what-scores") {
+    m_whatScores = Scan<int>(value);
+  }
+  else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }

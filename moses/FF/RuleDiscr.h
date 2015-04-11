@@ -13,6 +13,8 @@
 namespace Moses
 {
 class StackVec;
+class ChartTranslationOption;
+
 
 class RuleDiscr : public StatelessFeatureFunction
 {
@@ -49,6 +51,8 @@ public:
 
 protected:
   bool m_insideScores;
+  int m_whatScores; // 0 (default) = pef only, 1 = stateless, 2 = all
+  const FeatureFunction &m_pt;
   
   // cache
   size_t m_maxCacheSize; // 0 = no caching
@@ -64,9 +68,9 @@ protected:
   MaxProbCache &GetMaxProbCache() const;
   void ReduceCache() const;
 
+  float GetScore(const ChartTranslationOption &transOpt) const;
   float GetBestHypoScores(const ChartCellCollection &hypoStackColl
-                        , const StackVec &stackVec
-                        , const FeatureFunction &pt) const;
+                        , const StackVec &stackVec) const;
 
 };
 
