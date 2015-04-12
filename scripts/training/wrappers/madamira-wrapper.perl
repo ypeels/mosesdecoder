@@ -28,6 +28,7 @@ print STDERR "TMPDIR=$TMPDIR \n";
 $TMPDIR = "$TMPDIR/madamira.$$";
 `mkdir -p $TMPDIR`;
 `mkdir -p $TMPDIR/split`;
+`mkdir -p $TMPDIR/out`;
 
 my $infile = "$TMPDIR/input";
 print STDERR $infile."\n";
@@ -49,14 +50,14 @@ else {
     $SPLIT_EXEC = 'split';
 }
 
-$cmd = "$SPLIT_EXEC -l 10000 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
+$cmd = "$SPLIT_EXEC -l 100 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
 `$cmd`;
 
-$cmd = "cd $MADA_DIR && parallel --jobs 5 java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/split -rawconfig $MADA_DIR/samples/sampleConfigFile.xml  ::: $TMPDIR/split/x*";
+$cmd = "cd $MADA_DIR && parallel --jobs 5 java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/out -rawconfig $MADA_DIR/samples/sampleConfigFile.xml  ::: $TMPDIR/split/x*";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
-$cmd = "cat $TMPDIR/split/x*.mada > $infile.mada";
+$cmd = "cat $TMPDIR/out/x*.mada > $infile.mada";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
@@ -86,6 +87,6 @@ close (MADA_OUT);
 
 
 if ($KEEP_TMP == 0) {
-    `rm -rf $TMPDIR`;
+#    `rm -rf $TMPDIR`;
 }
 
