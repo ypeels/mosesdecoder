@@ -175,6 +175,40 @@ float RuleDiscr::GetScore(const ChartTranslationOption &transOpt) const
   return ret;
 }
 
+float RuleDiscr::GetScore(const ChartHypothesis &hypo) const
+{
+  float ret;
+  
+  switch (m_whatScores) {
+    case 0:
+    {
+      std::vector<float> scores = hypo.GetScoreBreakdown().GetScoresForProducer(&m_pt);
+      ret = scores[2];
+      break;
+    }
+    case 1:
+    {
+      ScoreComponentCollection statelessScores;
+      
+      BOOST_FOREACH(const StatelessFeatureFunction *ff, StatelessFeatureFunction::GetStatelessFeatureFunctions()) {
+        statelessScores.PlusEquals(ff, hypo.GetScoreBreakdown());
+      }
+      
+      ret = statelessScores.GetWeightedScore();
+      break;
+    }
+    case 2:
+    {
+      ret = hypo.GetScoreBreakdown().GetWeightedScore();
+      break;
+    }
+    default:
+        UTIL_THROW2("Unknown what-score: " << m_whatScores);
+  }
+  
+  return ret;
+}
+
 float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
                                   , const StackVec &stackVec) const
 {
@@ -189,9 +223,7 @@ float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
     
     UTIL_THROW_IF2(hypo == NULL, "No hypos at range " << range);
 
-    std::vector<float> scores = hypo->GetScoreBreakdown().GetScoresForProducer(&m_pt);
-    float pef = scores[2];
-    ret += pef;
+    ret += GetScore(*hypo);
   }
   
   return ret;
