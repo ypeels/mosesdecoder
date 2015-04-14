@@ -51,10 +51,10 @@ else {
     $SPLIT_EXEC = 'split';
 }
 
-$cmd = "$SPLIT_EXEC -l 100 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
+$cmd = "$SPLIT_EXEC -l 10000 -a 7 -d  $TMPDIR/input $TMPDIR/split/x";
 `$cmd`;
 
-$cmd = "cd $MADA_DIR && parallel --jobs 5 java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/out -rawconfig $MADA_DIR/samples/sampleConfigFile.xml  ::: $TMPDIR/split/x*";
+$cmd = "cd $MADA_DIR && parallel --jobs 4 java -Xmx2500m -Xms2500m -XX:NewRatio=3 -jar $MADA_DIR/MADAMIRA.jar -rawinput {} -rawoutdir  $TMPDIR/out -rawconfig $MADA_DIR/samples/sampleConfigFile.xml  ::: $TMPDIR/split/x*";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
