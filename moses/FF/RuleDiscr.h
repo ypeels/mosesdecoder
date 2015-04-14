@@ -69,6 +69,8 @@ protected:
   void ReduceCache() const;
 
   float GetScore(const ChartTranslationOption &transOpt) const;
+  float GetScore(const ChartHypothesis &hypo) const;
+
   float GetBestHypoScores(const ChartCellCollection &hypoStackColl
                         , const StackVec &stackVec) const;
 

@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w 
 
+use warnings;
 use strict;
 use Getopt::Long "GetOptions";
 use FindBin qw($RealBin);
