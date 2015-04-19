@@ -13,7 +13,7 @@ pre-tok-clean
         default-name: corpus/pre-tok-cleaned
         pass-unless: pre-tok-clean
         template: $pre-tok-clean IN $input-extension $output-extension OUT OUT.lines-retained
-        parallelizable: no
+        parallelizable: yes
 tokenize
 	in: pre-tok-cleaned
 	out: tokenized-stem
