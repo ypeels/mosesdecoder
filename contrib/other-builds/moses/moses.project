@@ -814,6 +814,8 @@
     <File Name="../../../moses/PP/RuleLengthPhraseProperty.cpp"/>
     <File Name="../../../moses/PP/RuleLengthPhraseProperty.h"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -832,6 +834,7 @@
         <IncludePath Value="../../../boost/include"/>
         <Preprocessor Value="MAX_NUM_FACTORS=4"/>
         <Preprocessor Value="KENLM_MAX_ORDER=7"/>
+        <Preprocessor Value="WITH_THREADS"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
@@ -906,6 +909,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

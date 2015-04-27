@@ -3,7 +3,7 @@
 #include <cstdlib>
 
 #include <boost/thread/locks.hpp>
-#include <boost/thread/lock_guard.hpp>
+// #include <boost/thread/lock_guard.hpp>
 #include <boost/thread/mutex.hpp>
 
 namespace util
@@ -19,21 +19,25 @@ namespace
 boost::mutex rand_lock;
 } // namespace
 
-void rand_int_init(unsigned int seed)
+void rand_init(unsigned int seed)
 {
   boost::lock_guard<boost::mutex> lock(rand_lock);
   srand(seed);
 }
 
 
-void rand_int_init()
+void rand_init()
 {
-  rand_int_init(time(NULL));
+  rand_init(time(NULL));
 }
 
+namespace internal
+{
+// This is the one call to the actual randomizer.  All else is built on this.
 int rand_int()
 {
   boost::lock_guard<boost::mutex> lock(rand_lock);
-  return rand();
+  return std::rand();
 }
+} // namespace internal
 } // namespace util
