@@ -9,6 +9,6 @@ clean:
 OBJECTS = DeEn.o EnOpenNLPChunker.o EnPhrasalVerb.o Main.o LabelByInitialLetter.o ZonesAndWalls.o
 
 manual-label: $(OBJECTS)
-	g++ $(OBJECTS)  -L../../../boost/lib64  -lz -lboost_program_options -o manual-label
+	g++ $(OBJECTS)  -L../../../boost/lib64  -lz -lboost_program_options -lboost_filesystem -lboost_system -o manual-label
 
 
