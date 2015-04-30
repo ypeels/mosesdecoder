@@ -15,6 +15,7 @@ my $TMPDIR = "tmp";
 my $KEEP_TMP = 0;
 my $MADA_DIR;
 my $CONFIG;
+my $SCHEME;
 
 my $FACTORS_STR;
 my @FACTORS;
@@ -24,8 +25,11 @@ GetOptions(
   "keep-tmp" => \$KEEP_TMP,
   "mada-dir=s" => \$MADA_DIR,
   "factors=s" => \$FACTORS_STR,
-  "config=s" => \$CONFIG
+  "config=s" => \$CONFIG,
+  "scheme=s" => \$SCHEME
     ) or die("ERROR: unknown options");
+
+die("must have -scheme arg") unless defined($SCHEME);
 
 if (!defined($CONFIG)) {
   $CONFIG = "$MADA_DIR/samples/sampleConfigFile.xml";
@@ -73,7 +77,7 @@ $cmd = "cd $MADA_DIR && parallel --jobs 4 java -Xmx2500m -Xms2500m -XX:NewRatio=
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
-$cmd = "cat $TMPDIR/out/x*.mada > $infile.mada";
+$cmd = "cat $TMPDIR/out/x*.$SCHEME.tok > $infile.mada";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
@@ -81,66 +85,13 @@ print STDERR "Executing: $cmd\n";
 open(MADA_OUT,"<$infile.mada");
 #binmode(MADA_OUT, ":utf8");
 while(my $line = <MADA_OUT>) { 
-    chomp($line);
-  #print STDERR "line=$line \n";
-
-    if (index($line, "SENTENCE BREAK") == 0) {
-    # new sentence
-    #print STDERR "BREAK\n";
-	print "\n";
-    }
-    elsif (index($line, ";;WORD") == 0) {
-        # word
-	my $word = substr($line, 7, length($line) - 8);
-        #print STDERR "FOund $word\n";
-	
-	for (my $i = 0; $i < 4; ++$i) {
-	    $line = <MADA_OUT>;
-	}
-	
-	my $factors = GetFactors($line, \@FACTORS);
-	$word .= $factors;
-
-	print "$word ";
-    }
-    else {
-      #print STDERR "NADA\n";
-    }
+  chomp($line);
+	print "$line\n";
 }
 close (MADA_OUT);
 
 
 if ($KEEP_TMP == 0) {
 #    `rm -rf $TMPDIR`;
-}
-
-
-###########################
-sub GetFactors
-{
-    my $line = shift;
-    my $factorsRef = shift;
-    my @factors = @{$factorsRef};
-
-    # all factors
-    my %allFactors;
-    my @toks = split(" ", $line);
-    for (my $i = 1; $i < scalar(@toks); ++$i) {
-	#print " tok=" .$toks[$i];
-
-        my ($key, $value) = split(":", $toks[$i]);
-	$allFactors{$key} = $value;
-    }
-
-    my $ret = "";
-    my $factorType;
-    foreach $factorType(@factors) {
-	#print "factorType=$factorType ";
-	my $value = $allFactors{$factorType};
-
-	$ret .= "|$value";
-    }
-    
-    return $ret;
 }
 
