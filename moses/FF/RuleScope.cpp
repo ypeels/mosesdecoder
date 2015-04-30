@@ -72,7 +72,7 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
 		  estimatedFutureScore.PlusEquals(this, scores);
 	  }
 	  else {
-		  scoreBreakdown.PlusEquals(this, scores);	  
+		  scoreBreakdown.PlusEquals(this, scores);
 	  }
   }
   else if (m_futureCostOnly) {
