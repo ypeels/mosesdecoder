@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="moses-cmd" InternalType="Console">
   <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
   "name": "Debug",
@@ -13,9 +16,6 @@
   "parentProject": ""
  }]]]>
     </Plugin>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
-    </Plugin>
   </Plugins>
   <Description/>
   <Dependencies/>
@@ -26,14 +26,6 @@
     <File Name="../../../moses-cmd/MainVW.cpp" ExcludeProjConfig="Debug"/>
     <File Name="../../../moses-cmd/MainVW.h" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
-  <Dependencies Name="Release"/>
-  <Dependencies Name="Debug">
-    <Project Name="OnDiskPt"/>
-    <Project Name="lm"/>
-    <Project Name="moses"/>
-    <Project Name="search"/>
-    <Project Name="util"/>
-  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -150,4 +142,12 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="OnDiskPt"/>
+    <Project Name="lm"/>
+    <Project Name="moses"/>
+    <Project Name="search"/>
+    <Project Name="util"/>
+  </Dependencies>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

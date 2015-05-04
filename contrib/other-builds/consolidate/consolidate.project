@@ -134,4 +134,5 @@
     <Project Name="search"/>
     <Project Name="OnDiskPt"/>
   </Dependencies>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>
