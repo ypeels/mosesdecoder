@@ -145,7 +145,7 @@ std::string ProcessLine(const std::vector<std::string> &toks)
           ret << tok;
           break;
         case 5:
-          ret << tok.substr(0, tok.length() - 1);
+          ret << tok.substr(1, tok.length() - 1);
           break;
       }
       break;
