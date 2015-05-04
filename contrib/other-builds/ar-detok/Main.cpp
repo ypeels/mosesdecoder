@@ -66,6 +66,7 @@ std::string ProcessLine(const std::vector<std::string> &toks)
   stringstream ret;
   
   int prevStage = 0;
+  string prevTok;
   for (size_t i = 0; i < toks.size(); ++i) {
     const string &tok = toks[i];
     int stage = FindClass(tok);
@@ -109,7 +110,12 @@ std::string ProcessLine(const std::vector<std::string> &toks)
         case 2:        
           abort();
         case 3:
-          ret << tok.substr(0, tok.length() - 1);
+          if (prevTok == "l+" && tok == "Al+") {
+            ret << "l";
+          }
+          else {
+            ret << tok.substr(0, tok.length() - 1);
+          }
           break;
         case 4:
           ret << tok;
@@ -173,6 +179,7 @@ std::string ProcessLine(const std::vector<std::string> &toks)
     } // outer switch
     
     prevStage = stage;
+    prevTok = tok;
   } // for
 
   return ret.str();
