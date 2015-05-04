@@ -78,39 +78,38 @@ void DiscardLeftRightNonTerm::EvaluateInIsolation(const Phrase &source
   }
 
   if (m_tuneable) {
-	vector<float> scores(m_numScoreComponents, 0);
-	size_t scoreInd = 0;
-	if (m_doLeft) {
-	  if (left) {
-		scores[scoreInd] = 1;
-		++scoreInd;
-	  }
-	}
+    vector<float> scores(m_numScoreComponents, 0);
+    size_t scoreInd = 0;
+    if (m_doLeft) {
+      if (left) {
+        scores[scoreInd] = 1;
+        ++scoreInd;
+      }
+    }
 
-	if (m_doRight) {
-	  if (right) {
-		scores[scoreInd] = 1;
-		++scoreInd;
-	  }
-	}
+    if (m_doRight) {
+      if (right) {
+        scores[scoreInd] = 1;
+        ++scoreInd;
+      }
+    }
 
-	if (m_doMiddle) {
-	  if (middle) {
-		scores[scoreInd] = 1;
-		++scoreInd;
-	  }
-	}
+    if (m_doMiddle) {
+      if (middle) {
+        scores[scoreInd] = 1;
+        ++scoreInd;
+      }
+    }
 
-	scoreBreakdown.PlusEquals(this, scores);
-  }
-  else {
-	UTIL_THROW_IF2(m_numScoreComponents != 1, "Must have 1 score");
+    scoreBreakdown.PlusEquals(this, scores);
+  } else {
+    UTIL_THROW_IF2(m_numScoreComponents != 1, "Must have 1 score");
 
-	if ((m_doLeft && left) ||
-		(m_doRight && right) ||
-		(m_doMiddle && middle)) {
-	  scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
-	}
+    if ((m_doLeft && left) ||
+        (m_doRight && right) ||
+        (m_doMiddle && middle)) {
+      scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
+    }
   }
 }
 

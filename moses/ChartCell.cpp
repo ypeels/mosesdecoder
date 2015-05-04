@@ -128,7 +128,7 @@ void ChartCell::SortHypotheses()
 const ChartHypothesis *ChartCell::GetBestHypothesis() const
 {
   if (m_bestHypo) return m_bestHypo;
-  
+
   float bestScore = -std::numeric_limits<float>::infinity();
 
   MapType::const_iterator iter;

@@ -462,17 +462,16 @@ BitmapContainer::ProcessBestHypothesis()
   }
 
   if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
-	  ret = false;
-  }
-  else {
-	  // Add best hypothesis to hypothesis stack.
-	  const bool newstackentry = m_stack.AddPrune(hypo);
-	  if (newstackentry)
-		m_numStackInsertions++;
+    ret = false;
+  } else {
+    // Add best hypothesis to hypothesis stack.
+    const bool newstackentry = m_stack.AddPrune(hypo);
+    if (newstackentry)
+      m_numStackInsertions++;
 
-	  IFVERBOSE(3) {
-		TRACE_ERR("new stack entry flag is " << newstackentry << std::endl);
-	  }
+    IFVERBOSE(3) {
+      TRACE_ERR("new stack entry flag is " << newstackentry << std::endl);
+    }
   }
 
   // Create new hypotheses for the two successors of the hypothesis just added.
@@ -482,8 +481,8 @@ BitmapContainer::ProcessBestHypothesis()
   delete item;
 
   if (!ret) {
-	VERBOSE(3,"discarded, constraint" << std::endl);
-	FREEHYPO(hypo);
+    VERBOSE(3,"discarded, constraint" << std::endl);
+    FREEHYPO(hypo);
   }
 
   return ret;

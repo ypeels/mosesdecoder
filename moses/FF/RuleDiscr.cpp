@@ -36,9 +36,9 @@ void RuleDiscr::InitializeForInput(InputType const& source)
 
 
 void RuleDiscr::EvaluateInIsolation(const Phrase &source
-                                      , const TargetPhrase &targetPhrase
-                                      , ScoreComponentCollection &scoreBreakdown
-                                      , ScoreComponentCollection &estimatedFutureScore) const
+                                    , const TargetPhrase &targetPhrase
+                                    , ScoreComponentCollection &scoreBreakdown
+                                    , ScoreComponentCollection &estimatedFutureScore) const
 {
   targetPhrase.SetRuleSource(source);
 }
@@ -53,32 +53,32 @@ void RuleDiscr::EvaluateWithSourceContext(const InputType &input
 }
 
 void RuleDiscr::EvaluateWhenApplied(const Hypothesis& hypo,
-                                      ScoreComponentCollection* accumulator) const
+                                    ScoreComponentCollection* accumulator) const
 {}
 
 void RuleDiscr::EvaluateWhenApplied(const ChartHypothesis &hypo,
-                                      ScoreComponentCollection* accumulator) const
+                                    ScoreComponentCollection* accumulator) const
 {}
 
 void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptList, const ChartCellCollection &hypoStackColl) const
-{	
+{
   // find max p(e|f)
   float maxPEF = - std::numeric_limits<float>::infinity();
   //cerr << "ChartTranslationOptionList:" << endl;
   for (size_t i = 0; i < transOptList.GetSize(); ++i) {
     ChartTranslationOptions &transOpts = transOptList.Get(i);
     //cerr << "ChartTranslationOptions " << i << "=" << transOpts.GetSize() << endl;
-    
+
     if (transOpts.GetSize() == 0) continue;
-        
+
     const TargetPhrase &tp = transOpts.Get(0).GetPhrase();
     const Phrase *sp = tp.GetRuleSource();
     assert(sp);
     size_t hash = hash_value(*sp);
-    
+
     MaxProbCache &cache = GetMaxProbCache();
     MaxProbCache::iterator cacheIter = cache.find(hash);
-    
+
     float maxPEFTransOpts = - std::numeric_limits<float>::infinity();
     if (cacheIter == cache.end()) {
       // not in cache. find max pef
@@ -86,30 +86,29 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
       if (m_insideScores) {
         bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec());
       }
-  
+
       for (size_t j = 0; j < transOpts.GetSize(); ++j) {
         const ChartTranslationOption &transOpt = transOpts.Get(j);
         //cerr << "   " << transOpt << endl;
 
         float pef = bestHyposScore + GetScore(transOpt);
-        
+
         if (maxPEFTransOpts < pef) {
           maxPEFTransOpts = pef;
         }
       }
-    
+
       // update cache
       std::pair<float, clock_t> value(maxPEFTransOpts, clock());
       cache[hash] = value;
-    }
-    else {
+    } else {
       // in cache. use it
       std::pair<float, clock_t> &value = cacheIter->second;
       value.second = clock();
 
       maxPEFTransOpts = value.first;
     }
-    
+
     if (maxPEF < maxPEFTransOpts) {
       maxPEF = maxPEFTransOpts;
     }
@@ -122,15 +121,15 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
     //cerr << "ChartTranslationOptions " << i << "=" << transOpts.GetSize() << endl;
 
     if (transOpts.GetSize() == 0) continue;
-    
+
     float bestHyposScore = 0;
     if (m_insideScores) {
       bestHyposScore = GetBestHypoScores(hypoStackColl, transOpts.GetStackVec());
     }
 
     for (size_t j = 0; j < transOpts.GetSize(); ++j) {
-    	ChartTranslationOption &transOpt = transOpts.Get(j);
-    	//cerr << "   " << transOpt << endl;
+      ChartTranslationOption &transOpt = transOpts.Get(j);
+      //cerr << "   " << transOpt << endl;
 
       float pef = bestHyposScore + GetScore(transOpt);
 
@@ -144,88 +143,82 @@ void RuleDiscr::EvaluateWithAllTransOpts(ChartTranslationOptionList &transOptLis
 float RuleDiscr::GetScore(const ChartTranslationOption &transOpt) const
 {
   float ret;
-  
+
   switch (m_whatScores) {
-    case 0:
-    {
-      std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&m_pt);
-      ret = scores[2];
-      break;
-    }
-    case 1:
-    {
-      ScoreComponentCollection statelessScores;
-      
-      BOOST_FOREACH(const StatelessFeatureFunction *ff, StatelessFeatureFunction::GetStatelessFeatureFunctions()) {
-        statelessScores.PlusEquals(ff, transOpt.GetScores());
-      }
-      
-      ret = statelessScores.GetWeightedScore();
-      break;
-    }
-    case 2:
-    {
-      ret = transOpt.GetScores().GetWeightedScore();
-      break;
-    }
-    default:
-        UTIL_THROW2("Unknown what-score: " << m_whatScores);
+  case 0: {
+    std::vector<float> scores = transOpt.GetScores().GetScoresForProducer(&m_pt);
+    ret = scores[2];
+    break;
   }
-  
+  case 1: {
+    ScoreComponentCollection statelessScores;
+
+    BOOST_FOREACH(const StatelessFeatureFunction *ff, StatelessFeatureFunction::GetStatelessFeatureFunctions()) {
+      statelessScores.PlusEquals(ff, transOpt.GetScores());
+    }
+
+    ret = statelessScores.GetWeightedScore();
+    break;
+  }
+  case 2: {
+    ret = transOpt.GetScores().GetWeightedScore();
+    break;
+  }
+  default:
+    UTIL_THROW2("Unknown what-score: " << m_whatScores);
+  }
+
   return ret;
 }
 
 float RuleDiscr::GetScore(const ChartHypothesis &hypo) const
 {
   float ret;
-  
+
   switch (m_whatScores) {
-    case 0:
-    {
-      std::vector<float> scores = hypo.GetScoreBreakdown().GetScoresForProducer(&m_pt);
-      ret = scores[2];
-      break;
-    }
-    case 1:
-    {
-      ScoreComponentCollection statelessScores;
-      
-      BOOST_FOREACH(const StatelessFeatureFunction *ff, StatelessFeatureFunction::GetStatelessFeatureFunctions()) {
-        statelessScores.PlusEquals(ff, hypo.GetScoreBreakdown());
-      }
-      
-      ret = statelessScores.GetWeightedScore();
-      break;
-    }
-    case 2:
-    {
-      ret = hypo.GetScoreBreakdown().GetWeightedScore();
-      break;
-    }
-    default:
-        UTIL_THROW2("Unknown what-score: " << m_whatScores);
+  case 0: {
+    std::vector<float> scores = hypo.GetScoreBreakdown().GetScoresForProducer(&m_pt);
+    ret = scores[2];
+    break;
   }
-  
+  case 1: {
+    ScoreComponentCollection statelessScores;
+
+    BOOST_FOREACH(const StatelessFeatureFunction *ff, StatelessFeatureFunction::GetStatelessFeatureFunctions()) {
+      statelessScores.PlusEquals(ff, hypo.GetScoreBreakdown());
+    }
+
+    ret = statelessScores.GetWeightedScore();
+    break;
+  }
+  case 2: {
+    ret = hypo.GetScoreBreakdown().GetWeightedScore();
+    break;
+  }
+  default:
+    UTIL_THROW2("Unknown what-score: " << m_whatScores);
+  }
+
   return ret;
 }
 
 float RuleDiscr::GetBestHypoScores(const ChartCellCollection &hypoStackColl
-                                  , const StackVec &stackVec) const
+                                   , const StackVec &stackVec) const
 {
   float ret = 0;
-  
+
   size_t numNT = stackVec.size();
   for (size_t i = 0; i < numNT; ++i) {
     const ChartCellLabel &label = *stackVec[i];
     const WordsRange &range = label.GetCoverage();
     const ChartCell &cell = hypoStackColl.Get(range);
     const ChartHypothesis *hypo = cell.GetBestHypothesis();
-    
+
     UTIL_THROW_IF2(hypo == NULL, "No hypos at range " << range);
 
     ret += GetScore(*hypo);
   }
-  
+
   return ret;
 }
 
@@ -233,11 +226,9 @@ void RuleDiscr::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "inside-score") {
     m_insideScores = Scan<bool>(value);
-  }
-  else if (key == "what-scores") {
+  } else if (key == "what-scores") {
     m_whatScores = Scan<int>(value);
-  }
-  else {
+  } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }

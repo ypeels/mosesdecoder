@@ -10,7 +10,7 @@ namespace Moses
 {
 int ManualFFState::Compare(const FFState& other) const
 {
-	return 0;
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -27,16 +27,16 @@ void ManualFF::Load()
   size_t lineNum = 0;
   string line;
   while(getline(inFile, line)) {
-	++lineNum;
-	vector<string> token = Tokenize<string>(line, " ");
+    ++lineNum;
+    vector<string> token = Tokenize<string>(line, " ");
 
   }
 }
 
 void ManualFF::EvaluateInIsolation(const Phrase &source
-    , const TargetPhrase &targetPhrase
-    , ScoreComponentCollection &scoreBreakdown
-    , ScoreComponentCollection &estimatedFutureScore) const
+                                   , const TargetPhrase &targetPhrase
+                                   , ScoreComponentCollection &scoreBreakdown
+                                   , ScoreComponentCollection &estimatedFutureScore) const
 {}
 
 void ManualFF::EvaluateWithSourceContext(const InputType &input
@@ -74,9 +74,8 @@ FFState* ManualFF::EvaluateWhenApplied(
 void ManualFF::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "path") {
-	  m_filePath = value;
-  }
-  else {
+    m_filePath = value;
+  } else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
 }

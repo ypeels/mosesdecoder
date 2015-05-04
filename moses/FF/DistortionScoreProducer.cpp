@@ -25,8 +25,8 @@ struct DistortionState_traditional : public FFState {
 std::vector<const DistortionScoreProducer*> DistortionScoreProducer::s_staticColl;
 
 DistortionScoreProducer::DistortionScoreProducer(const std::string &line)
-: StatefulFeatureFunction(1, line)
-,m_function(0)
+  : StatefulFeatureFunction(1, line)
+  ,m_function(0)
 {
   s_staticColl.push_back(this);
   ReadParameters();
@@ -98,16 +98,15 @@ FFState* DistortionScoreProducer::EvaluateWhenApplied(
 {
   const DistortionState_traditional* prev = static_cast<const DistortionState_traditional*>(prev_state);
   float distortionScore = CalculateDistortionScore(
-                                  hypo,
-                                  prev->range,
-                                  hypo.GetCurrSourceWordsRange(),
-                                  prev->first_gap);
+                            hypo,
+                            prev->range,
+                            hypo.GetCurrSourceWordsRange(),
+                            prev->first_gap);
 
-  switch (m_function)
-  {
+  switch (m_function) {
   case 1:
-	  distortionScore = log(- distortionScore + 1.0f);
-	  break;
+    distortionScore = log(- distortionScore + 1.0f);
+    break;
   }
 
   out->PlusEquals(this, distortionScore);
@@ -120,10 +119,9 @@ FFState* DistortionScoreProducer::EvaluateWhenApplied(
 void DistortionScoreProducer::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "function") {
-	m_function = Scan<size_t>(value);
-  }
-  else {
-	  StatefulFeatureFunction::SetParameter(key, value);
+    m_function = Scan<size_t>(value);
+  } else {
+    StatefulFeatureFunction::SetParameter(key, value);
   }
 
 }

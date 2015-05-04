@@ -53,7 +53,7 @@ protected:
   bool m_insideScores;
   int m_whatScores; // 0 (default) = pef only, 1 = stateless, 2 = all
   const FeatureFunction &m_pt;
-  
+
   // cache
   size_t m_maxCacheSize; // 0 = no caching
 
@@ -72,7 +72,7 @@ protected:
   float GetScore(const ChartHypothesis &hypo) const;
 
   float GetBestHypoScores(const ChartCellCollection &hypoStackColl
-                        , const StackVec &stackVec) const;
+                          , const StackVec &stackVec) const;
 
 };
 

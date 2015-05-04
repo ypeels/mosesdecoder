@@ -125,7 +125,7 @@ void SearchCubePruning::Decode()
       }
       // push on stack and create successors
       if (bc->ProcessBestHypothesis()) {
-    	  ++numpops;
+        ++numpops;
       }
       // if there are any hypothesis left in this specific container, add back to queue
       m_manager.GetSentenceStats().StartTimeManageCubes();

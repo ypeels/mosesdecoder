@@ -28,16 +28,16 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
                                     , ScoreComponentCollection &estimatedFutureScore) const
 {
   if (IsGlueRule(source)) {
-	return;
+    return;
   }
 
   float score = 0;
 
   if (source.GetSize() > 0 && source.Front().IsNonTerminal()) {
-	++score;
+    ++score;
   }
   if (source.GetSize() > 1 && source.Back().IsNonTerminal()) {
-	++score;
+    ++score;
   }
 
   /*
@@ -63,22 +63,19 @@ void RuleScope::EvaluateInIsolation(const Phrase &source
   */
 
   if (m_perScope) {
-	  UTIL_THROW_IF2(m_numScoreComponents <= score,
-	                 "Insufficient number of score components. Scope=" << score << ". NUmber of score components=" << score);
-	  vector<float> scores(m_numScoreComponents, 0);
-	  scores[score] = m_multiplier;
+    UTIL_THROW_IF2(m_numScoreComponents <= score,
+                   "Insufficient number of score components. Scope=" << score << ". NUmber of score components=" << score);
+    vector<float> scores(m_numScoreComponents, 0);
+    scores[score] = m_multiplier;
 
-	  if (m_futureCostOnly) {
-		  estimatedFutureScore.PlusEquals(this, scores);
-	  }
-	  else {
-		  scoreBreakdown.PlusEquals(this, scores);
-	  }
-  }
-  else if (m_futureCostOnly) {
+    if (m_futureCostOnly) {
+      estimatedFutureScore.PlusEquals(this, scores);
+    } else {
+      scoreBreakdown.PlusEquals(this, scores);
+    }
+  } else if (m_futureCostOnly) {
     estimatedFutureScore.PlusEquals(this, score * m_multiplier);
-  }
-  else {
+  } else {
     scoreBreakdown.PlusEquals(this, score * m_multiplier);
   }
 }
@@ -87,17 +84,13 @@ void RuleScope::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "source-syntax") {
     m_sourceSyntax = Scan<bool>(value);
-  }
-  else if (key == "per-scope") {
-	  m_perScope = Scan<bool>(value);
-  }
-  else if (key == "future-cost-only") {
-	m_futureCostOnly = Scan<bool>(value);
-  }
-  else if (key == "multiplier") {
-	m_multiplier = Scan<float>(value);
-  }
-  else {
+  } else if (key == "per-scope") {
+    m_perScope = Scan<bool>(value);
+  } else if (key == "future-cost-only") {
+    m_futureCostOnly = Scan<bool>(value);
+  } else if (key == "multiplier") {
+    m_multiplier = Scan<float>(value);
+  } else {
     StatelessFeatureFunction::SetParameter(key, value);
   }
 }

@@ -42,24 +42,23 @@ void AlignedSentence::Create(const Parameter &params)
 }
 
 void AlignedSentence::PopulateWordVec(Phrase &vec,
-		const std::string &line,
-		bool includeBOSEOS)
+                                      const std::string &line,
+                                      bool includeBOSEOS)
 {
   std::vector<string> toks;
   Moses::Tokenize(toks, line);
 
   size_t wordPos;
   if (includeBOSEOS) {
-	  vec.reserve(toks.size() + 2);
+    vec.reserve(toks.size() + 2);
 
-	  Word *word = new Word(0, "<s>");
-      vec.push_back(word);
+    Word *word = new Word(0, "<s>");
+    vec.push_back(word);
 
-	  wordPos = 1;
-  }
-  else {
-	  vec.reserve(toks.size());
-	  wordPos = 0;
+    wordPos = 1;
+  } else {
+    vec.reserve(toks.size());
+    wordPos = 0;
   }
 
   for (size_t i = 0; i < toks.size(); ++i) {
@@ -71,8 +70,8 @@ void AlignedSentence::PopulateWordVec(Phrase &vec,
   }
 
   if (includeBOSEOS) {
-	  Word *word = new Word(wordPos, "</s>");
-      vec.push_back(word);
+    Word *word = new Word(wordPos, "</s>");
+    vec.push_back(word);
   }
 }
 
@@ -90,8 +89,8 @@ void AlignedSentence::PopulateAlignment(const std::string &line, bool includeBOS
     int targetPos = alignPair[1];
 
     if (includeBOSEOS) {
-    	++sourcePos;
-    	++targetPos;
+      ++sourcePos;
+      ++targetPos;
     }
 
     if (sourcePos >= m_source.size()) {
@@ -109,16 +108,16 @@ void AlignedSentence::PopulateAlignment(const std::string &line, bool includeBOS
   }
 
   if (includeBOSEOS) {
-	    // begin
-	    Word *sourceWord = m_source[0];
-	    Word *targetWord = m_target[0];
-	    sourceWord->AddAlignment(targetWord);
-	    targetWord->AddAlignment(sourceWord);
+    // begin
+    Word *sourceWord = m_source[0];
+    Word *targetWord = m_target[0];
+    sourceWord->AddAlignment(targetWord);
+    targetWord->AddAlignment(sourceWord);
 
-	    sourceWord = m_source.back();
-	    targetWord = m_target.back();
-	    sourceWord->AddAlignment(targetWord);
-	    targetWord->AddAlignment(sourceWord);
+    sourceWord = m_source.back();
+    targetWord = m_target.back();
+    sourceWord->AddAlignment(targetWord);
+    targetWord->AddAlignment(sourceWord);
 
 
   }

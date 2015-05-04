@@ -43,13 +43,12 @@ void NonTermMinSpan::EvaluateWithSourceContext(const InputType &input
     const WordsRange &range = cell.GetCoverage();
 
     if (range.GetNumWordsCovered() < m_minSpan) {
-    	if (m_tuneable) {
-  		  scoreBreakdown.PlusEquals(this, 1);
-    	}
-    	else {
-		  scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
-		  return;
-    	}
+      if (m_tuneable) {
+        scoreBreakdown.PlusEquals(this, 1);
+      } else {
+        scoreBreakdown.PlusEquals(this, - std::numeric_limits<float>::infinity());
+        return;
+      }
     }
   }
 }

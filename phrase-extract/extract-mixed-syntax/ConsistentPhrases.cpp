@@ -98,10 +98,9 @@ void ConsistentPhrases::AddHieroNonTerms(const Parameter &params)
         ConsistentPhrase &cp = **iter;
 
         if (params.includeBOSEOS && cp.corners[0] == 0) {
-        	cp.AddNonTerms(params.hieroNonTerm, params.glueNonTerm);
-        }
-        else {
-        	cp.AddNonTerms(params.hieroNonTerm, params.hieroNonTerm);
+          cp.AddNonTerms(params.hieroNonTerm, params.glueNonTerm);
+        } else {
+          cp.AddNonTerms(params.hieroNonTerm, params.hieroNonTerm);
         }
       }
     }

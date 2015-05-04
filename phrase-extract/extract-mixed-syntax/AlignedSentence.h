@@ -43,8 +43,8 @@ protected:
 
   void CreateConsistentPhrases(const Parameter &params);
   void PopulateWordVec(Phrase &vec,
-		  const std::string &line,
-		  bool includeBOSEOS);
+                       const std::string &line,
+                       bool includeBOSEOS);
 
   // m_source and m_target MUST be populated before calling this
   void PopulateAlignment(const std::string &line, bool includeBOSEOS);

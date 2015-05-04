@@ -20,7 +20,7 @@ protected:
   static std::vector<const DistortionScoreProducer*> s_staticColl;
 
   size_t m_function;
-  	  // 0 = none, 1=log(+1)
+  // 0 = none, 1=log(+1)
 
 public:
   static const std::vector<const DistortionScoreProducer*>& GetDistortionFeatureFunctions() {
