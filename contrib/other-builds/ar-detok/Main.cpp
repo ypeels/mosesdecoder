@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 
   // init classes
   CLASSES["w+"] = 1;
+  CLASSES["f+"] = 1;
   
   CLASSES["l+"] = 2;
   CLASSES["b+"] = 2;
