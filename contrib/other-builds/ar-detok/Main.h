@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 // speeded up version of above
 inline void Tokenize(std::vector<std::string> &output
@@ -24,3 +25,6 @@ inline void Tokenize(std::vector<std::string> &output
 }
 
 std::string ProcessLine(const std::vector<std::string> &toks);
+int FindClass(const std::string &tok);
+
+std::map<std::string, int> CLASSES;
