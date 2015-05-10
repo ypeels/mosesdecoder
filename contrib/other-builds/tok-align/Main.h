@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "LCS.h"
 
 // speeded up version of above
 inline void Tokenize(std::vector<std::string> &output
@@ -24,4 +25,6 @@ inline void Tokenize(std::vector<std::string> &output
   }
 }
 
-std::string ProcessLine(const std::vector<std::string> &toks1, const std::vector<std::string> &toks2);
+void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> &toks1, const std::vector<std::string> &toks2);
+void CreateMismatches(std::vector<Point> &mismatches, int startMismatchX, int endMismatchX, int startMismatchY, int endMismatchY);
+
