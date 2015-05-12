@@ -145,7 +145,6 @@
   <Dependencies Name="Debug">
     <Project Name="OnDiskPt"/>
     <Project Name="lm"/>
-    <Project Name="moses"/>
     <Project Name="search"/>
     <Project Name="util"/>
   </Dependencies>
