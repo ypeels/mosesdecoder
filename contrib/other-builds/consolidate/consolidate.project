@@ -128,7 +128,6 @@
     </Configuration>
   </Settings>
   <Dependencies Name="Debug">
-    <Project Name="moses"/>
     <Project Name="util"/>
     <Project Name="lm"/>
     <Project Name="search"/>

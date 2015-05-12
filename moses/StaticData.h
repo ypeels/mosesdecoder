@@ -1,3 +1,4 @@
+// -*- c++ -*-
 // $Id$
 
 /***********************************************************************
@@ -43,6 +44,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "moses/FF/Factory.h"
 #include "moses/PP/Factory.h"
 
+#include "moses/parameters/ContextParameters.h"
+
 namespace Moses
 {
 
@@ -68,6 +71,9 @@ private:
   static StaticData									s_instance;
 protected:
   Parameter *m_parameter;
+
+  ContextParameters m_context_parameters;
+
   std::vector<FactorType>	m_inputFactorOrder, m_outputFactorOrder;
   mutable ScoreComponentCollection m_allWeights;
 
@@ -294,6 +300,9 @@ public:
     return *m_parameter;
   }
 
+  const ContextParameters&
+  GetContextParameters() const { return m_context_parameters; }
+
   const std::vector<FactorType> &GetInputFactorOrder() const {
     return m_inputFactorOrder;
   }
@@ -434,16 +443,21 @@ public:
   size_t GetNBestSize() const {
     return m_nBestSize;
   }
+
   const std::string &GetNBestFilePath() const {
     return m_nBestFilePath;
   }
+
   bool IsNBestEnabled() const {
-    return (!m_nBestFilePath.empty()) || m_mbr || m_useLatticeMBR || m_mira || m_outputSearchGraph || m_outputSearchGraphSLF || m_outputSearchGraphHypergraph || m_useConsensusDecoding || !m_latticeSamplesFilePath.empty()
+    return (!m_nBestFilePath.empty() || m_mbr || m_useLatticeMBR || m_mira || 
+	    m_outputSearchGraph || m_outputSearchGraphSLF || 
+	    m_outputSearchGraphHypergraph || m_useConsensusDecoding || 
 #ifdef HAVE_PROTOBUF
-           || m_outputSearchGraphPB
+	    m_outputSearchGraphPB ||
 #endif
-           ;
+	    !m_latticeSamplesFilePath.empty());
   }
+  
   size_t GetLatticeSamplesSize() const {
     return m_latticeSamplesSize;
   }
