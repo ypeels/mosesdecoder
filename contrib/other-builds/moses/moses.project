@@ -588,6 +588,8 @@
     <File Name="../../../moses/FF/ScopeSpan.h"/>
     <File Name="../../../moses/FF/RuleDiscr.cpp"/>
     <File Name="../../../moses/FF/RuleDiscr.h"/>
+    <File Name="../../../moses/FF/MadaConsistentTok.cpp"/>
+    <File Name="../../../moses/FF/MadaConsistentTok.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
