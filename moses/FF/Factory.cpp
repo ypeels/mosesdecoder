@@ -67,6 +67,7 @@
 #include "moses/FF/PhraseOrientationFeature.h"
 #include "MaxNonTerm.h"
 #include "RuleDiscr.h"
+#include "MadaConsistentTok.h"
 
 #include "moses/FF/SkeletonStatelessFF.h"
 #include "moses/FF/SkeletonStatefulFF.h"
@@ -295,6 +296,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(LM01);
   MOSES_FNAME(ManualFF);
   MOSES_FNAME(RuleDiscr);
+  MOSES_FNAME(MadaConsistentTok);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);

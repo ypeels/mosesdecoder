@@ -7,12 +7,12 @@
   <Project Name="lm" Path="lm/lm.project" Active="No"/>
   <Project Name="OnDiskPt" Path="OnDiskPt/OnDiskPt.project" Active="No"/>
   <Project Name="search" Path="search/search.project" Active="No"/>
-  <Project Name="moses" Path="moses/moses.project" Active="No"/>
-  <Project Name="moses-cmd" Path="moses-cmd/moses-cmd.project" Active="No"/>
+  <Project Name="moses-cmd" Path="moses-cmd/moses-cmd.project" Active="Yes"/>
   <Project Name="score" Path="score/score.project" Active="No"/>
   <Project Name="consolidate" Path="consolidate/consolidate.project" Active="No"/>
   <Project Name="ar-detok" Path="ar-detok/ar-detok.project" Active="No"/>
-  <Project Name="tok-align" Path="tok-align/tok-align.project" Active="Yes"/>
+  <Project Name="tok-align" Path="tok-align/tok-align.project" Active="No"/>
+  <Project Name="moses" Path="moses/moses.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="manual-label" ConfigName="Debug"/>
@@ -22,13 +22,13 @@
       <Project Name="lm" ConfigName="Debug"/>
       <Project Name="OnDiskPt" ConfigName="Debug"/>
       <Project Name="search" ConfigName="Debug"/>
-      <Project Name="moses" ConfigName="Debug"/>
       <Project Name="moses-cmd" ConfigName="Debug"/>
       <Project Name="score" ConfigName="Debug"/>
       <Project Name="consolidate" ConfigName="Debug"/>
       <Project Name="ar-detok" ConfigName="Debug"/>
       <Project Name="tok-align" ConfigName="Debug"/>
       <Project Name="tok-align" ConfigName="Debug"/>
+      <Project Name="moses" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="manual-label" ConfigName="Release"/>
@@ -38,13 +38,13 @@
       <Project Name="lm" ConfigName="Release"/>
       <Project Name="OnDiskPt" ConfigName="Release"/>
       <Project Name="search" ConfigName="Release"/>
-      <Project Name="moses" ConfigName="Release"/>
       <Project Name="moses-cmd" ConfigName="Release"/>
       <Project Name="score" ConfigName="Release"/>
       <Project Name="consolidate" ConfigName="Release"/>
       <Project Name="ar-detok" ConfigName="Release"/>
       <Project Name="tok-align" ConfigName="Release"/>
       <Project Name="tok-align" ConfigName="Release"/>
+      <Project Name="moses" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
