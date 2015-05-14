@@ -11,9 +11,9 @@ int MadaConsistentTokState::Compare(const FFState& other) const
 {
   const MadaConsistentTokState &otherState = static_cast<const MadaConsistentTokState&>(other);
 
-  if (m_targetLen == otherState.m_targetLen)
+  if (m_state == otherState.m_state)
     return 0;
-  return (m_targetLen < otherState.m_targetLen) ? -1 : +1;
+  return (m_state < otherState.m_state) ? -1 : +1;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -69,17 +69,6 @@ FFState* MadaConsistentTok::EvaluateWhenApplied(
   const FFState* prev_state,
   ScoreComponentCollection* accumulator) const
 {
-  // dense scores
-  vector<float> newScores(m_numScoreComponents);
-  newScores[0] = 1.5;
-  newScores[1] = 0.3;
-  newScores[2] = 0.4;
-  accumulator->PlusEquals(this, newScores);
-
-  // sparse scores
-  accumulator->PlusEquals(this, "sparse-name", 2.4);
-
-  // int targetLen = cur_hypo.GetCurrTargetPhrase().GetSize(); // ??? [UG]
   return new MadaConsistentTokState(0);
 }
 

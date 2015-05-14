@@ -10,10 +10,10 @@ namespace Moses
 
 class MadaConsistentTokState : public FFState
 {
-  int m_targetLen;
+  int m_state;
 public:
-  MadaConsistentTokState(int targetLen)
-    :m_targetLen(targetLen) {
+  MadaConsistentTokState(int state)
+    :m_state(state) {
   }
 
   int Compare(const FFState& other) const;
