@@ -1217,15 +1217,21 @@ post-decoding-transliteration
 	default-name: evaluation/transliterated
 	pass-unless: TRAINING:post-decoding-transliteration
 	template: $moses-script-dir/Transliteration/post-decoding-transliteration.pl --moses-src-dir $moses-src-dir --external-bin-dir $external-bin-dir --transliteration-model-dir IN2 --input-extension $input-extension --output-extension $output-extension --language-model IN3 --input-file IN0 --output-file OUT --oov-file IN1.oov --decoder $decoder
+join-output
+  in: transliterated-output EVALUATION:join-compound
+  out: joined-output
+	default-name: evaluation/joined
+	pass-unless: EVALUATION:join-compound
+	template: EVALUATION:join-compound < IN > OUT
 recase-output
-	in: transliterated-output RECASING:recase-config
+	in: joined-output RECASING:recase-config
 	out: recased-output
 	default-name: evaluation/recased
 	pass-unless: recaser
 	ignore-if: output-truecaser
 	template: $recaser -moses $RECASING:decoder -in IN -model IN1 > OUT
 detruecase-output
-	in: transliterated-output
+	in: joined-output
 	out: recased-output
 	default-name: evaluation/truecased
 	ignore-unless: output-truecaser
@@ -1336,7 +1342,7 @@ bolt-bleu-c
 	template: $bolt-bleu-c IN > OUT
 	final-model: yes
 multi-bleu
-	in: transliterated-output tokenized-reference
+	in: joined-output tokenized-reference
 	out: multi-bleu-score
 	default-name: evaluation/multi-bleu
 	ignore-unless: multi-bleu
@@ -1385,7 +1391,7 @@ wer
 	template: $wer IN IN1 > OUT
 	final-model: yes
 meteor
-	in: transliterated-output reference
+	in: joined-output reference
 	out: meteor-score
 	default-name: evaluation/meteor
 	ignore-unless: meteor
