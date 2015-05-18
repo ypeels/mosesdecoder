@@ -1552,6 +1552,16 @@ sub check_if_crashed {
 			$not_error++ if /$override/i;
 		    }
 		}
+
+		#NYUAD-specific errors caused by bash
+		my $override;
+		$override = ": line 0: syntax error near unexpected token";
+		$not_error++ if /$override/i;
+
+		$override = "error importing function definition for";
+		$not_error++ if /$override/i;
+
+		# push errors into digest
 		if (!$not_error) {
 		        push @DIGEST,$pattern;
 			print "\t$DO_STEP[$i]($version) crashed: $pattern\n" if $VERBOSE;

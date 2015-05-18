@@ -1,4 +1,4 @@
-cluster: townhill seville hermes lion seville sannox lutzow frontend
+cluster: townhill seville hermes lion seville sannox lutzow frontend login-0-1.local login-0-2.local login-0-3.local login-0-4.local
 multicore-4: freddie
 multicore-8: tyr thor odin crom
 multicore-16: saxnot vali vili freyja bragi hoenir
