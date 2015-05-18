@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 
 use warnings;
 use strict;
@@ -35,7 +35,7 @@ else {
 open (INPUT_ALL, "> $TMPDIR/input.all");
 binmode INPUT_ALL, ":utf8";
 while (my $line = <STDIN>)
-{ 
+{
   chomp($line);
   print INPUT_ALL $line."\n";
 }
@@ -53,7 +53,7 @@ print STDERR "executing\n";
 
 my $i = 0;
 my $filePath = "$TMPDIR/x" .NumStr($i);
-while (-f $filePath) 
+while (-f $filePath)
 {
   print EXEC "$cmd < $filePath > $filePath.out\n";
 
@@ -71,7 +71,7 @@ print STDERR "concatenating\n";
 $i = 1;
 my $firstPath = "$TMPDIR/x" .NumStr(0) .".out";
 $filePath = "$TMPDIR/x" .NumStr($i) .".out";
-while (-f $filePath) 
+while (-f $filePath)
 {
   $cmd = "cat $filePath >> $firstPath";
   `$cmd`;
@@ -84,7 +84,7 @@ while (-f $filePath)
 open (OUTPUT_ALL, "$firstPath");
 binmode OUTPUT_ALL, ":utf8";
 while (my $line = <OUTPUT_ALL>)
-{ 
+{
   chomp($line);
   print "$line\n";
 }
