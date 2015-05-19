@@ -1266,7 +1266,7 @@ join-output
   out: joined-output
 	default-name: evaluation/joined
 	pass-unless: EVALUATION:join-compound
-	template: EVALUATION:join-compound < IN > OUT
+	template: $EVALUATION:join-compound < IN > OUT
 recase-output
 	in: joined-output RECASING:recase-config
 	out: recased-output
