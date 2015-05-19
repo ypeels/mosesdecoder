@@ -137,7 +137,9 @@ my($_EXTERNAL_BINDIR,
    	$_SCORE_COMMAND);
 
 my $_BASELINE_CORPUS = "";
-my $_CORES = 1;
+my $_CORES = `getconf _NPROCESSORS_ONLN`;
+chomp($_CORES);
+
 my $debug = 0; # debug this script, do not delete any files in debug mode
 
 $_HELP = 1
