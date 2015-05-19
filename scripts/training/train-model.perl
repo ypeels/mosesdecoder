@@ -1816,6 +1816,7 @@ sub score_phrase_phrase_extract {
     $cmd .= " --SourceLabels $_GHKM_SOURCE_LABELS_FILE" if $_GHKM_SOURCE_LABELS && defined($_GHKM_SOURCE_LABELS_FILE);
     $cmd .= " ".$_CONSOLIDATE_OPTIONS if defined($_CONSOLIDATE_OPTIONS);
     $cmd .= " --PartsOfSpeech $_GHKM_PARTS_OF_SPEECH_FILE" if $_GHKM_PARTS_OF_SPEECH && defined($_GHKM_PARTS_OF_SPEECH_FILE);    
+
     $cmd .= " | $GZIP_EXEC -c > $ttable_file.gz";
 
     safesystem($cmd) or die "ERROR: Consolidating the two phrase table halves failed";
