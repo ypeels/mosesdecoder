@@ -44,7 +44,7 @@ sub Train
 
     my $cmd;
 
-    $cmd = "$MOSES_DIR/bin/lmplz -o 5 -T $OUT_DIR < $CORPUS.$OUTPUT > $OUT_DIR/lm";
+    $cmd = "$MOSES_DIR/bin/lmplz -S 5% -o 5 -T $OUT_DIR < $CORPUS.$OUTPUT > $OUT_DIR/lm";
     safesystem($cmd);
 
     $cmd = "$MOSES_DIR/bin/build_binary $OUT_DIR/lm $OUT_DIR/lm.kenlm";
