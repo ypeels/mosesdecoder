@@ -19,7 +19,7 @@ $SCRIPTS_ROOTDIR =~ s/\/training$//;
 
 my ($binarizer, $input_config, $output_config);
 my $opt_hierarchical = 0;
-$binarizer = "$SCRIPTS_ROOTDIR/../bin/processPhraseTable";
+$binarizer = "$SCRIPTS_ROOTDIR/../bin/processPhraseTableMin";
 GetOptions(
   "Hierarchical" => \$opt_hierarchical,
   "Binarizer=s" => \$binarizer

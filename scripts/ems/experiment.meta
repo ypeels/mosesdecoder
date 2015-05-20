@@ -113,11 +113,11 @@ post-split-clean-syntax
 	template: $moses-script-dir/training/clean-corpus-n.perl IN $input-extension $output-extension OUT 1 10000 OUT.lines-retained --ignore-xml
 	error: there is a blank factor
 
-[JOINING] single
+[JOIN] single
 train
 	in: CORPUS:lowercased-stem CORPUS:split-stem
         out: join-config
-	template: $join-trainer $input-extension $output-extension OUT IN
+	template: $join-trainer $join-settings $input-extension $output-extension OUT IN
         default-name: join/config
         tmp-name: join/model
         ignore-unless: EVALUATION:join-compound
@@ -1272,7 +1272,7 @@ post-decoding-transliteration
 	pass-unless: TRAINING:post-decoding-transliteration
 	template: $moses-script-dir/Transliteration/post-decoding-transliteration.pl --moses-src-dir $moses-src-dir --external-bin-dir $external-bin-dir --transliteration-model-dir IN2 --input-extension $input-extension --output-extension $output-extension --language-model IN3 --input-file IN0 --output-file OUT --oov-file IN1.oov --decoder $decoder
 join-output
-  in: EVALUATION:join-compound JOINING:join-config transliterated-output
+  in: EVALUATION:join-compound JOIN:join-config transliterated-output
   out: joined-output
 	default-name: evaluation/joined
 	pass-unless: EVALUATION:join-compound
