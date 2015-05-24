@@ -7,7 +7,7 @@ use File::Basename;
 my $MOSES_DIR = $ARGV[0];
 my $CONFIG_PATH = $ARGV[1];
 
-my $cmd = "$MOSES_DIR/bin/moses -v 0 -f $CONFIG_PATH < /dev/stdin > /dev/stdout";
+my $cmd = "$MOSES_DIR/bin/moses -d 0 -v 0 -f $CONFIG_PATH < /dev/stdin > /dev/stdout";
 safesystem($cmd);
 
 
