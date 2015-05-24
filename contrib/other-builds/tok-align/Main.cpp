@@ -58,11 +58,13 @@ void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> 
   
   LCS::findOne(x, toksX.size(), y, toksY.size(), matches);
 
+	/*
   cerr << "matches: ";
   for (size_t i = 0; i < matches.size(); ++i) {
       Point &p = matches[i];
       cerr << p.x << "-" << p.y << " ";
   }
+  */
   
   // mismatches
   int prevX = -1, prevY = -1;
@@ -82,12 +84,26 @@ void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> 
       prevY = p.y;
   }
 
+	if (prevX < (int) toksX.size() - 1) {
+	  assert(prevY < (int) toksY.size() - 1);
+	  
+	  int startMismatchX = prevX + 1;
+		int endMismatchX = toksX.size() - 1;
+		
+		int startMismatchY = prevY + 1;
+		int endMismatchY = toksY.size() - 1;
+        
+	  CreateMismatches(mismatches, startMismatchX, endMismatchX, startMismatchY, endMismatchY);
+	}
+
+  /*
   cerr << "mismatches: ";
   for (size_t i = 0; i < mismatches.size(); ++i) {
       Point &p = mismatches[i];
       cerr << p.x << "-" << p.y << " ";
   }
   cerr << endl;
+	*/
   
   std::copy(matches.begin(), matches.end(), std::inserter(alignments, alignments.end()));
   std::copy(mismatches.begin(), mismatches.end(), std::inserter(alignments, alignments.end()));
