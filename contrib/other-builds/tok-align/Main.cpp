@@ -49,22 +49,20 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> &toksA, const std::vector<std::string> &toksB)
+void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
 {
   std::vector<Point> matches, mismatches;
   
-  const string *a = toksA.data();
-  const string *b = toksB.data();
+  const string *x = toksX.data();
+  const string *y = toksY.data();
   
-  LCS::findOne(a, toksA.size(), b, toksB.size(), matches);
+  LCS::findOne(x, toksX.size(), y, toksY.size(), matches);
 
-  /*
   cerr << "matches: ";
   for (size_t i = 0; i < matches.size(); ++i) {
       Point &p = matches[i];
       cerr << p.x << "-" << p.y << " ";
   }
-  */
   
   // mismatches
   int prevX = -1, prevY = -1;
@@ -84,14 +82,12 @@ void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> 
       prevY = p.y;
   }
 
-  /*
   cerr << "mismatches: ";
-  for (size_t i = 0; i < mm2.size(); ++i) {
-      Point &p = mm2[i];
+  for (size_t i = 0; i < mismatches.size(); ++i) {
+      Point &p = mismatches[i];
       cerr << p.x << "-" << p.y << " ";
   }
   cerr << endl;
-  */
   
   std::copy(matches.begin(), matches.end(), std::inserter(alignments, alignments.end()));
   std::copy(mismatches.begin(), mismatches.end(), std::inserter(alignments, alignments.end()));

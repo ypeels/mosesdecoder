@@ -25,6 +25,6 @@ inline void Tokenize(std::vector<std::string> &output
   }
 }
 
-void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> &toks1, const std::vector<std::string> &toks2);
+void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY);
 void CreateMismatches(std::vector<Point> &mismatches, int startMismatchX, int endMismatchX, int startMismatchY, int endMismatchY);
 
