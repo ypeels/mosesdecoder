@@ -3,8 +3,10 @@
 #include <sstream>
 #include <set>
 #include <cassert>
+#include <boost/program_options.hpp>
 #include "Main.h"
 #include "LCS.h"
+#include "Parameter.h"
 
 using namespace std;
 
@@ -12,8 +14,40 @@ int main(int argc, char **argv)
 {
 	cerr << "starting" << endl;
 
-  assert(argc >= 3);
+  Parameter params;
   
+  namespace po = boost::program_options;
+  po::options_description desc("Options");
+  desc.add_options()
+  ("help", "Print help messages")
+  ("method", po::value<int>()->default_value(params.method), "Method. 1=LCS(default), 2=char-based")
+  ;
+
+    po::variables_map vm;
+  try {
+    po::store(po::parse_command_line(argc, argv, desc),
+              vm); // can throw
+
+    /** --help option
+     */
+    if ( vm.count("help") || argc < 3 ) {
+      std::cout << argv[0] << " target source [options...]" << std::endl
+                << desc << std::endl;
+      return EXIT_SUCCESS;
+    }
+
+    po::notify(vm); // throws on error, so do after help in case
+    // there are any problems
+  } catch(po::error& e) {
+    std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
+    std::cerr << desc << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  if (vm.count("method")) params.method = vm["method"].as<int>();
+
+
+  // BEGIN
   ifstream *inA = new ifstream();
   inA->open(argv[1]);
 
@@ -30,7 +64,12 @@ int main(int argc, char **argv)
     
     std::vector<Point> alignments;
     
-    ProcessLine(alignments, toksA, toksB);
+    if (params.method == 1) {
+      ProcessLineLCS(alignments, params, toksA, toksB);
+    }
+    else {
+      ProcessLineChar(alignments, params, toksA, toksB);
+    }
     
     for (size_t i = 0; i < alignments.size(); ++i) {
         Point &p = alignments[i];
@@ -49,7 +88,12 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void ProcessLine(std::vector<Point> &alignments, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
+void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
+{
+  
+}
+
+void ProcessLineLCS(std::vector<Point> &alignments, const Parameter &params, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
 {
   std::vector<Point> matches, mismatches;
   
