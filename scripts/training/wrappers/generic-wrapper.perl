@@ -8,10 +8,10 @@ use warnings;
 my $cmd = "";
 my $size = scalar(@ARGV);
 
-for (my $i = 0; $i < $size - 2; ++$i) {
+for (my $i = 0; $i < $size - 3; ++$i) {
   $cmd .= $ARGV[$i] ." ";
 }
 
-$cmd .= " < " .$ARGV[$size-2] ." > " .$ARGV[$size-1];
+$cmd .= " < " .$ARGV[$size-3] ." > " .$ARGV[$size-2];
 print STDERR "Executing: $cmd\n";
 system($cmd);
