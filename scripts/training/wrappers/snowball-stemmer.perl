@@ -25,6 +25,9 @@ print STDERR "Executing: $cmd \n";
 open(INFILE, $IN_PATH) or die("Can't open file $IN_PATH");
 open(STEMMEDFILE, $STEMMED_PATH) or die("Can't open file $STEMMED_PATH");
 
+open(OUTFILE, ">$OUT_PATH") or die("Can't open file $OUT_PATH");
+
+
 while (my $line = <INFILE>) {
 	chomp($line);
 	my @words = split(/ /, $line);
@@ -37,8 +40,12 @@ while (my $line = <INFILE>) {
 		for (my $i = 0; $i < $size; ++$i) {
 			my $stemmedWord = <STEMMEDFILE>;
 			chomp($stemmedWord);
-			print "$stemmedWord ";
+			print OUTFILE "$stemmedWord ";
 		}
 	}
-	print "\n";
+	print OUTFILE "\n";
 }
+
+close(OUTFILE);
+close(STEMMEDFILE);
+close(INFILE);
