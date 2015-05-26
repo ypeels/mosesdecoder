@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
   vector<string> toksX, toksY;
   string lineX, lineY;
-  size_t lineNum = 0;
+  size_t lineNum = 1;
   while (getline(*inX, lineX)) {
     getline(*inY, lineY);
     //cerr << "lineX=" << lineX << endl;
