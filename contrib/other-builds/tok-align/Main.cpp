@@ -58,7 +58,9 @@ int main(int argc, char **argv)
   string lineX, lineY;
   while (getline(*inX, lineX)) {
     getline(*inY, lineY);
-    //cerr << "line=" << line << endl;
+    //cerr << "lineX=" << lineX << endl;
+    //cerr << "lineY=" << lineY << endl;
+
     Tokenize(toksX, lineX);
     Tokenize(toksY, lineY);
     
@@ -67,8 +69,11 @@ int main(int argc, char **argv)
     if (params.method == 1) {
       ProcessLineLCS(alignments, params, toksX, toksY);
     }
-    else {
+    else if (params.method == 2) {
       ProcessLineChar(alignments, params, toksX, toksY);
+    }
+    else {
+      abort();
     }
     
     for (size_t i = 0; i < alignments.size(); ++i) {
@@ -88,10 +93,78 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsX, const vector<int> &indsY)
+{
+  for (size_t i = 0; i < indsX.size(); ++i) {
+    size_t x = indsX[i];
+    for (size_t j = 0; j < indsY.size(); ++j) {
+      size_t y = indsY[j];
+      Point point(x,y);
+      alignments.push_back(point);
+    }
+  }
+}
+
 void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
 {
-  size_t indX = 0, indY = 0, posX = 0, posY = 0;
+  int indX = 0, indY = 0, posX = 0, posY = 0;
+  vector<int> indsX, indsY;
   
+  //cerr << "toksX=" << toksX.size() << " toksY=" << toksY.size() << endl;
+  
+  while (true) {
+    if (posX == posY) {
+      // match
+      CreateCrossProduct(alignments, indsX, indsY);
+      
+      // reset
+      indsX.clear();
+      indsY.clear();
+      
+      if (indX < toksX.size()) {
+        // still more to go
+        assert(indY < toksY.size());
+        posX += toksX[indX].size();  
+        indsX.push_back(indX);
+      
+        posY += toksY[indY].size();    
+        indsY.push_back(indY);
+        
+        //cerr << "add " << indX << " " << indY << endl;
+        
+        ++indX; 
+        ++indY;
+      }
+      else {
+        // end of sentence
+        assert(indY == toksY.size());
+        break;
+      }
+    } // if (posX == posY) 
+    else if (posX < posY) {
+      // mismatch
+      assert(indX < toksX.size());
+      posX += toksX[indX].size();  
+      indsX.push_back(indX);
+      
+      //cerr << "add indX " << indX << endl;
+        
+      ++indX;
+    }
+    else if (posX > posY) {
+      // mismatch
+      assert(indY < toksY.size());
+      posY += toksY[indY].size();  
+      indsY.push_back(indY);
+
+      //cerr << "add indY " << indY << endl;
+
+      ++indY;
+    }
+    else {
+      abort();
+    }
+  }
   
 }
 

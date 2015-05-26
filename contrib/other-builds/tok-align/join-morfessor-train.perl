@@ -3,6 +3,11 @@
 use strict;
 use warnings;
 use File::Basename;
+use Getopt::Long "GetOptions";
+
+my $ALIGN_METHOD = 1;
+
+die unless &GetOptions('align-method' => \$ALIGN_METHOD);
 
 my $MOSES_DIR = $ARGV[0];
 my $INPUT_EXT = $ARGV[1];
@@ -50,7 +55,7 @@ sub Train
     $cmd = "$MOSES_DIR/bin/build_binary $OUT_DIR/lm $OUT_DIR/lm.kenlm";
     safesystem($cmd);
 
-    $cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $CORPUS.$INPUT $CORPUS.$OUTPUT  > $OUT_DIR/align.grow-diag-final-and";
+    $cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $CORPUS.$INPUT $CORPUS.$OUTPUT --method $ALIGN_METHOD > $OUT_DIR/align.grow-diag-final-and";
     safesystem($cmd);
 
     $cmd = "$MOSES_DIR/scripts/training/train-model.perl -sort-buffer-size 1G -sort-batch-size 253 -sort-compress pigz -dont-zip -first-step 4 -last-step 9  -f src -e tgt -alignment grow-diag-final-and -max-phrase-length 5  -score-options ' --GoodTuring' -corpus $CORPUS -alignment-file $OUT_DIR/align -extract-file $OUT_DIR/extract -lexical-file $OUT_DIR/lex -phrase-translation-table $OUT_DIR/phrase-table --lm 0:5:$OUT_DIR/lm.kenlm -config $OUT_DIR/moses.ini";

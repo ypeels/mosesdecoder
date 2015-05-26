@@ -50,7 +50,7 @@
         <Library Value="z"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="MultiUN.ar-en.tok.1.ar MultiUN.ar-en.tok.2.ar" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/Users/hieu/workspace/experiment/issues/ar-en/tok" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="corpus.src corpus.tgt  --method 2" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/Users/hieu/workspace/experiment/issues/join" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
