@@ -7,16 +7,19 @@ use Getopt::Long "GetOptions";
 
 my $ALIGN_METHOD = 1;
 my $MOSES_DIR;
+my $INPUT_EXT;
+my $OUTPUT_EXT;
 
 die unless &GetOptions(
-						'align-method' => \$ALIGN_METHOD,
-						'moses-dir' => \$MOSES_DIR);
+		'align-method=i' => \$ALIGN_METHOD,
+		'moses-dir=s' => \$MOSES_DIR,
+                'input-extension=s' => \$INPUT_EXT,
+                'output-extension=s' => \$OUTPUT_EXT);
 die("Must define moses-dir") if (!defined($MOSES_DIR));
+die("Must define input-extension") if (!defined($INPUT_EXT));
+die("Must define output-extension") if (!defined($OUTPUT_EXT));
 
-my $INPUT_EXT = $ARGV[1];
-my $OUTPUT_EXT = $ARGV[2];
-my $OUT_PATH = $ARGV[3];
-
+my $OUT_PATH = $ARGV[0];
 my $OUT_DIR = "$OUT_PATH.model";
 
 my ($cmd, $cmd2);
@@ -25,13 +28,13 @@ safesystem($cmd);
 
 # data files
 my $numFiles = scalar(@ARGV);
-$numFiles = ($numFiles - 4) / 2;
+$numFiles = ($numFiles - 1) / 2;
 
 $cmd = "cat ";
 $cmd2 = "cat ";
 for (my $i = 0; $i < $numFiles; ++$i) {
-  $cmd .= $ARGV[$i + 4] .".$OUTPUT_EXT ";
-  $cmd2 .= $ARGV[$i + 4 + $numFiles] .".$OUTPUT_EXT ";
+  $cmd .= $ARGV[$i + 1] .".$OUTPUT_EXT ";
+  $cmd2 .= $ARGV[$i + 1 + $numFiles] .".$OUTPUT_EXT ";
 }
 
 $cmd .= " | $MOSES_DIR/scripts/tokenizer/escape-special-chars.perl > $OUT_DIR/corpus.tgt";
