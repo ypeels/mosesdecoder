@@ -6,10 +6,13 @@ use File::Basename;
 use Getopt::Long "GetOptions";
 
 my $ALIGN_METHOD = 1;
+my $MOSES_DIR;
 
-die unless &GetOptions('align-method' => \$ALIGN_METHOD);
+die unless &GetOptions(
+						'align-method' => \$ALIGN_METHOD,
+						'moses-dir' => \$MOSES_DIR);
+die("Must define moses-dir") if (!defined($MOSES_DIR));
 
-my $MOSES_DIR = $ARGV[0];
 my $INPUT_EXT = $ARGV[1];
 my $OUTPUT_EXT = $ARGV[2];
 my $OUT_PATH = $ARGV[3];
