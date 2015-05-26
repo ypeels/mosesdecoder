@@ -48,27 +48,27 @@ int main(int argc, char **argv)
 
 
   // BEGIN
-  ifstream *inA = new ifstream();
-  inA->open(argv[1]);
+  ifstream *inX = new ifstream();
+  inX->open(argv[1]);
 
-  ifstream *inB = new ifstream();
-  inB->open(argv[2]);
+  ifstream *inY = new ifstream();
+  inY->open(argv[2]);
 
-  vector<string> toksA, toksB;
-  string lineA, lineB;
-  while (getline(*inA, lineA)) {
-    getline(*inB, lineB);
+  vector<string> toksX, toksY;
+  string lineX, lineY;
+  while (getline(*inX, lineX)) {
+    getline(*inY, lineY);
     //cerr << "line=" << line << endl;
-    Tokenize(toksA, lineA);
-    Tokenize(toksB, lineB);
+    Tokenize(toksX, lineX);
+    Tokenize(toksY, lineY);
     
     std::vector<Point> alignments;
     
     if (params.method == 1) {
-      ProcessLineLCS(alignments, params, toksA, toksB);
+      ProcessLineLCS(alignments, params, toksX, toksY);
     }
     else {
-      ProcessLineChar(alignments, params, toksA, toksB);
+      ProcessLineChar(alignments, params, toksX, toksY);
     }
     
     for (size_t i = 0; i < alignments.size(); ++i) {
@@ -77,12 +77,12 @@ int main(int argc, char **argv)
     }
     cout << endl;
 
-    toksA.clear();
-    toksB.clear();
+    toksX.clear();
+    toksY.clear();
   }
   
-  delete inA;
-  delete inB;
+  delete inX;
+  delete inY;
 
 	cerr << "finished" << endl;
 	return 0;
@@ -90,6 +90,8 @@ int main(int argc, char **argv)
 
 void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
 {
+  size_t indX = 0, indY = 0, posX = 0, posY = 0;
+  
   
 }
 
