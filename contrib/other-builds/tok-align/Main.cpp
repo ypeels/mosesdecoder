@@ -130,7 +130,7 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
       if (indX < toksX.size()) {
         // still more to go
         if (indY >= toksY.size()) {
-          cerr << "Ignoring line " << lineNum << ". Number of characters don't match" << endl;  
+          cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
           return;
         }
@@ -148,13 +148,25 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
       }
       else {
         // end of sentence
-        assert(indY == toksY.size());
+        //assert(indY == toksY.size());
+        if (indY != toksY.size()) {
+            cerr << "Ignoring(B) line " << lineNum << ". Number of characters don't match" << endl;  
+            alignments.clear();
+            return;
+        }
+
         break;
       }
     } // if (posX == posY) 
     else if (posX < posY) {
       // mismatch
-      assert(indX < toksX.size());
+      //assert(indX < toksX.size());
+      if (indX >= toksX.size()) {
+          cerr << "Ignoring(C) line " << lineNum << ". Number of characters don't match" << endl;  
+          alignments.clear();
+          return;
+      }
+
       posX += toksX[indX].size();  
       indsX.push_back(indX);
       
@@ -164,7 +176,13 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
     }
     else if (posX > posY) {
       // mismatch
-      assert(indY < toksY.size());
+      //assert(indY < toksY.size())
+      if (indY >= toksY.size()) {
+          cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
+          alignments.clear();
+          return;
+      }
+      
       posY += toksY[indY].size();  
       indsY.push_back(indY);
 
