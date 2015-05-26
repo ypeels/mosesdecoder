@@ -56,6 +56,7 @@ int main(int argc, char **argv)
 
   vector<string> toksX, toksY;
   string lineX, lineY;
+  size_t lineNum = 0;
   while (getline(*inX, lineX)) {
     getline(*inY, lineY);
     //cerr << "lineX=" << lineX << endl;
@@ -67,10 +68,10 @@ int main(int argc, char **argv)
     std::vector<Point> alignments;
     
     if (params.method == 1) {
-      ProcessLineLCS(alignments, params, toksX, toksY);
+      ProcessLineLCS(alignments, params, toksX, toksY, lineNum);
     }
     else if (params.method == 2) {
-      ProcessLineChar(alignments, params, toksX, toksY);
+      ProcessLineChar(alignments, params, toksX, toksY, lineNum);
     }
     else {
       abort();
@@ -84,6 +85,8 @@ int main(int argc, char **argv)
 
     toksX.clear();
     toksY.clear();
+    
+    ++lineNum;
   }
   
   delete inX;
@@ -105,7 +108,10 @@ void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsX
   }
 }
 
-void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
+void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, 
+                  const std::vector<std::string> &toksX, 
+                  const std::vector<std::string> &toksY,
+                  size_t lineNum)
 {
   int indX = 0, indY = 0, posX = 0, posY = 0;
   vector<int> indsX, indsY;
@@ -123,7 +129,12 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, co
       
       if (indX < toksX.size()) {
         // still more to go
-        assert(indY < toksY.size());
+        if (indY >= toksY.size()) {
+          cerr << "Ignoring line " << lineNum << ". Number of characters don't match" << endl;  
+          alignments.clear();
+          return;
+        }
+        
         posX += toksX[indX].size();  
         indsX.push_back(indX);
       
@@ -168,7 +179,11 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, co
   
 }
 
-void ProcessLineLCS(std::vector<Point> &alignments, const Parameter &params, const std::vector<std::string> &toksX, const std::vector<std::string> &toksY)
+void ProcessLineLCS(std::vector<Point> &alignments, 
+                    const Parameter &params, 
+                    const std::vector<std::string> &toksX, 
+                    const std::vector<std::string> &toksY,
+                    size_t lineNum)
 {
   std::vector<Point> matches, mismatches;
   
