@@ -117,7 +117,7 @@ post-split-clean-syntax
 train
 	in: CORPUS:lowercased-stem CORPUS:split-stem
         out: join-config
-	template: $join-trainer $join-settings $input-extension $output-extension OUT IN
+	template: $join-trainer $join-settings OUT IN
         default-name: join/config
         tmp-name: join/model
         ignore-unless: EVALUATION:join-compound
