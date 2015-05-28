@@ -18,7 +18,8 @@ my $cmd = "";
 
 my $ESC_FILE = "$TMP_DIR/morf.esc.$$";
 
-$cmd = "cat /dev/stdin | sed s/^#/HASH/ > $ESC_FILE";
+#$cmd = "cat /dev/stdin | sed s/^#/HASH/ > $ESC_FILE";
+$cmd = "cat /dev/stdin  > $ESC_FILE";   
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
@@ -34,7 +35,7 @@ $cmd .= "morfessor-segment "
        ."--output-format-separator \" \" "
        ."--output-newlines "
        ."$ESC_FILE "
-       ."| sed 's/ \$//' | sed s/^HASH/#/ > $OUT_FILE";
+       ."| sed 's/ \$//' > $OUT_FILE";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
