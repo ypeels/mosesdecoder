@@ -57,10 +57,12 @@ int main(int argc, char **argv)
   inTarget->open(argv[2]);
 
   // output changed data
+  string changeSource;
   ofstream *outSource;
   if (params.changeCorpus) {
+    changeSource = string(argv[1]) + ".changed";
     outSource = new ofstream();
-    outSource->open(string(argv[1]) + ".changed");
+    outSource->open(changeSource.c_str());
   }
   
   vector<string> toksSource, toksTarget;
