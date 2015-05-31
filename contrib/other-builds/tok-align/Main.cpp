@@ -113,7 +113,9 @@ int main(int argc, char **argv)
     outSource->close();
     delete outSource;
     
-    // TODO move new file into place of orig
+    string unchangedSource = string(argv[1]) + ".unchanged";
+    rename(argv[1], unchangedSource.c_str());
+    rename(changeSource.c_str(), argv[1]);
     
   }
 
