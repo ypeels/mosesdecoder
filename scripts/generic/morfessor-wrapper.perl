@@ -11,10 +11,13 @@ my $MODEL;
 my $TMP_DIR = ".";
 my $MOSES_DIR = "$RealBin/../../..";
 
+my $CORPUS;
+
 GetOptions("morfessor-dir=s" => \$MORF_DIR,
            "model=s" => \$MODEL,
-           "tmpdir=s" => \$TMP_DIR
-           "train" => \$TRAIN
+           "tmpdir=s" => \$TMP_DIR,
+           "train" => \$TRAIN,
+	   "corpus=s" => \$CORPUS
            );
 
 die("Must provide --model=s argument") if (!defined($MODEL));
@@ -22,8 +25,21 @@ die("Must provide --model=s argument") if (!defined($MODEL));
 my $cmd = "";
 
 if ($TRAIN) {
-  print STDERR "Training morf";
-  
+  # train
+  print STDERR "Training morf\n";
+
+  $TMP_DIR = "$MODEL.tmp";
+  mkdir $TMP_DIR;
+
+  # vocab list
+  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | gzip -c > $TMP_DIR/vocab.gz";
+  print STDERR "Executing: $cmd\n";
+  `$cmd`;
+
+  $cmd = "PYTHONPATH=$MORF_DIR $MORF_DIR/scripts/morfessor -t $TMP_DIR/vocab.gz -S $MODEL ";
+  print STDERR "Executing: $cmd\n";
+  `$cmd`;
+
 }
 else {
   # split
