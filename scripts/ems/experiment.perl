@@ -1756,13 +1756,14 @@ sub define_splitter_train {
     my $output_splitter = &get("GENERAL:output-splitter");
     my $input_extension = &check_backoff_and_get("SPLITTER:input-extension");
     my $output_extension = &check_backoff_and_get("SPLITTER:output-extension");
-
+    my $output_training_settings = &get("SPLITTER:output-training-settings");
+    
     my $cmd = "";
     if ($input_splitter) {
 	$cmd .= "$input_splitter -train -model $output.$input_extension -corpus $input.$input_extension\n";
     }
     if ($output_splitter) {
-	$cmd .= "$output_splitter -train -model $output.$output_extension -corpus $input.$output_extension\n";
+	$cmd .= "$output_splitter -train  -model $output.$output_extension -corpus $input.$output_extension $output_training_settings \n";
     }
 
     &create_step($step_id,$cmd);
