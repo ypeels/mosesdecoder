@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
 #include <map>
 #include "LCS.h"
 
@@ -39,4 +40,6 @@ void ProcessLineLCS(std::vector<Point> &alignments,
                     size_t lineNum);
 void CreateMismatches(std::vector<Point> &mismatches, int startMismatchX, int endMismatchX, int startMismatchY, int endMismatchY);
 void CreateCrossProduct(std::vector<Point> &alignments, const std::vector<int> &indsX, const std::vector<int> &indsY);
+void OutputSource(std::ofstream &outSource, const std::vector<std::string> &toksSource, 
+                const std::vector<Point> &alignments, const Parameter &params);
 

@@ -21,6 +21,7 @@ int main(int argc, char **argv)
   desc.add_options()
   ("help", "Print help messages")
   ("method", po::value<int>()->default_value(params.method), "Method. 1=LCS(default), 2=char-based")
+  ("change-corpus", "Add prefixes and suffixes to splitted words")
   ;
 
     po::variables_map vm;
@@ -45,33 +46,41 @@ int main(int argc, char **argv)
   }
 
   if (vm.count("method")) params.method = vm["method"].as<int>();
+  if (vm.count("change-corpus")) params.changeCorpus = true;
 
 
   // BEGIN
-  ifstream *inX = new ifstream();
-  inX->open(argv[1]);
+  ifstream *inSource = new ifstream();
+  inSource->open(argv[1]);
 
-  ifstream *inY = new ifstream();
-  inY->open(argv[2]);
+  ifstream *inTarget = new ifstream();
+  inTarget->open(argv[2]);
 
-  vector<string> toksX, toksY;
-  string lineX, lineY;
+  // output changed data
+  ofstream *outSource;
+  if (params.changeCorpus) {
+    outSource = new ofstream();
+    outSource->open(string(argv[1]) + ".changed");
+  }
+  
+  vector<string> toksSource, toksTarget;
+  string lineSource, lineTarget;
   size_t lineNum = 1;
-  while (getline(*inX, lineX)) {
-    getline(*inY, lineY);
-    //cerr << "lineX=" << lineX << endl;
-    //cerr << "lineY=" << lineY << endl;
+  while (getline(*inSource, lineSource)) {
+    getline(*inTarget, lineTarget);
+    //cerr << "lineSource=" << lineSource << endl;
+    //cerr << "lineTarget=" << lineTarget << endl;
 
-    Tokenize(toksX, lineX);
-    Tokenize(toksY, lineY);
+    Tokenize(toksSource, lineSource);
+    Tokenize(toksTarget, lineTarget);
     
     std::vector<Point> alignments;
     
     if (params.method == 1) {
-      ProcessLineLCS(alignments, params, toksX, toksY, lineNum);
+      ProcessLineLCS(alignments, params, toksSource, toksTarget, lineNum);
     }
     else if (params.method == 2) {
-      ProcessLineChar(alignments, params, toksX, toksY, lineNum);
+      ProcessLineChar(alignments, params, toksSource, toksTarget, lineNum);
     }
     else {
       abort();
@@ -83,25 +92,95 @@ int main(int argc, char **argv)
     }
     cout << endl;
 
-    toksX.clear();
-    toksY.clear();
+    if (params.changeCorpus) {
+        OutputSource(*outSource, toksSource, alignments, params);
+    }
+    
+    toksSource.clear();
+    toksTarget.clear();
     
     ++lineNum;
   }
   
-  delete inX;
-  delete inY;
+  inSource->close();
+  inTarget->close();
+  delete inSource;
+  delete inTarget;
+
+  if (params.changeCorpus) {
+    outSource->close();
+    delete outSource;
+    
+    // TODO move new file into place of orig
+    
+  }
 
 	cerr << "finished" << endl;
 	return 0;
 }
 
-void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsX, const vector<int> &indsY)
+void OutputSource(ofstream &outSource, const vector<string> &toksSource, 
+                const std::vector<Point> &alignments, const Parameter &params)
 {
-  for (size_t i = 0; i < indsX.size(); ++i) {
-    size_t x = indsX[i];
-    for (size_t j = 0; j < indsY.size(); ++j) {
-      size_t y = indsY[j];
+  // compute which source words should have prefixes and suffixes
+  typedef pair<bool, bool> PreAndSuff;
+  vector<PreAndSuff> preAndSuffs(toksSource.size(), PreAndSuff(false,false));
+
+  // create temp data, sorted by target, source
+  typedef map< int, set<int> > AlignT2S;
+  AlignT2S alignT2S;
+  for (size_t i = 0; i < alignments.size(); ++i) {
+    const Point &p = alignments[i];
+    int source = p.x;
+    int target = p.y;
+      
+    alignT2S[target].insert(source);
+  }
+  
+  // figure put which source word need prefix and postfix
+  AlignT2S::const_iterator iterOuter;
+  for (iterOuter = alignT2S.begin(); iterOuter != alignT2S.end(); ++iterOuter) {
+    const set<int> &sources = iterOuter->second;
+    
+    if (sources.size() > 1) {
+      set<int>::const_iterator iterInner;      
+      for (iterInner = sources.begin(); iterInner != sources.end(); ++iterInner) {
+        int source = *iterInner;
+        preAndSuffs[source].first = true;    
+        preAndSuffs[source].second = true;    
+      } 
+      
+      // 1st & last
+      int source = *sources.begin();
+      preAndSuffs[source].first = false;
+
+      source = *(--sources.end());
+      preAndSuffs[source].second = false;
+
+    }
+  }
+
+  // output to file
+  for (size_t i = 0; i < toksSource.size(); ++i) {
+    const PreAndSuff &preAndSuff = preAndSuffs[i];
+    if (preAndSuff.first) {
+      outSource << params.prefix;
+    }
+    outSource << toksSource[i];
+    if (preAndSuff.second) {
+      outSource << params.suffix;
+    }
+    outSource << " ";    
+  } 
+  outSource << endl;
+}
+
+void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsSource, const vector<int> &indsTarget)
+{
+  for (size_t i = 0; i < indsSource.size(); ++i) {
+    size_t x = indsSource[i];
+    for (size_t j = 0; j < indsTarget.size(); ++j) {
+      size_t y = indsTarget[j];
       Point point(x,y);
       alignments.push_back(point);
     }
@@ -109,47 +188,47 @@ void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsX
 }
 
 void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, 
-                  const std::vector<std::string> &toksX, 
-                  const std::vector<std::string> &toksY,
+                  const std::vector<std::string> &toksSource, 
+                  const std::vector<std::string> &toksTarget,
                   size_t lineNum)
 {
-  int indX = 0, indY = 0, posX = 0, posY = 0;
-  vector<int> indsX, indsY;
+  int indSource = 0, indTarget = 0, posSource = 0, posTarget = 0;
+  vector<int> indsSource, indsTarget;
   
-  //cerr << "toksX=" << toksX.size() << " toksY=" << toksY.size() << endl;
+  //cerr << "toksSource=" << toksSource.size() << " toksTarget=" << toksTarget.size() << endl;
   
   while (true) {
-    if (posX == posY) {
+    if (posSource == posTarget) {
       // match
-      CreateCrossProduct(alignments, indsX, indsY);
+      CreateCrossProduct(alignments, indsSource, indsTarget);
       
       // reset
-      indsX.clear();
-      indsY.clear();
+      indsSource.clear();
+      indsTarget.clear();
       
-      if (indX < toksX.size()) {
+      if (indSource < toksSource.size()) {
         // still more to go
-        if (indY >= toksY.size()) {
+        if (indTarget >= toksTarget.size()) {
           cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
           return;
         }
         
-        posX += toksX[indX].size();  
-        indsX.push_back(indX);
+        posSource += toksSource[indSource].size();  
+        indsSource.push_back(indSource);
       
-        posY += toksY[indY].size();    
-        indsY.push_back(indY);
+        posTarget += toksTarget[indTarget].size();    
+        indsTarget.push_back(indTarget);
         
-        //cerr << "add " << indX << " " << indY << endl;
+        //cerr << "add " << indSource << " " << indTarget << endl;
         
-        ++indX; 
-        ++indY;
+        ++indSource; 
+        ++indTarget;
       }
       else {
         // end of sentence
-        //assert(indY == toksY.size());
-        if (indY != toksY.size()) {
+        //assert(indTarget == toksTarget.size());
+        if (indTarget != toksTarget.size()) {
             cerr << "Ignoring(B) line " << lineNum << ". Number of characters don't match" << endl;  
             alignments.clear();
             return;
@@ -157,38 +236,38 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
 
         break;
       }
-    } // if (posX == posY) 
-    else if (posX < posY) {
+    } // if (posSource == posTarget) 
+    else if (posSource < posTarget) {
       // mismatch
-      //assert(indX < toksX.size());
-      if (indX >= toksX.size()) {
+      //assert(indSource < toksSource.size());
+      if (indSource >= toksSource.size()) {
           cerr << "Ignoring(C) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
           return;
       }
 
-      posX += toksX[indX].size();  
-      indsX.push_back(indX);
+      posSource += toksSource[indSource].size();  
+      indsSource.push_back(indSource);
       
-      //cerr << "add indX " << indX << endl;
+      //cerr << "add indSource " << indX << endl;
         
-      ++indX;
+      ++indSource;
     }
-    else if (posX > posY) {
+    else if (posSource > posTarget) {
       // mismatch
-      //assert(indY < toksY.size())
-      if (indY >= toksY.size()) {
+      //assert(indTarget < toksTarget.size())
+      if (indTarget >= toksTarget.size()) {
           cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
           return;
       }
       
-      posY += toksY[indY].size();  
-      indsY.push_back(indY);
+      posTarget += toksTarget[indTarget].size();  
+      indsTarget.push_back(indTarget);
 
-      //cerr << "add indY " << indY << endl;
+      //cerr << "add indTarget " << indTarget << endl;
 
-      ++indY;
+      ++indTarget;
     }
     else {
       abort();
@@ -199,16 +278,16 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
 
 void ProcessLineLCS(std::vector<Point> &alignments, 
                     const Parameter &params, 
-                    const std::vector<std::string> &toksX, 
-                    const std::vector<std::string> &toksY,
+                    const std::vector<std::string> &toksSource, 
+                    const std::vector<std::string> &toksTarget,
                     size_t lineNum)
 {
   std::vector<Point> matches, mismatches;
   
-  const string *x = toksX.data();
-  const string *y = toksY.data();
+  const string *x = toksSource.data();
+  const string *y = toksTarget.data();
   
-  LCS::findOne(x, toksX.size(), y, toksY.size(), matches);
+  LCS::findOne(x, toksSource.size(), y, toksTarget.size(), matches);
 
 	/*
   cerr << "matches: ";
@@ -236,14 +315,14 @@ void ProcessLineLCS(std::vector<Point> &alignments,
       prevY = p.y;
   }
 
-	if (prevX < (int) toksX.size() - 1) {
-	  assert(prevY < (int) toksY.size() - 1);
+	if (prevX < (int) toksSource.size() - 1) {
+	  assert(prevY < (int) toksTarget.size() - 1);
 	  
 	  int startMismatchX = prevX + 1;
-		int endMismatchX = toksX.size() - 1;
+		int endMismatchX = toksSource.size() - 1;
 		
 		int startMismatchY = prevY + 1;
-		int endMismatchY = toksY.size() - 1;
+		int endMismatchY = toksTarget.size() - 1;
         
 	  CreateMismatches(mismatches, startMismatchX, endMismatchX, startMismatchY, endMismatchY);
 	}
