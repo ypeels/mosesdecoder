@@ -3,10 +3,12 @@
 use warnings;
 use strict;
 use Getopt::Long "GetOptions";
+use FindBin qw($RealBin);
 
 my $MORF_DIR;
 my $MODEL;
 my $TMP_DIR = ".";
+my $MOSES_DIR = "$RealBin/../../..";
 
 GetOptions("morfessor-dir=s" => \$MORF_DIR,
            "model=s" => \$MODEL,
@@ -35,7 +37,7 @@ $cmd .= "morfessor-segment "
        ."--output-format-separator \" \" "
        ."--output-newlines "
        ."$ESC_FILE "
-       ."| sed 's/ \$//' | sed s/^\#/#/ > $OUT_FILE";
+       ."| sed 's/ \$//' | sed s/^\#/#/ | MOSES_DIR/scripts/tokenizer/escape-special-chars.perl > $OUT_FILE";
 #       ."| sed 's/ \$//' > $OUT_FILE";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
