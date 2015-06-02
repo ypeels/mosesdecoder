@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     /** --help option
      */
     if ( vm.count("help") || argc < 3 ) {
-      std::cout << argv[0] << " Unsplit source [options...]" << std::endl
+      std::cout << argv[0] << " Unsplit Split [options...]" << std::endl
                 << desc << std::endl;
       return EXIT_SUCCESS;
     }
@@ -116,66 +116,66 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void OutputSplit(ofstream &outSource, const vector<string> &toksSource, 
+void OutputSplit(ofstream &outSplit, const vector<string> &toksSplit, 
                 const std::vector<Point> &alignments, const Parameter &params)
 {
-  // compute which source words should have prefixes and suffixes
+  // compute which Split words should have prefixes and suffixes
   typedef pair<bool, bool> PreAndSuff;
-  vector<PreAndSuff> preAndSuffs(toksSource.size(), PreAndSuff(false,false));
+  vector<PreAndSuff> preAndSuffs(toksSplit.size(), PreAndSuff(false,false));
 
-  // create temp data, sorted by Unsplit, source
+  // create temp data, sorted by Unsplit, Split
   typedef map< int, set<int> > AlignT2S;
   AlignT2S alignT2S;
   for (size_t i = 0; i < alignments.size(); ++i) {
     const Point &p = alignments[i];
-    int source = p.x;
+    int Split = p.x;
     int Unsplit = p.y;
       
-    alignT2S[Unsplit].insert(source);
+    alignT2S[Unsplit].insert(Split);
   }
   
-  // figure put which source word need prefix and postfix
+  // figure put which Split word need prefix and postfix
   AlignT2S::const_iterator iterOuter;
   for (iterOuter = alignT2S.begin(); iterOuter != alignT2S.end(); ++iterOuter) {
-    const set<int> &sources = iterOuter->second;
+    const set<int> &Splits = iterOuter->second;
     
-    if (sources.size() > 1) {
+    if (Splits.size() > 1) {
       set<int>::const_iterator iterInner;      
-      for (iterInner = sources.begin(); iterInner != sources.end(); ++iterInner) {
-        int source = *iterInner;
-        preAndSuffs[source].first = true;    
-        preAndSuffs[source].second = true;    
+      for (iterInner = Splits.begin(); iterInner != Splits.end(); ++iterInner) {
+        int Split = *iterInner;
+        preAndSuffs[Split].first = true;    
+        preAndSuffs[Split].second = true;    
       } 
       
       // 1st & last
-      int source = *sources.begin();
-      preAndSuffs[source].first = false;
+      int Split = *Splits.begin();
+      preAndSuffs[Split].first = false;
 
-      source = *(--sources.end());
-      preAndSuffs[source].second = false;
+      Split = *(--Splits.end());
+      preAndSuffs[Split].second = false;
 
     }
   }
 
   // output to file
-  for (size_t i = 0; i < toksSource.size(); ++i) {
+  for (size_t i = 0; i < toksSplit.size(); ++i) {
     const PreAndSuff &preAndSuff = preAndSuffs[i];
     if (preAndSuff.first) {
-      outSource << params.prefix;
+      outSplit << params.prefix;
     }
-    outSource << toksSource[i];
+    outSplit << toksSplit[i];
     if (preAndSuff.second) {
-      outSource << params.suffix;
+      outSplit << params.suffix;
     }
-    outSource << " ";    
+    outSplit << " ";    
   } 
-  outSource << endl;
+  outSplit << endl;
 }
 
-void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsSource, const vector<int> &indsUnsplit)
+void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsSplit, const vector<int> &indsUnsplit)
 {
-  for (size_t i = 0; i < indsSource.size(); ++i) {
-    size_t x = indsSource[i];
+  for (size_t i = 0; i < indsSplit.size(); ++i) {
+    size_t x = indsSplit[i];
     for (size_t j = 0; j < indsUnsplit.size(); ++j) {
       size_t y = indsUnsplit[j];
       Point point(x,y);
@@ -185,25 +185,25 @@ void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsS
 }
 
 void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, 
-                  const std::vector<std::string> &toksSource, 
+                  const std::vector<std::string> &toksSplit, 
                   const std::vector<std::string> &toksUnsplit,
                   size_t lineNum)
 {
-  int indSource = 0, indUnsplit = 0, posSource = 0, posUnsplit = 0;
-  vector<int> indsSource, indsUnsplit;
+  int indSplit = 0, indUnsplit = 0, posSplit = 0, posUnsplit = 0;
+  vector<int> indsSplit, indsUnsplit;
   
-  //cerr << "toksSource=" << toksSource.size() << " toksUnsplit=" << toksUnsplit.size() << endl;
+  //cerr << "toksSplit=" << toksSplit.size() << " toksUnsplit=" << toksUnsplit.size() << endl;
   
   while (true) {
-    if (posSource == posUnsplit) {
+    if (posSplit == posUnsplit) {
       // match
-      CreateCrossProduct(alignments, indsSource, indsUnsplit);
+      CreateCrossProduct(alignments, indsSplit, indsUnsplit);
       
       // reset
-      indsSource.clear();
+      indsSplit.clear();
       indsUnsplit.clear();
       
-      if (indSource < toksSource.size()) {
+      if (indSplit < toksSplit.size()) {
         // still more to go
         if (indUnsplit >= toksUnsplit.size()) {
           cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
@@ -211,15 +211,15 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
           return;
         }
         
-        posSource += toksSource[indSource].size();  
-        indsSource.push_back(indSource);
+        posSplit += toksSplit[indSplit].size();  
+        indsSplit.push_back(indSplit);
       
         posUnsplit += toksUnsplit[indUnsplit].size();    
         indsUnsplit.push_back(indUnsplit);
         
-        //cerr << "add " << indSource << " " << indUnsplit << endl;
+        //cerr << "add " << indSplit << " " << indUnsplit << endl;
         
-        ++indSource; 
+        ++indSplit; 
         ++indUnsplit;
       }
       else {
@@ -233,24 +233,24 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
 
         break;
       }
-    } // if (posSource == posUnsplit) 
-    else if (posSource < posUnsplit) {
+    } // if (posSplit == posUnsplit) 
+    else if (posSplit < posUnsplit) {
       // mismatch
-      //assert(indSource < toksSource.size());
-      if (indSource >= toksSource.size()) {
+      //assert(indSplit < toksSplit.size());
+      if (indSplit >= toksSplit.size()) {
           cerr << "Ignoring(C) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
           return;
       }
 
-      posSource += toksSource[indSource].size();  
-      indsSource.push_back(indSource);
+      posSplit += toksSplit[indSplit].size();  
+      indsSplit.push_back(indSplit);
       
-      //cerr << "add indSource " << indX << endl;
+      //cerr << "add indSplit " << indX << endl;
         
-      ++indSource;
+      ++indSplit;
     }
-    else if (posSource > posUnsplit) {
+    else if (posSplit > posUnsplit) {
       // mismatch
       //assert(indUnsplit < toksUnsplit.size())
       if (indUnsplit >= toksUnsplit.size()) {
@@ -275,16 +275,16 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
 
 void ProcessLineLCS(std::vector<Point> &alignments, 
                     const Parameter &params, 
-                    const std::vector<std::string> &toksSource, 
+                    const std::vector<std::string> &toksSplit, 
                     const std::vector<std::string> &toksUnsplit,
                     size_t lineNum)
 {
   std::vector<Point> matches, mismatches;
   
-  const string *x = toksSource.data();
+  const string *x = toksSplit.data();
   const string *y = toksUnsplit.data();
   
-  LCS::findOne(x, toksSource.size(), y, toksUnsplit.size(), matches);
+  LCS::findOne(x, toksSplit.size(), y, toksUnsplit.size(), matches);
 
 	/*
   cerr << "matches: ";
@@ -312,11 +312,11 @@ void ProcessLineLCS(std::vector<Point> &alignments,
       prevY = p.y;
   }
 
-	if (prevX < (int) toksSource.size() - 1) {
+	if (prevX < (int) toksSplit.size() - 1) {
 	  assert(prevY < (int) toksUnsplit.size() - 1);
 	  
 	  int startMismatchX = prevX + 1;
-		int endMismatchX = toksSource.size() - 1;
+		int endMismatchX = toksSplit.size() - 1;
 		
 		int startMismatchY = prevY + 1;
 		int endMismatchY = toksUnsplit.size() - 1;
