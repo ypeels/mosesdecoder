@@ -50,37 +50,37 @@ int main(int argc, char **argv)
 
 
   // BEGIN
-  ifstream *inSource = new ifstream();
-  inSource->open(argv[1]);
+  ifstream *inSplit = new ifstream();
+  inSplit->open(argv[1]);
 
   ifstream *inUnsplit = new ifstream();
   inUnsplit->open(argv[2]);
 
   // output changed data
-  ofstream *outSource;
+  ofstream *outSplit;
   if (!params.newSplitPath.empty()) {
-    outSource = new ofstream();
-    outSource->open(params.newSplitPath.c_str());
+    outSplit = new ofstream();
+    outSplit->open(params.newSplitPath.c_str());
   }
   
-  vector<string> toksSource, toksUnsplit;
-  string lineSource, lineUnsplit;
+  vector<string> toksSplit, toksUnsplit;
+  string lineSplit, lineUnsplit;
   size_t lineNum = 1;
-  while (getline(*inSource, lineSource)) {
+  while (getline(*inSplit, lineSplit)) {
     getline(*inUnsplit, lineUnsplit);
-    //cerr << "lineSource=" << lineSource << endl;
+    //cerr << "lineSplit=" << lineSplit << endl;
     //cerr << "lineUnsplit=" << lineUnsplit << endl;
 
-    Tokenize(toksSource, lineSource);
+    Tokenize(toksSplit, lineSplit);
     Tokenize(toksUnsplit, lineUnsplit);
     
     std::vector<Point> alignments;
     
     if (params.method == 1) {
-      ProcessLineLCS(alignments, params, toksSource, toksUnsplit, lineNum);
+      ProcessLineLCS(alignments, params, toksSplit, toksUnsplit, lineNum);
     }
     else if (params.method == 2) {
-      ProcessLineChar(alignments, params, toksSource, toksUnsplit, lineNum);
+      ProcessLineChar(alignments, params, toksSplit, toksUnsplit, lineNum);
     }
     else {
       abort();
@@ -93,30 +93,30 @@ int main(int argc, char **argv)
     cout << endl;
 
     if (!params.newSplitPath.empty()) {
-        OutputSource(*outSource, toksSource, alignments, params);
+        OutputSplit(*outSplit, toksSplit, alignments, params);
     }
     
-    toksSource.clear();
+    toksSplit.clear();
     toksUnsplit.clear();
     
     ++lineNum;
   }
   
-  inSource->close();
+  inSplit->close();
   inUnsplit->close();
-  delete inSource;
+  delete inSplit;
   delete inUnsplit;
 
   if (params.newSplitPath.empty()) {
-    outSource->close();
-    delete outSource;
+    outSplit->close();
+    delete outSplit;
   }
 
 	cerr << "finished" << endl;
 	return 0;
 }
 
-void OutputSource(ofstream &outSource, const vector<string> &toksSource, 
+void OutputSplit(ofstream &outSource, const vector<string> &toksSource, 
                 const std::vector<Point> &alignments, const Parameter &params)
 {
   // compute which source words should have prefixes and suffixes
