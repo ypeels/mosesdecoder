@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 
-use warning;
+use warnings;
 use strict;
 
-if ($ARGV[0] eq "-train") {
+if (scalar(@ARGV) > 0 && ($ARGV[0] eq "-train")) {
   exit();
 }
 
