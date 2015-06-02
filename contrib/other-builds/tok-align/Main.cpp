@@ -57,10 +57,9 @@ int main(int argc, char **argv)
   inTarget->open(argv[2]);
 
   // output changed data
-  string changeSource;
   ofstream *outSource;
   if (params.changeCorpus) {
-    changeSource = string(argv[1]) + ".changed";
+    string changeSource = string(argv[1]) + ".changed";
     outSource = new ofstream();
     outSource->open(changeSource.c_str());
   }
@@ -112,11 +111,6 @@ int main(int argc, char **argv)
   if (params.changeCorpus) {
     outSource->close();
     delete outSource;
-    
-    string unchangedSource = string(argv[1]) + ".unchanged";
-    rename(argv[1], unchangedSource.c_str());
-    rename(changeSource.c_str(), argv[1]);
-    
   }
 
 	cerr << "finished" << endl;
