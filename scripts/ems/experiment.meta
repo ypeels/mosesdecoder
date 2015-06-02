@@ -97,7 +97,7 @@ split
 	template-if: input-splitter IN.$input-extension OUT.$input-extension -model IN1.$input-extension
 	template-if: output-splitter IN.$output-extension OUT.$output-extension -model IN1.$output-extension
 post-split-clean
-	in: split-stem 
+	in: lowercased-stem split-stem 
 	out: clean-split-stem
 	default-name: corpus/split-clean
 	ignore-if: input-parser output-parser
@@ -1033,6 +1033,7 @@ split-reference
 	out: split-ref
 	default-name: tuning/reference.split
 	pass-unless: output-splitter
+	pass-if: no-splitter-tuning
 	multiref: $moses-script-dir/ems/support/run-command-on-multiple-refsets.perl
 	template: $output-splitter -model IN1.$output-extension < IN > OUT
 split-reference-devtest
@@ -1040,6 +1041,7 @@ split-reference-devtest
 	out: split-ref-devtest
 	default-name: tuning/reference.devtest.split
 	pass-unless: output-splitter
+	pass-if: no-splitter-tuning
 	ignore-unless: use-mira
 	multiref: $moses-script-dir/ems/support/run-command-on-multiple-refsets.perl
 	template: $output-splitter -model IN1.$output-extension < IN > OUT

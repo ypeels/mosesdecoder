@@ -4,18 +4,22 @@ use warnings;
 use strict;
 use FindBin qw($RealBin);
 
-die("Must provide 7 args: input.stem source target output.stem min.length max.length lines-retained \n") if (scalar(@ARGV) != 7);
+die("Must provide 8 args: unsplit.input.stem split.input.stem source target output.stem min.length max.length lines-retained \n") if (scalar(@ARGV) != 8);
 
-my $INPUT_STEM = $ARGV[0];
-my $SOURCE		 = $ARGV[1];
-my $TARGET		 = $ARGV[2];
-my $OUTPUT_STEM = $ARGV[3];
-my $MIN_LENGTH = $ARGV[4];
-my $MAX_LENGTH = $ARGV[5];
-my $LINES_RETAINED = $ARGV[6];
+my $UNSPLIT_INPUT_STEM = $ARGV[0];
+my $SPLIT_INPUT_STEM = $ARGV[1];
+my $SOURCE		 = $ARGV[2];
+my $TARGET		 = $ARGV[3];
+my $OUTPUT_STEM = $ARGV[4];
+my $MIN_LENGTH = $ARGV[5];
+my $MAX_LENGTH = $ARGV[6];
+my $LINES_RETAINED = $ARGV[7];
 
 my $MOSES_SCRIPT_DIR = "$RealBin/../../../scripts";
-my $cmd = "$MOSES_SCRIPT_DIR/training/clean-corpus-n.perl $INPUT_STEM $SOURCE $TARGET $OUTPUT_STEM.tmp $MIN_LENGTH $MAX_LENGTH $LINES_RETAINED";
+
+# 
+
+my $cmd = "$MOSES_SCRIPT_DIR/training/clean-corpus-n.perl $SPLIT_INPUT_STEM $SOURCE $TARGET $OUTPUT_STEM.tmp $MIN_LENGTH $MAX_LENGTH $LINES_RETAINED";
 safesystem($cmd);
 
 
