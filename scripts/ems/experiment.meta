@@ -102,7 +102,7 @@ post-split-clean
 	default-name: corpus/split-clean
 	ignore-if: input-parser output-parser
 	pass-unless: input-splitter output-splitter
-	template: $moses-script-dir/training/clean-corpus-n.perl IN $input-extension $output-extension OUT 1 $max-sentence-length OUT.lines-retained
+	template: $SPLITTER:post-split-cleaner IN $input-extension $output-extension OUT 1 $max-sentence-length OUT.lines-retained
 	error: there is a blank factor
 post-split-clean-syntax
 	in: split-stem 
