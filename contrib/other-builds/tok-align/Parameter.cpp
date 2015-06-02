@@ -4,7 +4,7 @@ Parameter::Parameter()
 {
   method = 1;
   
-  changeCorpus = false;
+  changeSourcePath = "";
   prefix = "+";
   suffix = "+";
 }
