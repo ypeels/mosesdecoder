@@ -571,6 +571,42 @@
     <File Name="../../../moses/FF/WordPenaltyProducer.h"/>
     <File Name="../../../moses/FF/WordTranslationFeature.cpp"/>
     <File Name="../../../moses/FF/WordTranslationFeature.h"/>
+    <File Name="../../../moses/FF/MaxNonTerm.cpp"/>
+    <File Name="../../../moses/FF/MaxNonTerm.h"/>
+    <File Name="../../../moses/FF/RuleBackoff.cpp"/>
+    <File Name="../../../moses/FF/RuleBackoff.h"/>
+    <File Name="../../../moses/FF/RuleLength.cpp"/>
+    <File Name="../../../moses/FF/RuleLength.h"/>
+    <File Name="../../../moses/FF/DiscardLeftRightNonTerm.cpp"/>
+    <File Name="../../../moses/FF/DiscardLeftRightNonTerm.h"/>
+    <File Name="../../../moses/FF/DiscardOnlyNonTermSpan.cpp"/>
+    <File Name="../../../moses/FF/DiscardOnlyNonTermSpan.h"/>
+    <File Name="../../../moses/FF/KeepOnlyReordering.cpp"/>
+    <File Name="../../../moses/FF/KeepOnlyReordering.h"/>
+    <File Name="../../../moses/FF/LM01.cpp"/>
+    <File Name="../../../moses/FF/LM01.h"/>
+    <File Name="../../../moses/FF/LongerPhraseFF.cpp"/>
+    <File Name="../../../moses/FF/LongerPhraseFF.h"/>
+    <File Name="../../../moses/FF/MadaConsistentTok.cpp"/>
+    <File Name="../../../moses/FF/MadaConsistentTok.h"/>
+    <File Name="../../../moses/FF/ManualFF.cpp"/>
+    <File Name="../../../moses/FF/ManualFF.h"/>
+    <File Name="../../../moses/FF/NonTermContext.cpp"/>
+    <File Name="../../../moses/FF/NonTermContext.h"/>
+    <File Name="../../../moses/FF/NonTermContextTarget.cpp"/>
+    <File Name="../../../moses/FF/NonTermContextTarget.h"/>
+    <File Name="../../../moses/FF/NonTermMinSpan.cpp"/>
+    <File Name="../../../moses/FF/NonTermMinSpan.h"/>
+    <File Name="../../../moses/FF/RuleDiscr.cpp"/>
+    <File Name="../../../moses/FF/RuleDiscr.cpp.bak"/>
+    <File Name="../../../moses/FF/RuleDiscr.h"/>
+    <File Name="../../../moses/FF/RuleDiscr.h.bak"/>
+    <File Name="../../../moses/FF/ScopeSpan.cpp"/>
+    <File Name="../../../moses/FF/ScopeSpan.h"/>
+    <VirtualDirectory Name="HyperParam">
+      <File Name="../../../moses/FF/HyperParam/HyperCountNonTerms.cpp"/>
+      <File Name="../../../moses/FF/HyperParam/HyperCountNonTerms.h"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
@@ -792,6 +828,10 @@
     <File Name="../../../moses/PP/SpanLengthPhraseProperty.cpp"/>
     <File Name="../../../moses/PP/SpanLengthPhraseProperty.h"/>
     <File Name="../../../moses/PP/TreeStructurePhraseProperty.h"/>
+    <File Name="../../../moses/PP/NonTermContextTargetProperty.cpp"/>
+    <File Name="../../../moses/PP/NonTermContextTargetProperty.h"/>
+    <File Name="../../../moses/PP/RuleLengthPhraseProperty.cpp"/>
+    <File Name="../../../moses/PP/RuleLengthPhraseProperty.h"/>
   </VirtualDirectory>
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
