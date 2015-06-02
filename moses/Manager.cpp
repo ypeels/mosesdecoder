@@ -1522,6 +1522,7 @@ void Manager::OutputBest(OutputCollector *collector)  const
             staticData.GetReportAllFactors());
 
           string output = outPreJoin.str();
+          FeatureFunction::DoJoinAll(output);
           
           out << output;
         }

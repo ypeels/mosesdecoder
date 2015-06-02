@@ -203,8 +203,8 @@ public:
   virtual void ReadParameters();
   virtual void SetTuneableComponents(const std::string& value);
 
-  static void DoJoinAll(); 
-  virtual void DoJoin() 
+  static void DoJoinAll(std::string &output); 
+  virtual void DoJoin(std::string &output) 
   {}
 
 };

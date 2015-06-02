@@ -209,10 +209,10 @@ FeatureFunction
   return this->GetNumScoreComponents() + idx;
 }
 
-void FeatureFunction::DoJoinAll()
+void FeatureFunction::DoJoinAll(std::string &output)
 {
    BOOST_FOREACH(FeatureFunction* ff, s_staticColl) {
-    ff->DoJoin();
+    ff->DoJoin(output);
    }
 }
 
