@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-cat /dev/stdin
+cat <&0
