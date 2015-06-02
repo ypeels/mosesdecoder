@@ -1521,6 +1521,9 @@ void Manager::OutputBest(OutputCollector *collector)  const
             staticData.GetReportSegmentation(),
             staticData.GetReportAllFactors());
 
+          string output = outPreJoin.str();
+          
+          out << output;
         }
         else {        
           bestHypo->OutputBestSurface(
