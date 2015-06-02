@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   desc.add_options()
   ("help", "Print help messages")
   ("method", po::value<int>()->default_value(params.method), "Method. 1=LCS(default), 2=char-based")
-  ("change-corpus", "Add prefixes and suffixes to splitted words")
+  ("change-source", po::value<string>()->default_value(params.changeSourcePath), "Add prefixes and suffixes to splitted words")
   ;
 
     po::variables_map vm;
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   }
 
   if (vm.count("method")) params.method = vm["method"].as<int>();
-  if (vm.count("change-corpus")) params.changeCorpus = true;
+  if (vm.count("change-source")) params.changeSourcePath = vm["change-source"].as<string>();
 
 
   // BEGIN
@@ -58,10 +58,9 @@ int main(int argc, char **argv)
 
   // output changed data
   ofstream *outSource;
-  if (params.changeCorpus) {
-    string changeSource = string(argv[1]) + ".changed";
+  if (!params.changeSourcePath.empty()) {
     outSource = new ofstream();
-    outSource->open(changeSource.c_str());
+    outSource->open(params.changeSourcePath.c_str());
   }
   
   vector<string> toksSource, toksTarget;
@@ -93,7 +92,7 @@ int main(int argc, char **argv)
     }
     cout << endl;
 
-    if (params.changeCorpus) {
+    if (!params.changeSourcePath.empty()) {
         OutputSource(*outSource, toksSource, alignments, params);
     }
     
@@ -108,7 +107,7 @@ int main(int argc, char **argv)
   delete inSource;
   delete inTarget;
 
-  if (params.changeCorpus) {
+  if (params.changeSourcePath.empty()) {
     outSource->close();
     delete outSource;
   }

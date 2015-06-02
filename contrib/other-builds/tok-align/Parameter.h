@@ -7,7 +7,7 @@ class Parameter
 public:
   int method; // 1=lcs, 2=char-based
   
-  bool changeCorpus;
+  std::string changeSourcePath;
   std::string prefix, suffix;
   
   Parameter();
