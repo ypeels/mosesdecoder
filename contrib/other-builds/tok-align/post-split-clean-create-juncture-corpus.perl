@@ -15,11 +15,19 @@ my $MIN_LENGTH = $ARGV[5];
 my $MAX_LENGTH = $ARGV[6];
 my $LINES_RETAINED = $ARGV[7];
 
-my $MOSES_SCRIPT_DIR = "$RealBin/../../../scripts";
+my $MOSES_DIR = "$RealBin/../../..";
+my $MOSES_SCRIPT_DIR = "$MOSES_DIR/scripts";
+my $cmd;
 
-# 
+#add juncture to target side of corpus
+$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.$TARGET --method 2 --change-source $SPLIT_INPUT_STEM.juncture.$TARGET > temp.align";
+safesystem($cmd);
 
-my $cmd = "$MOSES_SCRIPT_DIR/training/clean-corpus-n.perl $SPLIT_INPUT_STEM $SOURCE $TARGET $OUTPUT_STEM.tmp $MIN_LENGTH $MAX_LENGTH $LINES_RETAINED";
+$cmd = "ln -s $SPLIT_INPUT_STEM.$SOURCE $SPLIT_INPUT_STEM.juncture.$SOURCE";
+safesystem($cmd);
+
+# normal clean
+$cmd = "$MOSES_SCRIPT_DIR/training/clean-corpus-n.perl $SPLIT_INPUT_STEM.juncture $SOURCE $TARGET $OUTPUT_STEM $MIN_LENGTH $MAX_LENGTH $LINES_RETAINED";
 safesystem($cmd);
 
 
