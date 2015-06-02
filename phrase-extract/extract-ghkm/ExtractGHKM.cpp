@@ -30,6 +30,8 @@
 
 #include <boost/program_options.hpp>
 
+#include "syntax-common/xml_tree_parser.h"
+
 #include "InputFileStream.h"
 #include "OutputFileStream.h"
 #include "SyntaxNode.h"
@@ -50,7 +52,6 @@
 #include "Span.h"
 #include "StsgRule.h"
 #include "StsgRuleWriter.h"
-#include "XmlTreeParser.h"
 
 namespace MosesTraining
 {
@@ -138,7 +139,8 @@ int ExtractGHKM::Main(int argc, char *argv[])
   std::string sourceLine;
   std::string alignmentLine;
   Alignment alignment;
-  XmlTreeParser targetXmlTreeParser(targetLabelSet, targetTopLabelSet);
+  Syntax::XmlTreeParser targetXmlTreeParser(targetLabelSet, targetTopLabelSet);
+  Syntax::XmlTreeParser sourceXmlTreeParser(sourceLabelSet, sourceTopLabelSet);
   ScfgRuleWriter scfgWriter(fwdExtractStream, invExtractStream, options);
   StsgRuleWriter stsgWriter(fwdExtractStream, invExtractStream, options);
   size_t lineNum = options.sentenceOffset;
@@ -175,39 +177,14 @@ int ExtractGHKM::Main(int argc, char *argv[])
       Error(oss.str());
     }
 
-
-    // Parse source tree and construct a SyntaxTree object.
-    SyntaxNodeCollection sourceSyntaxTree;
-    SyntaxNode *sourceSyntaxTreeRoot=NULL;
-
-    if (options.sourceLabels) {
-      try {
-        if (!ProcessAndStripXMLTags(sourceLine, sourceSyntaxTree, sourceLabelSet, sourceTopLabelSet, false)) {
-          throw Exception("");
-        }
-        sourceSyntaxTree.ConnectNodes();
-        sourceSyntaxTreeRoot = sourceSyntaxTree.GetTop();
-        assert(sourceSyntaxTreeRoot);
-      } catch (const Exception &e) {
-        std::ostringstream oss;
-        oss << "Failed to parse source XML tree at line " << lineNum;
-        if (!e.GetMsg().empty()) {
-          oss << ": " << e.GetMsg();
-        }
-        Error(oss.str());
-      }
-    }
-
-    // Read source tokens.
-    std::vector<std::string> sourceTokens(ReadTokens(sourceLine));
-
-    // Construct a source SyntaxTree object from the SyntaxNodeCollection
-    // object.
+    // Read source tokens (and parse tree if using source labels).
+    std::vector<std::string> sourceTokens;
     std::auto_ptr<SyntaxTree> sourceParseTree;
-
-    if (options.sourceLabels) {
+    if (!options.sourceLabels) {
+      sourceTokens = ReadTokens(sourceLine);
+    } else {
       try {
-        sourceParseTree = XmlTreeParser::ConvertTree(*sourceSyntaxTreeRoot, sourceTokens);
+        sourceParseTree = sourceXmlTreeParser.Parse(sourceLine);
         assert(sourceParseTree.get());
       } catch (const Exception &e) {
         std::ostringstream oss;
@@ -217,8 +194,8 @@ int ExtractGHKM::Main(int argc, char *argv[])
         }
         Error(oss.str());
       }
+      sourceTokens = sourceXmlTreeParser.GetWords();
     }
-
 
     // Read word alignments.
     try {
@@ -239,12 +216,14 @@ int ExtractGHKM::Main(int argc, char *argv[])
 
     // Record word counts.
     if (!options.targetUnknownWordFile.empty()) {
-      CollectWordLabelCounts(*targetParseTree, options, targetWordCount, targetWordLabel);
+      CollectWordLabelCounts(*targetParseTree, options, targetWordCount,
+                             targetWordLabel);
     }
 
     // Record word counts: source side.
     if (options.sourceLabels && !options.sourceUnknownWordFile.empty()) {
-      CollectWordLabelCounts(*sourceParseTree, options, sourceWordCount, sourceWordLabel);
+      CollectWordLabelCounts(*sourceParseTree, options, sourceWordCount,
+                             sourceWordLabel);
     }
 
     // Form an alignment graph from the target tree, source words, and
@@ -260,7 +239,8 @@ int ExtractGHKM::Main(int argc, char *argv[])
     }
 
     // Initialize phrase orientation scoring object
-    PhraseOrientation phraseOrientation( sourceTokens.size(), targetXmlTreeParser.GetWords().size(), alignment);
+    PhraseOrientation phraseOrientation(sourceTokens.size(),
+        targetXmlTreeParser.GetWords().size(), alignment);
 
     // Write the rules, subject to scope pruning.
     const std::vector<Node *> &targetNodes = graph.GetTargetNodes();
@@ -292,7 +272,7 @@ int ExtractGHKM::Main(int argc, char *argv[])
         // SCFG output.
         ScfgRule *r = 0;
         if (options.sourceLabels) {
-          r = new ScfgRule(**q, &sourceSyntaxTree);
+          r = new ScfgRule(**q, &sourceXmlTreeParser.GetNodeCollection());
         } else {
           r = new ScfgRule(**q);
         }
