@@ -1511,11 +1511,25 @@ void Manager::OutputBest(OutputCollector *collector)  const
         if (staticData.GetReportSegmentation() == 2) {
           GetOutputLanguageModelOrder(out, bestHypo);
         }
-        bestHypo->OutputBestSurface(
-          out,
-          staticData.GetOutputFactorOrder(),
-          staticData.GetReportSegmentation(),
-          staticData.GetReportAllFactors());
+        
+        if (staticData.DoJoining()) {
+          ostringstream outPreJoin;
+
+          bestHypo->OutputBestSurface(
+            outPreJoin,
+            staticData.GetOutputFactorOrder(),
+            staticData.GetReportSegmentation(),
+            staticData.GetReportAllFactors());
+
+        }
+        else {        
+          bestHypo->OutputBestSurface(
+            out,
+            staticData.GetOutputFactorOrder(),
+            staticData.GetReportSegmentation(),
+            staticData.GetReportAllFactors());
+        }
+        
         if (staticData.PrintAlignmentInfo()) {
           out << "||| ";
           bestHypo->OutputAlignment(out);

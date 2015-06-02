@@ -44,6 +44,8 @@ protected:
   std::vector<std::vector<std::string> > m_args;
   bool m_tuneable;
   bool m_requireSortingAfterSourceContext;
+  bool m_doJoining;
+  
   size_t m_verbosity;
   size_t m_numScoreComponents;
   size_t m_index; // index into vector covering ALL feature function values
@@ -115,6 +117,10 @@ public:
   }
 
   virtual bool RequireSortingAfterSourceContext() const {
+    return m_requireSortingAfterSourceContext;
+  }
+
+  virtual bool DoJoining() const {
     return m_requireSortingAfterSourceContext;
   }
 

@@ -62,6 +62,7 @@ FeatureFunction::
 FeatureFunction(const std::string& line, bool registerNow)
   : m_tuneable(true)
   , m_requireSortingAfterSourceContext(false)
+  , m_doJoining(false)
   , m_verbosity(std::numeric_limits<std::size_t>::max())
   , m_numScoreComponents(1)
   , m_index(0)

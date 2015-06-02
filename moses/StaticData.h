@@ -124,7 +124,8 @@ protected:
   bool m_recoverPath;
   bool m_outputHypoScore;
   bool m_requireSortingAfterSourceContext;
-
+  bool m_doJoining;
+  
   SearchAlgorithm m_searchAlgorithm;
   InputTypeEnum m_inputType;
 
@@ -871,6 +872,9 @@ public:
 
   bool RequireSortingAfterSourceContext() const {
     return m_requireSortingAfterSourceContext;
+  }
+  bool DoJoining() const {
+    return m_doJoining;
   }
 
 };
