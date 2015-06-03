@@ -1,6 +1,6 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
-#include "JoinFF.h"
+#include "JoinCompound.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/TargetPhrase.h"
 
@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Moses
 {
-JoinFF::JoinFF(const std::string &line)
+JoinCompound::JoinCompound(const std::string &line)
   :StatelessFeatureFunction(0, line)
 {
   m_tuneable = false;
@@ -16,13 +16,13 @@ JoinFF::JoinFF(const std::string &line)
   ReadParameters();
 }
 
-void JoinFF::EvaluateInIsolation(const Phrase &source
+void JoinCompound::EvaluateInIsolation(const Phrase &source
     , const TargetPhrase &targetPhrase
     , ScoreComponentCollection &scoreBreakdown
     , ScoreComponentCollection &estimatedFutureScore) const
 {}
 
-void JoinFF::EvaluateWithSourceContext(const InputType &input
+void JoinCompound::EvaluateWithSourceContext(const InputType &input
     , const InputPath &inputPath
     , const TargetPhrase &targetPhrase
     , const StackVec *stackVec
@@ -30,20 +30,20 @@ void JoinFF::EvaluateWithSourceContext(const InputType &input
     , ScoreComponentCollection *estimatedFutureScore) const
 {}
 
-void JoinFF::EvaluateTranslationOptionListWithSourceContext(const InputType &input
+void JoinCompound::EvaluateTranslationOptionListWithSourceContext(const InputType &input
 
     , const TranslationOptionList &translationOptionList) const
 {}
 
-void JoinFF::EvaluateWhenApplied(const Hypothesis& hypo,
+void JoinCompound::EvaluateWhenApplied(const Hypothesis& hypo,
     ScoreComponentCollection* accumulator) const
 {}
 
-void JoinFF::EvaluateWhenApplied(const ChartHypothesis &hypo,
+void JoinCompound::EvaluateWhenApplied(const ChartHypothesis &hypo,
     ScoreComponentCollection* accumulator) const
 {}
 
-void JoinFF::SetParameter(const std::string& key, const std::string& value)
+void JoinCompound::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "arg") {
     // set value here
@@ -52,7 +52,7 @@ void JoinFF::SetParameter(const std::string& key, const std::string& value)
   }
 }
 
-void JoinFF::DoJoin(std::string &output)
+void JoinCompound::DoJoin(std::string &output)
 {  
   boost::replace_all(output, "+ +", "");
   boost::replace_all(output, "+ ", " ");

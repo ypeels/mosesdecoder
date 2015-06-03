@@ -607,10 +607,10 @@
       <File Name="../../../moses/FF/HyperParam/HyperCountNonTerms.cpp"/>
       <File Name="../../../moses/FF/HyperParam/HyperCountNonTerms.h"/>
     </VirtualDirectory>
-    <File Name="../../../moses/FF/JoinFF.cpp"/>
-    <File Name="../../../moses/FF/JoinFF.h"/>
     <File Name="../../../moses/FF/JoinScore.cpp"/>
     <File Name="../../../moses/FF/JoinScore.h"/>
+    <File Name="../../../moses/FF/JoinCompound.cpp"/>
+    <File Name="../../../moses/FF/JoinCompound.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

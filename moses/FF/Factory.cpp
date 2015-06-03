@@ -82,7 +82,7 @@
 #include "DiscardLeftRightNonTerm.h"
 #include "LM01.h"
 #include "ManualFF.h"
-#include "JoinFF.h"
+#include "JoinCompound.h"
 #include "JoinScore.h"
 
 #ifdef HAVE_VW
@@ -298,7 +298,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(ManualFF);
   MOSES_FNAME(RuleDiscr);
   MOSES_FNAME(MadaConsistentTok);
-  MOSES_FNAME(JoinFF);
+  MOSES_FNAME(JoinCompound);
   MOSES_FNAME(JoinScore);
   
   MOSES_FNAME(SkeletonStatelessFF);

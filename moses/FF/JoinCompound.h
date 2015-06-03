@@ -6,10 +6,10 @@
 namespace Moses
 {
 
-class JoinFF : public StatelessFeatureFunction
+class JoinCompound : public StatelessFeatureFunction
 {
 public:
-  JoinFF(const std::string &line);
+  JoinCompound(const std::string &line);
 
   bool IsUseable(const FactorMask &mask) const {
     return true;
