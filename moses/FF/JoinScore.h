@@ -21,10 +21,10 @@ public:
   :m_juncture(0)
   {}
   
-  JoinScoreState(const Phrase &newMorphemes, size_t juncture)
+  JoinScoreState(const Phrase &morphemes, size_t juncture)
+  :m_morphemes(morphemes)
+  ,m_juncture(juncture)
   {
-    m_morphemes.Append(newMorphemes);
-    m_juncture = juncture;
   }
 
   int Compare(const FFState& other) const;

@@ -66,7 +66,14 @@ FFState* JoinScore::EvaluateWhenApplied(
     prevJuncture = currJuncture;
   }
 
-  return new JoinScoreState();
+  vector<float> scores(m_numScoreComponents, 0);
+  scores[0] = numWord;
+  scores[1] = numCompoundWord;
+  scores[2] = numInvalidJoin;
+  scores[3] = compoundWordScore;
+  accumulator->PlusEquals(this, scores);
+  
+  return new JoinScoreState(morphemes, prevJuncture);
 }
 
 void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord, 

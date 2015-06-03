@@ -57,6 +57,11 @@ void JoinCompound::DoJoin(std::string &output)
   boost::replace_all(output, "+ +", "");
   boost::replace_all(output, "+ ", " ");
   boost::replace_all(output, " +", "");
+  
+  // begining of sentence
+  if (output.at(0) == '+' && output.size() > 1 && output.at(1) != ' ') {
+    output.erase(0, 1);
+  }
 }
 
 }
