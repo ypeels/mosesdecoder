@@ -63,6 +63,7 @@ StaticData StaticData::s_instance;
 StaticData::StaticData()
   :m_sourceStartPosMattersForRecombination(false)
   ,m_requireSortingAfterSourceContext(false)
+  ,m_doJoining(false)
   ,m_inputType(SentenceInput)
   ,m_lmEnableOOVFeature(false)
   ,m_isAlwaysCreateDirectTranslationOption(false)
@@ -1033,6 +1034,9 @@ void StaticData::LoadFeatureFunctions()
 
     if (ff->RequireSortingAfterSourceContext()) {
       m_requireSortingAfterSourceContext = true;
+    }
+    if (ff->DoJoining()) {
+      m_doJoining = true;
     }
 
     // if (PhraseDictionary *ffCast = dynamic_cast<PhraseDictionary*>(ff)) {

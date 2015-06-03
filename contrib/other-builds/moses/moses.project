@@ -607,6 +607,8 @@
       <File Name="../../../moses/FF/HyperParam/HyperCountNonTerms.cpp"/>
       <File Name="../../../moses/FF/HyperParam/HyperCountNonTerms.h"/>
     </VirtualDirectory>
+    <File Name="../../../moses/FF/JoinFF.cpp"/>
+    <File Name="../../../moses/FF/JoinFF.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

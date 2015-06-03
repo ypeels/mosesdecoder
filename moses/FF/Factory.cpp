@@ -82,6 +82,7 @@
 #include "DiscardLeftRightNonTerm.h"
 #include "LM01.h"
 #include "ManualFF.h"
+#include "JoinFF.h"
 
 #ifdef HAVE_VW
 #include "moses/FF/VW/VW.h"
@@ -296,6 +297,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(ManualFF);
   MOSES_FNAME(RuleDiscr);
   MOSES_FNAME(MadaConsistentTok);
+  MOSES_FNAME(JoinFF);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);

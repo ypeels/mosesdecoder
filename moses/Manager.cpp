@@ -1659,10 +1659,22 @@ void Manager::OutputNBest(std::ostream& out
 
     // print the surface factor of the translation
     out << translationId << " ||| ";
+    
+    ostringstream outPreJoin;
+    ostream &outUse = staticData.DoJoining() ? outPreJoin : out;
+    
     for (int currEdge = (int)edges.size() - 1 ; currEdge >= 0 ; currEdge--) {
       const Hypothesis &edge = *edges[currEdge];
-      OutputSurface(out, edge, outputFactorOrder, reportSegmentation, reportAllFactors);
+      OutputSurface(outUse, edge, outputFactorOrder, reportSegmentation, reportAllFactors);
     }
+    
+    if (staticData.DoJoining()) {
+      string output = outPreJoin.str();
+      FeatureFunction::DoJoinAll(output);
+      
+      out << output;
+    }
+    
     out << " |||";
 
     // print scores with feature names
