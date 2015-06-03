@@ -609,6 +609,8 @@
     </VirtualDirectory>
     <File Name="../../../moses/FF/JoinFF.cpp"/>
     <File Name="../../../moses/FF/JoinFF.h"/>
+    <File Name="../../../moses/FF/JoinScore.cpp"/>
+    <File Name="../../../moses/FF/JoinScore.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>

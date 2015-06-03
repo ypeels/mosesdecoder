@@ -83,6 +83,7 @@
 #include "LM01.h"
 #include "ManualFF.h"
 #include "JoinFF.h"
+#include "JoinScore.h"
 
 #ifdef HAVE_VW
 #include "moses/FF/VW/VW.h"
@@ -298,7 +299,8 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(RuleDiscr);
   MOSES_FNAME(MadaConsistentTok);
   MOSES_FNAME(JoinFF);
-
+  MOSES_FNAME(JoinScore);
+  
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
   MOSES_FNAME(SkeletonLM);
