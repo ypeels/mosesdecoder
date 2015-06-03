@@ -78,8 +78,10 @@ public:
   
   int GetJuncture(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord, 
-                          size_t &numInvalidJoin, int prevJuncture, int currJuncture) const;
-
+                          size_t &numInvalidJoin, float &compoundWordScore,
+                          Phrase &morphemes, const Word &word,
+                          int prevJuncture, int currJuncture) const;
+  float CalcMorphemeScore(const Phrase &morphemes) const;
 };
 
 
