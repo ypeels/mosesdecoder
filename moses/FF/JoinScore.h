@@ -9,13 +9,34 @@ namespace Moses
 
 class JoinScoreState : public FFState
 {
-  int m_targetLen;
+  //std::string m_concat;
+  Phrase m_morphemes;
+  size_t m_juncture;
+    //None  =  0,
+    //Left  =  1,
+    //Right =  2
+
 public:
-  JoinScoreState(int targetLen)
-    :m_targetLen(targetLen) {
+  JoinScoreState()
+  :m_juncture(0)
+  {}
+  
+  JoinScoreState(const Phrase &newMorphemes, size_t juncture)
+  {
+    m_morphemes.Append(newMorphemes);
+    m_juncture = juncture;
   }
 
   int Compare(const FFState& other) const;
+  
+  const Phrase &GetMorphemes() const {
+    return m_morphemes;
+  }
+
+  int GetJuncture() const {
+    return m_juncture;
+  }
+
 };
 
 class JoinScore : public StatefulFeatureFunction
@@ -27,7 +48,7 @@ public:
     return true;
   }
   virtual const FFState* EmptyHypothesisState(const InputType &input) const {
-    return new JoinScoreState(0);
+    return new JoinScoreState();
   }
 
   void EvaluateInIsolation(const Phrase &source
@@ -54,6 +75,10 @@ public:
     ScoreComponentCollection* accumulator) const;
 
   void SetParameter(const std::string& key, const std::string& value);
+  
+  int GetJuncture(const Word &word) const;
+  void CalcScores(size_t &numWord, size_t&numCompoundWord, 
+                          size_t &numInvalidJoin, int prevJuncture, int currJuncture) const;
 
 };
 

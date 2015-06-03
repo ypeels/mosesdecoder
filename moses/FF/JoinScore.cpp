@@ -11,9 +11,9 @@ int JoinScoreState::Compare(const FFState& other) const
 {
   const JoinScoreState &otherState = static_cast<const JoinScoreState&>(other);
 
-  if (m_targetLen == otherState.m_targetLen)
+  if (m_morphemes == otherState.m_morphemes)
     return 0;
-  return (m_targetLen < otherState.m_targetLen) ? -1 : +1;
+  return (m_morphemes < otherState.m_morphemes) ? -1 : +1;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -46,9 +46,29 @@ FFState* JoinScore::EvaluateWhenApplied(
   const FFState* prev_state,
   ScoreComponentCollection* accumulator) const
 {
+  const JoinScoreState *classState = static_cast<const JoinScoreState*>(prev_state);
+  int prevJuncture = classState->GetJuncture();
+  
+  Phrase nextMorphemes = classState->GetMorphemes();
+  size_t numWord = 0;
+  size_t numCompoundWord = 0;
+  size_t numInvalidJoin = 0;
+  
+  const Phrase &tp = cur_hypo.GetCurrTargetPhrase();
+  for (size_t pos = 0; pos < tp.GetSize(); ++pos) {
+    const Word &word = tp.GetWord(pos);
+    int currJuncture = GetJuncture(word);
+   
+    CalcScores(numWord, numCompoundWord, numInvalidJoin, prevJuncture, currJuncture);
+  }
 
-  // int targetLen = cur_hypo.GetCurrTargetPhrase().GetSize(); // ??? [UG]
-  return new JoinScoreState(0);
+  return new JoinScoreState();
+}
+
+void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord, 
+                          size_t &numInvalidJoin, int prevJuncture, int currJuncture) const
+{
+  
 }
 
 FFState* JoinScore::EvaluateWhenApplied(
@@ -56,7 +76,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   int /* featureID - used to index the state in the previous hypotheses */,
   ScoreComponentCollection* accumulator) const
 {
-  return new JoinScoreState(0);
+  return new JoinScoreState();
 }
 
 void JoinScore::SetParameter(const std::string& key, const std::string& value)
@@ -66,6 +86,24 @@ void JoinScore::SetParameter(const std::string& key, const std::string& value)
   } else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
+}
+
+int JoinScore::GetJuncture(const Word &word) const
+{
+  int ret = 0;
+  
+  const Factor *factor = word.GetFactor(0);
+  StringPiece str = factor->GetString();
+  if (str.size() > 1) {
+    if (str.starts_with("+")) {
+      ret += 1;
+    }
+    if (str.ends_with("+")) {
+      ret += 2;
+    }
+  }
+  
+  return ret;
 }
 
 }
