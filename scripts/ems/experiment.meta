@@ -234,8 +234,16 @@ split
 	pass-unless: output-splitter
 	ignore-if: concatenate-files concatenate-files-split
 	template: $output-splitter -model IN1.$output-extension < IN > OUT
+post-split-clean
+	in: lowercased-corpus split-corpus
+	out: clean-split-corpus
+	default-name: lm/split-clean
+	ignore-if: output-parser
+	pass-unless: output-splitter
+	template: $SPLITTER:lm-post-split-cleaner IN OUT
+	error: there is a blank factor
 strip
-        in: split-corpus
+        in: clean-split-corpus
         out: stripped-corpus
         default-name: lm/stripped
         pass-unless: mock-output-parser-lm

@@ -45,7 +45,7 @@ else {
   # split
 	my $ESC_FILE = "$TMP_DIR/morf.esc.$$";
 
-	$cmd = "cat /dev/stdin | sed s/^#/\#/ > $ESC_FILE";
+	$cmd = "cat /dev/stdin | sed s/^#/æ/ > $ESC_FILE";
 	#$cmd = "cat /dev/stdin  > $ESC_FILE";
 	print STDERR "Executing: $cmd\n";
 	`$cmd`;
@@ -62,7 +62,7 @@ else {
 				 ."--output-format-separator \" \" "
 				 ."--output-newlines "
 				 ."$ESC_FILE "
-				 ."| sed 's/ \$//' | sed s/^\#/#/ | $MOSES_DIR/scripts/tokenizer/escape-special-chars.perl > $OUT_FILE";
+				 ."| sed 's/ \$//' | sed s/^æ/#/ | $MOSES_DIR/scripts/tokenizer/escape-special-chars.perl > $OUT_FILE";
 	#       ."| sed 's/ \$//' > $OUT_FILE";
 	print STDERR "Executing: $cmd\n";
 	`$cmd`;
