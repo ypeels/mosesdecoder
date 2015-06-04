@@ -82,6 +82,9 @@ public:
                           Phrase &morphemes, const Word &word,
                           int prevJuncture, int currJuncture) const;
   float CalcMorphemeScore(const Phrase &morphemes) const;
+  
+protected:
+  bool m_scoreRealWords, m_scoreNumCompounds, m_scoreInvalidJoins, m_scoreCompoundWord;
 };
 
 

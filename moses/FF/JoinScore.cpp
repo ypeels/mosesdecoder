@@ -19,6 +19,10 @@ int JoinScoreState::Compare(const FFState& other) const
 ////////////////////////////////////////////////////////////////
 JoinScore::JoinScore(const std::string &line)
   :StatefulFeatureFunction(4, line)
+  ,m_scoreRealWords(true)
+  ,m_scoreNumCompounds(true) 
+  ,m_scoreInvalidJoins(true)
+  ,m_scoreCompoundWord(true)
 {
   ReadParameters();
 }
@@ -67,10 +71,21 @@ FFState* JoinScore::EvaluateWhenApplied(
   }
 
   vector<float> scores(m_numScoreComponents, 0);
-  scores[0] = numWord;
-  scores[1] = numCompoundWord;
-  scores[2] = numInvalidJoin;
-  scores[3] = compoundWordScore;
+  size_t ind = 0;
+  if (m_scoreRealWords) {
+    scores[ind++] = numWord;
+  }
+  if (m_scoreNumCompounds) {
+    scores[ind++] = numCompoundWord;
+  }
+  if (m_scoreInvalidJoins) {
+    scores[ind++] = numInvalidJoin;
+  }
+  if (m_scoreCompoundWord) {
+    scores[ind++] = compoundWordScore;
+  }
+  assert(ind < m_numScoreComponents);
+  
   accumulator->PlusEquals(this, scores);
   
   return new JoinScoreState(morphemes, prevJuncture);
@@ -82,7 +97,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
                           int prevJuncture, int currJuncture) const
 {
   if (prevJuncture < 0 || prevJuncture > 4 || currJuncture < 0 || currJuncture > 4) {
-      throw "HHH";
+      UTIL_THROW2("Invalid juncture value: " << prevJuncture << " " << currJuncture);
   }
   
   switch (prevJuncture) {
@@ -257,9 +272,19 @@ FFState* JoinScore::EvaluateWhenApplied(
 
 void JoinScore::SetParameter(const std::string& key, const std::string& value)
 {
-  if (key == "arg") {
-    // set value here
-  } else {
+  if (key == "score-real-words") {
+    m_scoreRealWords = Scan<bool>(value);
+  }
+  else if (key == "score-num-compounds") {
+    m_scoreNumCompounds = Scan<bool>(value);  
+  }
+  else if (key == "score-invalid-joins") {
+    m_scoreInvalidJoins = Scan<bool>(value);      
+  }
+  else if (key == "score-compound-word") {
+    m_scoreCompoundWord = Scan<bool>(value);  
+  } 
+  else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
 }
