@@ -118,7 +118,7 @@ public:
   }
 
   virtual bool DoJoining() const {
-    return m_requireSortingAfterSourceContext;
+    return m_doJoining;
   }
 
   virtual std::vector<float> DefaultWeights() const;
