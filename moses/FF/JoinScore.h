@@ -86,8 +86,10 @@ public:
 protected:
   bool m_scoreRealWords, m_scoreNumCompounds, m_scoreInvalidJoins, m_scoreCompoundWord;
   int m_maxMorphemeState;
+  float m_multiplier;
   
   void AddMorphemeToState(Phrase &morphemes, const Word &morpheme) const;
+  float CalcScore(size_t count) const;
 };
 
 
