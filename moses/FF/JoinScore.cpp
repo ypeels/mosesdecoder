@@ -352,7 +352,7 @@ void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word &morpheme)
   if (m_maxMorphemeState < 0) {
     // unlimited number of morph. Don't delete any prev morph
   }
-  else if (m_maxMorphemeState < 0) {
+  else if (m_maxMorphemeState == 0) {
     // stateless. Don't add any morphemes to state
     return;
   }
