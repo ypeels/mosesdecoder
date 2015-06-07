@@ -123,7 +123,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numCompoundWord;
           
           assert(morphemes.GetSize() == 0);
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
@@ -132,7 +132,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numCompoundWord;
           
           assert(morphemes.GetSize() == 0);
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 3:
           ++numInvalidJoin;
@@ -140,7 +140,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numCompoundWord;
 
           assert(morphemes.GetSize() == 0);
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 4:
           ++numWord;
@@ -158,7 +158,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numCompoundWord;
           
           assert(morphemes.GetSize() == 0);
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
@@ -167,7 +167,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numCompoundWord;
           
           assert(morphemes.GetSize() == 0);
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 3:
           ++numInvalidJoin;
@@ -175,7 +175,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numCompoundWord;
 
           assert(morphemes.GetSize() == 0);
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 4:
           ++numWord;
@@ -188,13 +188,13 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numInvalidJoin;
           ++numWord;
           
-          assert(morphemes.GetSize());
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
         case 1:
-          assert(morphemes.GetSize());
-          morphemes.AddWord(morpheme);
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+          AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
@@ -203,14 +203,14 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numWord;
           ++numCompoundWord;
 
-          assert(morphemes.GetSize());
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 3:
-          assert(morphemes.GetSize() > 0);
-          morphemes.AddWord(morpheme);
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 4:
           break;
@@ -222,13 +222,13 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numInvalidJoin;
           ++numWord;
 
-          assert(morphemes.GetSize());
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
         case 1:
-          assert(morphemes.GetSize());
-          morphemes.AddWord(morpheme);
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+          AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
@@ -237,14 +237,14 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           ++numWord;
           ++numCompoundWord;
 
-          assert(morphemes.GetSize());
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 3:
-          assert(morphemes.GetSize() > 0);
-          morphemes.AddWord(morpheme);
+          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 4:
           break;
@@ -261,7 +261,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           break;
         case 1:
           assert(morphemes.GetSize());
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
           break;
@@ -272,7 +272,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           assert(morphemes.GetSize());
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
         case 3:
           break;
@@ -282,7 +282,7 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           assert(morphemes.GetSize());
           compoundWordScore += CalcMorphemeScore(morphemes);
           morphemes.Clear();
-          morphemes.AddWord(morpheme);
+          AddMorphemeToState(morphemes, morpheme);
           break;
       }
       break;
@@ -347,7 +347,7 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes) const
   return 0;
 }
 
-void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word &morpheme)
+void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word &morpheme) const
 {
   if (m_maxMorphemeState < 0) {
     // unlimited number of morph. Don't delete any prev morph
