@@ -359,6 +359,9 @@ void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word &morpheme) cons
   else if (morphemes.GetSize() == m_maxMorphemeState) {
     morphemes.RemoveWord(0);
   }
+  else if (morphemes.GetSize() < m_maxMorphemeState) {
+    // do nothing
+  }  
   else {
     UTIL_THROW2("Number of morphemes (" << morphemes.GetSize() 
               << " exceed max " << m_maxMorphemeState << ")");
