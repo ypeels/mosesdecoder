@@ -58,7 +58,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   size_t numCompoundWord = 0;
   size_t numInvalidJoin = 0;
   float compoundWordScore = 0;
-  
+
   const Phrase &tp = cur_hypo.GetCurrTargetPhrase();
   for (size_t pos = 0; pos < tp.GetSize(); ++pos) {
     const Word &word = tp.GetWord(pos);
@@ -70,19 +70,29 @@ FFState* JoinScore::EvaluateWhenApplied(
     prevJuncture = currJuncture;
   }
 
+  // end of sentence
+  if (cur_hypo.IsSourceCompleted()) {
+    if (prevJuncture & 2) {
+      ++numInvalidJoin;
+      compoundWordScore += CalcMorphemeScore(morphemes);
+      morphemes.Clear();
+    }
+  }
+
+  // set scores
   vector<float> scores(m_numScoreComponents, 0);
   size_t ind = 0;
   if (m_scoreRealWords) {
-    scores[ind++] = m_tuneable ? numWord : - std::numeric_limits<float>::infinity();
+    scores[ind++] = m_tuneable ? numWord : (numWord?-std::numeric_limits<float>::infinity():0);
   }
   if (m_scoreNumCompounds) {
-    scores[ind++] = m_tuneable ? numCompoundWord : - std::numeric_limits<float>::infinity();
+    scores[ind++] = m_tuneable ? numCompoundWord : (numCompoundWord?-std::numeric_limits<float>::infinity():0);
   }
   if (m_scoreInvalidJoins) {
-    scores[ind++] = m_tuneable ? numInvalidJoin : - std::numeric_limits<float>::infinity();
+    scores[ind++] = m_tuneable ? numInvalidJoin : (numInvalidJoin?-std::numeric_limits<float>::infinity():0);    
   }
   if (m_scoreCompoundWord) {
-    scores[ind++] = m_tuneable ? compoundWordScore : - std::numeric_limits<float>::infinity();
+    scores[ind++] = m_tuneable ? compoundWordScore : (compoundWordScore?-std::numeric_limits<float>::infinity():0);
   }
   assert(ind < m_numScoreComponents);
   
@@ -119,11 +129,17 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
         case 2:
           ++numWord;
           ++numCompoundWord;
+          
+          assert(morphemes.GetSize() == 0);
+          morphemes.AddWord(word);
           break;
         case 3:
           ++numInvalidJoin;
           ++numWord;
           ++numCompoundWord;
+
+          assert(morphemes.GetSize() == 0);
+          morphemes.AddWord(word);
           break;
         case 4:
           ++numWord;
@@ -148,11 +164,17 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
         case 2:
           ++numWord;
           ++numCompoundWord;
+          
+          assert(morphemes.GetSize() == 0);
+          morphemes.AddWord(word);
           break;
         case 3:
           ++numInvalidJoin;
           ++numWord;
           ++numCompoundWord;
+
+          assert(morphemes.GetSize() == 0);
+          morphemes.AddWord(word);
           break;
         case 4:
           ++numWord;
@@ -186,6 +208,8 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           morphemes.AddWord(word);
           break;
         case 3:
+          assert(morphemes.GetSize() > 0);
+          morphemes.AddWord(word);
           break;
         case 4:
           break;
@@ -218,6 +242,8 @@ void JoinScore::CalcScores(size_t &numWord, size_t&numCompoundWord,
           morphemes.AddWord(word);
           break;
         case 3:
+          assert(morphemes.GetSize() > 0);
+          morphemes.AddWord(word);
           break;
         case 4:
           break;
