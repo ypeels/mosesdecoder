@@ -621,10 +621,9 @@ bool StaticData::LoadData(Parameter *parameter)
 #ifdef HAVE_PROTOBUF
       || m_outputSearchGraphPB
 #endif
-      || m_latticeSamplesFilePath.size())
-    {
-      m_nbest_options.enabled = true;
-    }
+      || m_latticeSamplesFilePath.size()) {
+    m_nbest_options.enabled = true;
+  }
 
   // S2T decoder
   m_parameter->SetParameter(m_s2tParsingAlgorithm, "s2t-parsing-algorithm",

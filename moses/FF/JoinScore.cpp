@@ -73,16 +73,16 @@ FFState* JoinScore::EvaluateWhenApplied(
   vector<float> scores(m_numScoreComponents, 0);
   size_t ind = 0;
   if (m_scoreRealWords) {
-    scores[ind++] = numWord;
+    scores[ind++] = m_tuneable ? numWord : - std::numeric_limits<float>::infinity();
   }
   if (m_scoreNumCompounds) {
-    scores[ind++] = numCompoundWord;
+    scores[ind++] = m_tuneable ? numCompoundWord : - std::numeric_limits<float>::infinity();
   }
   if (m_scoreInvalidJoins) {
-    scores[ind++] = numInvalidJoin;
+    scores[ind++] = m_tuneable ? numInvalidJoin : - std::numeric_limits<float>::infinity();
   }
   if (m_scoreCompoundWord) {
-    scores[ind++] = compoundWordScore;
+    scores[ind++] = m_tuneable ? compoundWordScore : - std::numeric_limits<float>::infinity();
   }
   assert(ind < m_numScoreComponents);
   
