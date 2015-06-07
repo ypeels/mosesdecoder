@@ -94,7 +94,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   if (m_scoreCompoundWord) {
     scores[ind++] = m_tuneable ? compoundWordScore : (compoundWordScore?-std::numeric_limits<float>::infinity():0);
   }
-  assert(ind < m_numScoreComponents);
+  UTIL_THROW_IF2(ind > m_numScoreComponents, "Vector element out-of-range:" << ind << ">" << m_numScoreComponents);
   
   accumulator->PlusEquals(this, scores);
   
