@@ -67,18 +67,17 @@ FFState* JoinScore::EvaluateWhenApplied(
     int currJuncture = GetJuncture(word);
     
     CalcScores(countWord, countCompound, countInvalidJoin, compoundWordScore, 
-              morphemes, word, 
+              morphemes, &word, 
               prevJuncture, currJuncture);
     prevJuncture = currJuncture;
   }
 
   // end of sentence
   if (cur_hypo.IsSourceCompleted()) {
-    if (prevJuncture & 2) {
-      ++countInvalidJoin;
-      compoundWordScore += CalcMorphemeScore(morphemes);
-      morphemes.Clear();
-    }
+    int currJuncture = 0;
+    CalcScores(countWord, countCompound, countInvalidJoin, compoundWordScore, 
+              morphemes, NULL, 
+              prevJuncture, currJuncture);              
   }
 
   // set scores
@@ -112,7 +111,7 @@ float JoinScore::CalcScore(size_t count) const
 
 void JoinScore::CalcScores(size_t &countWord, size_t&countCompound, 
                           size_t &countInvalidJoin, float &compoundWordScore, 
-                          Phrase &morphemes, const Word &morpheme,
+                          Phrase &morphemes, const Word *morpheme,
                           int prevJuncture, int currJuncture) const
 {
   if (prevJuncture < 0 || prevJuncture > 4 || currJuncture < 0 || currJuncture > 4) {
@@ -358,7 +357,7 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes) const
   return 0;
 }
 
-void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word &morpheme) const
+void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const
 {
   if (m_maxMorphemeState < 0) {
     // unlimited number of morph. Don't delete any prev morph
@@ -378,7 +377,8 @@ void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word &morpheme) cons
               << " exceed max (" << m_maxMorphemeState << ")");
   }
   
-  morphemes.AddWord(morpheme);
+  assert(morpheme);
+  morphemes.AddWord(*morpheme);
 }
 
 }

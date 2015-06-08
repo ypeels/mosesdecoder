@@ -75,20 +75,20 @@ public:
     ScoreComponentCollection* accumulator) const;
 
   void SetParameter(const std::string& key, const std::string& value);
-  
-  int GetJuncture(const Word &word) const;
-  void CalcScores(size_t &numWord, size_t&numCompoundWord, 
-                          size_t &numInvalidJoin, float &compoundWordScore,
-                          Phrase &morphemes, const Word &word,
-                          int prevJuncture, int currJuncture) const;
-  float CalcMorphemeScore(const Phrase &morphemes) const;
-  
+    
 protected:
   bool m_scoreRealWords, m_scoreNumCompounds, m_scoreInvalidJoins, m_scoreCompoundWord;
   int m_maxMorphemeState;
   float m_multiplier;
   
-  void AddMorphemeToState(Phrase &morphemes, const Word &morpheme) const;
+  int GetJuncture(const Word &word) const;
+  void CalcScores(size_t &numWord, size_t&numCompoundWord, 
+                          size_t &numInvalidJoin, float &compoundWordScore,
+                          Phrase &morphemes, const Word *morpheme,
+                          int prevJuncture, int currJuncture) const;
+  float CalcMorphemeScore(const Phrase &morphemes) const;
+
+  void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;
   float CalcScore(size_t count) const;
 };
 
