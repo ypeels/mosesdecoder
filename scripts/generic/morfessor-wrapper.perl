@@ -6,6 +6,7 @@ use Getopt::Long "GetOptions";
 use FindBin qw($RealBin);
 
 my $TRAIN = 0;
+my $TRAIN_ARGS = "";
 my $MORF_DIR;
 my $MODEL;
 my $TMP_DIR = ".";
@@ -17,7 +18,8 @@ GetOptions("morfessor-dir=s" => \$MORF_DIR,
            "model=s" => \$MODEL,
            "tmpdir=s" => \$TMP_DIR,
            "train" => \$TRAIN,
-	   "corpus=s" => \$CORPUS
+           "training-args=s" => \$TRAIN_ARGS,
+				   "corpus=s" => \$CORPUS
            );
 
 die("Must provide --model=s argument") if (!defined($MODEL));
@@ -36,7 +38,7 @@ if ($TRAIN) {
   print STDERR "Executing: $cmd\n";
   `$cmd`;
 
-  $cmd = "PYTHONPATH=$MORF_DIR $MORF_DIR/scripts/morfessor -t $TMP_DIR/vocab.gz -S $MODEL ";
+  $cmd = "PYTHONPATH=$MORF_DIR $MORF_DIR/scripts/morfessor -t $TMP_DIR/vocab.gz -S $MODEL $TRAIN_ARGS ";
   print STDERR "Executing: $cmd\n";
   `$cmd`;
 
