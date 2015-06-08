@@ -12,7 +12,8 @@ use File::Basename;
 for (my $i = 0; $i < scalar(@ARGV); ++$i) {
 	my $path = $ARGV[$i];
   my ($basename, $numToks, $numTypes) = Calc($path);
-  print "$basename: $numToks $numTypes \n";
+  my $ttr = $numToks / $numTypes;
+  print "$basename: $numToks $numTypes $ttr \n";
 }
 
 ############################################
