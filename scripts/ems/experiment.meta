@@ -240,7 +240,7 @@ post-split-clean
 	out: clean-split-corpus
 	default-name: lm/split-clean
 	ignore-if: output-parser
-	pass-unless: output-splitter
+	pass-unless: SPLITTER:lm-post-split-cleaner
 	template: $SPLITTER:lm-post-split-cleaner IN OUT
 	error: there is a blank factor
 strip
