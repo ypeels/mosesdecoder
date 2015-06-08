@@ -168,6 +168,7 @@ train
 	default-name: splitter/split-model
 	ignore-unless: input-splitter output-splitter
 	ignore-if: no-splitter-training
+	rerun-on-change: input-splitter output-splitter
 
 [LM] multiple
 get-corpus
