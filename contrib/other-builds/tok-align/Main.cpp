@@ -70,7 +70,8 @@ int main(int argc, char **argv)
     getline(*inUnsplit, lineUnsplit);
     //cerr << "lineSplit=" << lineSplit << endl;
     //cerr << "lineUnsplit=" << lineUnsplit << endl;
-
+    //cerr << lineNum << " " << flush;
+    
     Tokenize(toksSplit, lineSplit);
     Tokenize(toksUnsplit, lineUnsplit);
     
@@ -100,14 +101,14 @@ int main(int argc, char **argv)
     toksUnsplit.clear();
     
     ++lineNum;
-  }
+  } // while (getline(*inSplit, lineSplit)) {
   
   inSplit->close();
   inUnsplit->close();
   delete inSplit;
   delete inUnsplit;
 
-  if (params.newSplitPath.empty()) {
+  if (!params.newSplitPath.empty()) {
     outSplit->close();
     delete outSplit;
   }
