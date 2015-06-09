@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   }
 
   if (vm.count("method")) params.method = vm["method"].as<int>();
-  if (vm.count("junctured-path")) params.juncturedPath = vm["new-split-path"].as<string>();
+  if (vm.count("junctured-path")) params.juncturedPath = vm["junctured-path"].as<string>();
 
 
   // BEGIN
