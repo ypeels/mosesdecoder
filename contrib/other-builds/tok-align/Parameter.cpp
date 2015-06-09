@@ -4,7 +4,7 @@ Parameter::Parameter()
 {
   method = 1;
   
-  newSplitPath = "";
+  juncturedPath = "";
   prefix = "+";
   suffix = "+";
 }

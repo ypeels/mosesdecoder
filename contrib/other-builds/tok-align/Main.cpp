@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   desc.add_options()
   ("help", "Print help messages")
   ("method", po::value<int>()->default_value(params.method), "Method. 1=LCS(default), 2=char-based")
-  ("new-split-path", po::value<string>()->default_value(params.newSplitPath), "Add prefixes and suffixes to splitted words")
+  ("junctured-path", po::value<string>()->default_value(params.juncturedPath), "Add prefixes and suffixes to splitted words")
   ;
 
     po::variables_map vm;
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   }
 
   if (vm.count("method")) params.method = vm["method"].as<int>();
-  if (vm.count("new-split-path")) params.newSplitPath = vm["new-split-path"].as<string>();
+  if (vm.count("junctured-path")) params.juncturedPath = vm["new-split-path"].as<string>();
 
 
   // BEGIN
@@ -57,10 +57,10 @@ int main(int argc, char **argv)
   inUnsplit->open(argv[2]);
 
   // output changed data
-  ofstream *outSplit;
-  if (!params.newSplitPath.empty()) {
-    outSplit = new ofstream();
-    outSplit->open(params.newSplitPath.c_str());
+  ofstream *outJunctured;
+  if (!params.juncturedPath.empty()) {
+    outJunctured = new ofstream();
+    outJunctured->open(params.juncturedPath.c_str());
   }
   
   vector<string> toksSplit, toksUnsplit;
@@ -93,8 +93,8 @@ int main(int argc, char **argv)
     }
     cout << endl;
 
-    if (!params.newSplitPath.empty()) {
-        OutputSplit(*outSplit, toksSplit, alignments, params);
+    if (!params.juncturedPath.empty()) {
+        OutputJunctured(*outJunctured, toksSplit, alignments, params);
     }
     
     toksSplit.clear();
@@ -108,16 +108,16 @@ int main(int argc, char **argv)
   delete inSplit;
   delete inUnsplit;
 
-  if (!params.newSplitPath.empty()) {
-    outSplit->close();
-    delete outSplit;
+  if (!params.juncturedPath.empty()) {
+    outJunctured->close();
+    delete outJunctured;
   }
 
 	cerr << "finished" << endl;
 	return 0;
 }
 
-void OutputSplit(ofstream &outSplit, const vector<string> &toksSplit, 
+void OutputJunctured(ofstream &outJunctured, const vector<string> &toksSplit, 
                 const std::vector<Point> &alignments, const Parameter &params)
 {
   // compute which Split words should have prefixes and suffixes
@@ -162,15 +162,15 @@ void OutputSplit(ofstream &outSplit, const vector<string> &toksSplit,
   for (size_t i = 0; i < toksSplit.size(); ++i) {
     const PreAndSuff &preAndSuff = preAndSuffs[i];
     if (preAndSuff.first) {
-      outSplit << params.prefix;
+      outJunctured << params.prefix;
     }
-    outSplit << toksSplit[i];
+    outJunctured << toksSplit[i];
     if (preAndSuff.second) {
-      outSplit << params.suffix;
+      outJunctured << params.suffix;
     }
-    outSplit << " ";    
+    outJunctured << " ";    
   } 
-  outSplit << endl;
+  outJunctured << endl;
 }
 
 void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsSplit, const vector<int> &indsUnsplit)

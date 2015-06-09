@@ -40,6 +40,6 @@ void ProcessLineLCS(std::vector<Point> &alignments,
                     size_t lineNum);
 void CreateMismatches(std::vector<Point> &mismatches, int startMismatchX, int endMismatchX, int startMismatchY, int endMismatchY);
 void CreateCrossProduct(std::vector<Point> &alignments, const std::vector<int> &indsX, const std::vector<int> &indsY);
-void OutputSplit(std::ofstream &outSplit, const std::vector<std::string> &toksSplit, 
+void OutputJunctured(std::ofstream &outSplit, const std::vector<std::string> &toksSplit, 
                 const std::vector<Point> &alignments, const Parameter &params);
 

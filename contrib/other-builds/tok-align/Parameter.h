@@ -7,7 +7,7 @@ class Parameter
 public:
   int method; // 1=lcs, 2=char-based
   
-  std::string newSplitPath;
+  std::string juncturedPath;
   std::string prefix, suffix;
   
   Parameter();
