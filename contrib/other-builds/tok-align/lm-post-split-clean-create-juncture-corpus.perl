@@ -17,7 +17,7 @@ my $cmd;
 $cmd = "$MOSES_SCRIPT_DIR/tokenizer/escape-special-chars.perl < $UNSPLIT_INPUT > $UNSPLIT_INPUT.esc";
 safesystem($cmd);
 
-$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT $UNSPLIT_INPUT.esc --method 2 --new-split-path $OUTPUT > /dev/null";
+$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT $UNSPLIT_INPUT.esc --method 2 --junctured-path $OUTPUT > /dev/null";
 safesystem($cmd);
 
 
