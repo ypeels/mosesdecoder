@@ -100,5 +100,7 @@
     <File Name="Compound.h"/>
     <File Name="Compound.cpp"/>
     <File Name="Makefile"/>
+    <File Name="Node.h"/>
+    <File Name="Node.cpp"/>
   </VirtualDirectory>
 </CodeLite_Project>

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Main.h"
-#include "Base.h"
 #include "Simple.h"
+#include "Compound.h"
 
 using namespace std;
 
@@ -17,7 +17,8 @@ int main(int argc, char **argv)
 	ifstream corpusStrme;
 	corpusStrme.open(corpusPath.c_str());
 	
-  Base *obj = new Simple();
+  //Base *obj = new Simple();
+  Base *obj = new Compound();
   
 	obj->CreateVocab(corpusStrme);
 	

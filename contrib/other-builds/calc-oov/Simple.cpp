@@ -21,7 +21,7 @@ void Simple::CreateVocab(std::ifstream &corpusStrme)
 }
 
 
-void Simple::CalcOOV(std::ifstream &testStrme)
+void Simple::CalcOOV(std::ifstream &testStrme) const
 {
 	size_t totalToks = 0, oovToks = 0;
 	std::unordered_set<std::string> oovTypes, foundTypes;
