@@ -36,7 +36,7 @@ void Simple::CalcOOV(std::ifstream &testStrme) const
 			std::unordered_set<std::string>::const_iterator got = vocab.find (tok);
 
   		if ( got == vocab.end() ) {
-    		//std::cout << tok << " not found in myset" << endl;
+    		std::cout << tok << " not found in myset" << endl;
     		++oovToks;
     		
     		oovTypes.insert(tok);

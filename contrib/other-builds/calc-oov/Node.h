@@ -8,12 +8,16 @@ public:
   Node();
   
   void Insert(const std::string &tok);
+  bool Find(const std::string &tok) const;
+  const Node *Find(char c) const;
   
   bool isAWord;
 protected:
-  std::unordered_map<char, Node> m_children;
+  typedef std::unordered_map<char, Node> Children;
+  Children m_children;
 
   void Insert(const std::string &tok, size_t pos);
+  bool Find(const std::string &tok, size_t pos) const;
   
 };
 
