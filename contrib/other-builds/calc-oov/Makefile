@@ -6,7 +6,7 @@ clean:
 .cpp.o:
 	g++ -I../../../boost/include -I../../../ -O3 -g -c $<
 
-OBJECTS = Main.o 
+OBJECTS = Main.o Base.o Simple.o Compound.o
 
 calc-oov: $(OBJECTS)
 	g++ $(OBJECTS)  -L../../../boost/lib64  -lz -lboost_program_options -lboost_filesystem -lboost_system -o calc-oov

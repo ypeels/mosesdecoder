@@ -11,7 +11,8 @@
   <Project Name="consolidate" Path="consolidate/consolidate.project" Active="No"/>
   <Project Name="ar-detok" Path="ar-detok/ar-detok.project" Active="No"/>
   <Project Name="tok-align" Path="tok-align/tok-align.project" Active="No"/>
-  <Project Name="moses" Path="moses/moses.project" Active="Yes"/>
+  <Project Name="moses" Path="moses/moses.project" Active="No"/>
+  <Project Name="calc-oov" Path="calc-oov/calc-oov.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="manual-label" ConfigName="Debug"/>
@@ -28,6 +29,8 @@
       <Project Name="tok-align" ConfigName="Debug"/>
       <Project Name="tok-align" ConfigName="Debug"/>
       <Project Name="moses" ConfigName="Debug"/>
+      <Project Name="calc-oov" ConfigName="Debug"/>
+      <Project Name="calc-oov" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="manual-label" ConfigName="Release"/>
@@ -44,6 +47,8 @@
       <Project Name="tok-align" ConfigName="Release"/>
       <Project Name="tok-align" ConfigName="Release"/>
       <Project Name="moses" ConfigName="Release"/>
+      <Project Name="calc-oov" ConfigName="Release"/>
+      <Project Name="calc-oov" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

@@ -4,10 +4,6 @@
 #include <string>
 #include <unordered_set>
 
-
-void CreateVocab(std::unordered_set<std::string> &vocab, std::ifstream &corpusStrme);
-void CalcOOV(std::ifstream &testStrme, const std::unordered_set<std::string> &vocab);
-
 // speeded up version of above
 inline void Tokenize(std::vector<std::string> &output
                      , const std::string& str
