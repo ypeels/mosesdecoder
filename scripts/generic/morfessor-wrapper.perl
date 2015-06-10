@@ -47,7 +47,7 @@ else {
   # split
 	my $ESC_FILE = "$TMP_DIR/morf.esc.$$";
 
-	$cmd = "cat /dev/stdin | sed s/^#/æ/ > $ESC_FILE";
+	$cmd = "cat /dev/stdin | $MOSES_DIR/scripts/tokenizer/deescape-special-chars.perl | sed s/^#/æ/ > $ESC_FILE";
 	#$cmd = "cat /dev/stdin  > $ESC_FILE";
 	print STDERR "Executing: $cmd\n";
 	`$cmd`;
