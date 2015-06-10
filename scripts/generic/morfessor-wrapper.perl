@@ -34,7 +34,7 @@ if ($TRAIN) {
   mkdir $TMP_DIR;
 
   # vocab list
-  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | $MOSES_DIR/scripts/tokenizer/escape-special-chars.perl | gzip -c > $TMP_DIR/vocab.gz";
+  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | $MOSES_DIR/scripts/tokenizer/deescape-special-chars.perl | gzip -c > $TMP_DIR/vocab.gz";
   print STDERR "Executing: $cmd\n";
   `$cmd`;
 
