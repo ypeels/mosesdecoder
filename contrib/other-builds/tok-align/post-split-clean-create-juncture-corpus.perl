@@ -23,7 +23,7 @@ my $cmd;
 $cmd = "$MOSES_SCRIPT_DIR/tokenizer/escape-special-chars.perl < $UNSPLIT_INPUT_STEM.$TARGET > $UNSPLIT_INPUT_STEM.esc.$TARGET";
 safesystem($cmd);
 
-$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.esc.$TARGET --method 2 --new-split-path $SPLIT_INPUT_STEM.juncture.$TARGET > /dev/null";
+$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.esc.$TARGET --method 2 --junctured-path $SPLIT_INPUT_STEM.juncture.$TARGET > /dev/null";
 safesystem($cmd);
 
 $cmd = "rm -f $SPLIT_INPUT_STEM.juncture.$SOURCE";
