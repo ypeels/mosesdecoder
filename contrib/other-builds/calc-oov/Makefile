@@ -1,0 +1,14 @@
+all: calc-oov
+
+clean: 
+	rm -f *.o calc-oov
+
+.cpp.o:
+	g++ -I../../../boost/include -I../../../ -O3 -g -c $<
+
+OBJECTS = Main.o 
+
+calc-oov: $(OBJECTS)
+	g++ $(OBJECTS)  -L../../../boost/lib64  -lz -lboost_program_options -lboost_filesystem -lboost_system -o calc-oov
+
+
