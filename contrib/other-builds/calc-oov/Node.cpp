@@ -50,3 +50,15 @@ bool Node::Find(const std::string &tok, size_t pos) const
     }
   }
 }
+
+const Node *Node::Find(char c) const
+{
+    Children::const_iterator iter;
+    iter = m_children.find(c);
+    if (iter == m_children.end()) {
+      return NULL;
+    }
+    else {
+      return &iter->second;
+    }  
+}

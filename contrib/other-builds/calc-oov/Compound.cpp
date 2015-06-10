@@ -33,7 +33,7 @@ void Compound::CalcOOV(std::ifstream &testStrme) const
 		for (size_t i = 0; i < toks.size(); ++i) {
 			const string &tok = toks[i];
 			
-			bool found = m_root.Find(tok);
+			bool found = Decode(tok);
 
   		if ( !found ) {
     		std::cout << tok << " not found in myset" << endl;
@@ -60,3 +60,47 @@ void Compound::CalcOOV(std::ifstream &testStrme) const
 			<< " totalTypes=" << totalTypes
 			<< " oovTypes=" << oovTypes.size() << "(" << typeRatio << ")" << endl;
 }
+
+bool Compound::Decode(const std::string &tok) const
+{
+  std::unordered_set<size_t> stack;
+  stack.insert(0);
+  
+  while (!stack.empty()) {
+    std::unordered_set<size_t>::iterator iter = stack.begin();
+    size_t startPos = *iter;
+    stack.erase(iter);
+    
+    bool ret = Decode(stack, tok, startPos);
+    if (ret) {
+      return true;
+    }
+  }
+  
+  // still can't find a completed word
+  return false;
+  
+}
+
+bool Compound::Decode(std::unordered_set<size_t> &stack, const std::string &tok, size_t startPos) const
+{
+  const Node *node = &m_root;
+  for (size_t currPos = startPos; currPos < tok.size(); ++currPos) {
+    char c = tok[currPos];
+    node = node->Find(c);
+    
+    if (node) {
+      if (node->isAWord) {
+        stack.insert(currPos + 1);
+      }
+    }
+    else {
+      // couldn't get to the end
+      return false;
+    }
+  }
+  
+  // got to the end.
+  return true;
+}
+

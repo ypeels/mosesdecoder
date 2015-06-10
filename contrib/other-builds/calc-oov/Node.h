@@ -9,6 +9,7 @@ public:
   
   void Insert(const std::string &tok);
   bool Find(const std::string &tok) const;
+  const Node *Find(char c) const;
   
   bool isAWord;
 protected:
