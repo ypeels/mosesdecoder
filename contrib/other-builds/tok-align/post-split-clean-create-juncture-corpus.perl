@@ -3,6 +3,14 @@
 use warnings;
 use strict;
 use FindBin qw($RealBin);
+use Getopt::Long "GetOptions";
+
+my $DO_FILTER = 0;
+GetOptions(
+  "no-filter" => \$DO_FILTER
+    );
+
+$DO_FILTER = ! $DO_FILTER;
 
 die("Must provide 8 args: unsplit.input.stem split.input.stem source target output.stem min.length max.length lines-retained \n") if (scalar(@ARGV) != 8);
 
@@ -20,22 +28,27 @@ my $MOSES_SCRIPT_DIR = "$MOSES_DIR/scripts";
 my $cmd;
 
 #add juncture to target side of corpus
-$cmd = "$MOSES_SCRIPT_DIR/tokenizer/escape-special-chars.perl < $UNSPLIT_INPUT_STEM.$TARGET > $UNSPLIT_INPUT_STEM.esc.$TARGET";
-safesystem($cmd);
-
-$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.esc.$TARGET --method 2 --junctured-path $SPLIT_INPUT_STEM.juncture.$TARGET > /dev/null";
+$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.$TARGET --method 2 --junctured-path $SPLIT_INPUT_STEM.juncture.$TARGET > /dev/null";
 safesystem($cmd);
 
 $cmd = "rm -f $SPLIT_INPUT_STEM.juncture.$SOURCE";
 safesystem($cmd);
 
-$cmd = "ln -s $SPLIT_INPUT_STEM.$SOURCE $SPLIT_INPUT_STEM.juncture.$SOURCE";
+$cmd = "rm -f $SPLIT_INPUT_STEM.juncture.$SOURCE  &&  ln -s $SPLIT_INPUT_STEM.$SOURCE $SPLIT_INPUT_STEM.juncture.$SOURCE";
 safesystem($cmd);
 
 # normal clean
-$cmd = "$MOSES_SCRIPT_DIR/training/clean-corpus-n.perl $SPLIT_INPUT_STEM.juncture $SOURCE $TARGET $OUTPUT_STEM $MIN_LENGTH $MAX_LENGTH $LINES_RETAINED";
-safesystem($cmd);
+if ($DO_FILTER) {
+  $cmd = "$MOSES_SCRIPT_DIR/training/clean-corpus-n.perl $SPLIT_INPUT_STEM.juncture $SOURCE $TARGET $OUTPUT_STEM $MIN_LENGTH $MAX_LENGTH $LINES_RETAINED";
+  safesystem($cmd);
+}
+else {
+    $cmd = "rm -f $OUTPUT_STEM.$SOURCE  &&  ln -s $SPLIT_INPUT_STEM.juncture.$SOURCE $OUTPUT_STEM.$SOURCE";
+    safesystem($cmd);
 
+    $cmd = "rm -f $OUTPUT_STEM.$TARGET  &&  ln -s $SPLIT_INPUT_STEM.juncture.$TARGET $OUTPUT_STEM.$TARGET";
+    safesystem($cmd);
+}
 
 ##################################
 sub safesystem {

@@ -19,7 +19,7 @@ GetOptions("morfessor-dir=s" => \$MORF_DIR,
            "tmpdir=s" => \$TMP_DIR,
            "train" => \$TRAIN,
            "training-args=s" => \$TRAIN_ARGS,
-				   "corpus=s" => \$CORPUS
+           "corpus=s" => \$CORPUS
            );
 
 die("Must provide --model=s argument") if (!defined($MODEL));
