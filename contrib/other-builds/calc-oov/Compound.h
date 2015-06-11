@@ -8,7 +8,7 @@ class Compound: public Base
 {
 public:
   void CreateVocab(std::ifstream &corpusStrme);
-  void CalcOOV(std::ifstream &testStrme) const;
+  void CalcOOV(std::ifstream &testStrme, std::ofstream *oovStream) const;
 
 protected:
   Node m_root;

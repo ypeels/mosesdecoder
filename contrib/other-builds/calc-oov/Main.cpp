@@ -1,4 +1,5 @@
 #include <iostream>
+#include <boost/program_options.hpp>
 #include "Main.h"
 #include "Simple.h"
 #include "Compound.h"
@@ -9,6 +10,43 @@ int main(int argc, char **argv)
 {
 	cerr << "starting" << endl;
 
+  int method = 1; // 1=simple, 2=compound
+  string oovPath;
+  
+  namespace po = boost::program_options;
+  po::options_description desc("Options");
+  desc.add_options()
+  ("help", "Print help messages")
+  ("method", po::value<int>()->default_value(method), "Method. 1=Simple(default), 2=Compound")
+  ("output-file", po::value<string>()->default_value(oovPath), "Output oov to file")
+  ;
+  
+  po::variables_map vm;
+  try {
+    po::store(po::parse_command_line(argc, argv, desc),
+              vm); // can throw
+
+    /** --help option
+     */
+    if ( vm.count("help") || argc < 3 ) {
+      std::cout << argv[0] << " Unsplit Split [options...]" << std::endl
+                << desc << std::endl;
+      return EXIT_SUCCESS;
+    }
+
+    po::notify(vm); // throws on error, so do after help in case
+    // there are any problems
+  } catch(po::error& e) {
+    std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
+    std::cerr << desc << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  if (vm.count("method")) method = vm["method"].as<int>();
+  if (vm.count("output-file")) oovPath = vm["output-file"].as<string>();
+  
+  
+  // BEGIN
 	string corpusPath, testPath;
 	corpusPath = argv[1];
 	testPath = argv[2];
@@ -17,8 +55,17 @@ int main(int argc, char **argv)
 	ifstream corpusStrme;
 	corpusStrme.open(corpusPath.c_str());
 	
-  //Base *obj = new Simple();
-  Base *obj = new Compound();
+  Base *obj;
+  switch (method) {
+    case 1:
+      obj = new Simple();
+      break;
+    case 2:
+      obj = new Compound();
+      break;
+    default:
+      abort();
+  }
   
 	obj->CreateVocab(corpusStrme);
 	
@@ -28,8 +75,15 @@ int main(int argc, char **argv)
 	ifstream testStrme;
 	testStrme.open(testPath.c_str());
 	
-	obj->CalcOOV(testStrme);
+  ofstream *oovStream = NULL;
+  if (!oovPath.empty()) {
+    oovStream = new ofstream();
+    oovStream->open(oovPath.c_str());
+  }
+  
+	obj->CalcOOV(testStrme, oovStream);
 
+  delete oovStream;
 	testStrme.close();
 	
   delete obj;

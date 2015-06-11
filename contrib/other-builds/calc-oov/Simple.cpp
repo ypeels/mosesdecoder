@@ -21,14 +21,14 @@ void Simple::CreateVocab(std::ifstream &corpusStrme)
 }
 
 
-void Simple::CalcOOV(std::ifstream &testStrme) const
+void Simple::CalcOOV(std::ifstream &testStrme, std::ofstream *oovStream) const
 {
 	size_t totalToks = 0, oovToks = 0;
 	std::unordered_set<std::string> oovTypes, foundTypes;
 	
 	string line;
-	vector<string> toks;
 	while (getline(testStrme, line)) {
+    vector<string> toks;
 		Tokenize(toks, line);
 		for (size_t i = 0; i < toks.size(); ++i) {
 			const string &tok = toks[i];
@@ -36,7 +36,9 @@ void Simple::CalcOOV(std::ifstream &testStrme) const
 			std::unordered_set<std::string>::const_iterator got = vocab.find (tok);
 
   		if ( got == vocab.end() ) {
-    		std::cout << tok << " not found in myset" << endl;
+       if (oovStream) {
+          (*oovStream) << tok << endl;
+       }
     		++oovToks;
     		
     		oovTypes.insert(tok);

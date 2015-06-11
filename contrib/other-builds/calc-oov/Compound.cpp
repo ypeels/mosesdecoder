@@ -1,3 +1,4 @@
+#include <cassert>
 #include <vector>
 #include <iostream>
 #include "Compound.h"
@@ -21,22 +22,24 @@ void Compound::CreateVocab(std::ifstream &corpusStrme)
 
 }
 
-void Compound::CalcOOV(std::ifstream &testStrme) const
+void Compound::CalcOOV(std::ifstream &testStrme, std::ofstream *oovStream) const
 {
   size_t totalToks = 0, oovToks = 0;
 	std::unordered_set<std::string> oovTypes, foundTypes;
 	
 	string line;
-	vector<string> toks;
 	while (getline(testStrme, line)) {
-		Tokenize(toks, line);
-		for (size_t i = 0; i < toks.size(); ++i) {
-			const string &tok = toks[i];
+    vector<string> toks;
+		 Tokenize(toks, line);
+		 for (size_t i = 0; i < toks.size(); ++i) {
+      const string &tok = toks[i];
 			
 			bool found = Decode(tok);
 
   		if ( !found ) {
-    		std::cout << tok << " not found in myset" << endl;
+       if (oovStream) {
+          (*oovStream) << tok << endl;
+       }
     		++oovToks;
     		
     		oovTypes.insert(tok);
@@ -100,7 +103,7 @@ bool Compound::Decode(std::unordered_set<size_t> &stack, const std::string &tok,
     }
   }
   
-  // got to the end.
-  return true;
+  // got to the end but not is still not a word
+  return node->isAWord;
 }
 
