@@ -37,8 +37,8 @@ for (my $i = 0; $i < $numFiles; ++$i) {
   $cmd2 .= $ARGV[$i + 1 + $numFiles] .".$OUTPUT_EXT ";
 }
 
-$cmd .= " | $MOSES_DIR/scripts/tokenizer/escape-special-chars.perl > $OUT_DIR/corpus.unsplit";
-$cmd2 .="> $OUT_DIR/corpus.split";
+$cmd .= " > $OUT_DIR/corpus.unsplit";
+$cmd2 .=" > $OUT_DIR/corpus.split";
 safesystem($cmd);
 safesystem($cmd2);
 
