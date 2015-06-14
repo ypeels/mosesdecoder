@@ -27,7 +27,7 @@ void Compound::CreateVocab(std::ifstream &corpusStrme)
 
 }
 
-void Compound::CalcOOV(std::ifstream &testStrme) const
+void Compound::CalcOOV(std::ifstream &testStrme, bool outWords) const
 {
   size_t totalToks = 0, oovToks = 0;
 	std::unordered_set<std::string> oovTypes, foundTypes;
@@ -42,7 +42,9 @@ void Compound::CalcOOV(std::ifstream &testStrme) const
 			bool found = Decode(tok);
 
   		if ( !found ) {
-       cout << tok << endl;
+       if (outWords) {
+         cout << tok << " ";      
+       }
        ++oovToks;
     		
     		oovTypes.insert(tok);
@@ -61,6 +63,9 @@ void Compound::CalcOOV(std::ifstream &testStrme) const
 	float totalTypes = oovTypes.size() + foundTypes.size();
 	float typeRatio = (float) oovTypes.size() / totalTypes;
 	
+  if (outWords) {
+    cout << endl; 
+  }
 	cout << "totalToks=" << totalToks 
 			<< " oovToks=" << oovToks << "(" << tokRatio << ")"
 			<< " totalTypes=" << totalTypes

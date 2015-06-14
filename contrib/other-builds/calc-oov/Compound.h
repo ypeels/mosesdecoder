@@ -9,7 +9,7 @@ class Compound: public Base
 public:
   Compound();
   void CreateVocab(std::ifstream &corpusStrme);
-  void CalcOOV(std::ifstream &testStrme) const;
+  void CalcOOV(std::ifstream &testStrme, bool outWords) const;
 
 protected:
   Node m_root;

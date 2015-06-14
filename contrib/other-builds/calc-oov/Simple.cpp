@@ -26,11 +26,11 @@ void Simple::CreateVocab(std::ifstream &corpusStrme)
 }
 
 
-void Simple::CalcOOV(std::ifstream &testStrme) const
+void Simple::CalcOOV(std::ifstream &testStrme, bool outWords) const
 {
 	size_t totalToks = 0, oovToks = 0;
 	std::unordered_set<std::string> oovTypes, foundTypes;
-	
+	  
 	string line;
 	while (getline(testStrme, line)) {
     vector<string> toks;
@@ -41,7 +41,9 @@ void Simple::CalcOOV(std::ifstream &testStrme) const
 			std::unordered_set<std::string>::const_iterator got = vocab.find (tok);
 
   		if ( got == vocab.end() ) {
-       cout << tok << endl;
+       if (outWords) {
+         cout << tok << " ";      
+       }
     		++oovToks;
     		
     		oovTypes.insert(tok);
@@ -60,6 +62,9 @@ void Simple::CalcOOV(std::ifstream &testStrme) const
 	float totalTypes = oovTypes.size() + foundTypes.size();
 	float typeRatio = (float) oovTypes.size() / totalTypes;
 	
+  if (outWords) {
+    cout << endl; 
+  }
 	cout << "totalToks=" << totalToks 
 			<< " oovToks=" << oovToks << "(" << tokRatio << ")"
 			<< " totalTypes=" << totalTypes
