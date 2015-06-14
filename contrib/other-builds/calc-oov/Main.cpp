@@ -15,17 +15,28 @@ int main(int argc, char **argv)
   bool outWords = false;
   
   namespace po = boost::program_options;
+  po::positional_options_description m_positional;
   po::options_description desc("Options");
+  po::variables_map m_variables;
+  
   desc.add_options()
   ("help", "Print help messages")
   ("method", po::value<int>()->default_value(method), "Method. 1=Simple(default), 2=Compound")
+  ("input", po::value<vector<string> >()->composing(), "")
   ;
+  
+  vector<string> additionalParameters;
   
   po::variables_map vm;
   try {
-    po::store(po::parse_command_line(argc, argv, desc),
-              vm); // can throw
-
+    po::parsed_options parsed = po::command_line_parser(argc, argv).
+    options(desc).allow_unregistered().run();
+    
+    po::store(parsed, vm); // can throw
+  
+    additionalParameters = collect_unrecognized(parsed.options, 
+      po::include_positional);
+    
     /** --help option
      */
     if ( vm.count("help") || argc < 3 ) {
@@ -47,7 +58,7 @@ int main(int argc, char **argv)
   
   // BEGIN
 	string corpusPath, testPath;
-	corpusPath = argv[1];
+	corpusPath = additionalParameters[0];
 
   // get training data vocab
   ifstream corpusStrme;
@@ -68,15 +79,15 @@ int main(int argc, char **argv)
   obj->CreateVocab(corpusStrme);
   corpusStrme.close();
     
-  for (size_t i = 2; i < argc; ++i) {
-    testPath = argv[i];
-
+  for (size_t i = 1; i < additionalParameters.size(); ++i) {
+    testPath = additionalParameters[i];
+    
     // look up each word in test set
     ifstream testStrme;
     testStrme.open(testPath.c_str());
       
     boost::filesystem::path p(testPath);
-    cout << p.filename();
+    cout << p.filename() << ": ";
 
     obj->CalcOOV(testStrme, outWords);
 
