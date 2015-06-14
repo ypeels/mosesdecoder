@@ -31,6 +31,8 @@
     <File Name="Makefile"/>
     <File Name="Node.h"/>
     <File Name="Node.cpp"/>
+    <File Name="Parameter.cpp"/>
+    <File Name="Parameter.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

@@ -1,9 +1,11 @@
+#include <clocale>
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include "Main.h"
 #include "Simple.h"
 #include "Compound.h"
+#include "Parameter.h"
 
 using namespace std;
 
@@ -11,8 +13,7 @@ int main(int argc, char **argv)
 {
 	cerr << "starting" << endl;
 
-  int method = 1; // 1=simple, 2=compound
-  bool outWords = false;
+  Parameter params;
   
   namespace po = boost::program_options;
   po::positional_options_description m_positional;
@@ -21,7 +22,9 @@ int main(int argc, char **argv)
   
   desc.add_options()
   ("help", "Print help messages")
-  ("method", po::value<int>()->default_value(method), "Method. 1=Simple(default), 2=Compound")
+  ("method", po::value<int>()->default_value(params.method), "Method. 1=Simple(default), 2=Compound")
+  ("output-oov", po::value<bool>()->default_value(params.outWords), "Output all oov words")
+  ("lowercase", po::value<bool>()->default_value(params.lowercase), "Lowercase data")
   ("input", po::value<vector<string> >()->composing(), "")
   ;
   
@@ -53,8 +56,13 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  if (vm.count("method")) method = vm["method"].as<int>();
+  if (vm.count("method")) params.method = vm["method"].as<int>();
+  if (vm.count("output-oov")) params.outWords = vm["output-oov"].as<bool>();
+  if (vm.count("lowercase")) params.lowercase = vm["lowercase"].as<bool>();
   
+  if (params.lowercase) {
+    std::setlocale(LC_ALL, "C");
+  }
   
   // BEGIN
 	string corpusPath, testPath;
@@ -65,7 +73,7 @@ int main(int argc, char **argv)
   corpusStrme.open(corpusPath.c_str());
   
   Base *obj;
-  switch (method) {
+  switch (params.method) {
     case 1:
       obj = new Simple();
       break;
@@ -76,9 +84,10 @@ int main(int argc, char **argv)
       abort();
   }
   
-  obj->CreateVocab(corpusStrme);
+  obj->CreateVocab(corpusStrme, params);
   corpusStrme.close();
-    
+
+  // each test set
   for (size_t i = 1; i < additionalParameters.size(); ++i) {
     testPath = additionalParameters[i];
     
@@ -89,7 +98,7 @@ int main(int argc, char **argv)
     boost::filesystem::path p(testPath);
     cout << p.filename() << endl;
 
-    obj->CalcOOV(testStrme, outWords);
+    obj->CalcOOV(testStrme, params);
 
     testStrme.close();
     

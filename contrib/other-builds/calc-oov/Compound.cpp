@@ -1,8 +1,10 @@
 #include <cassert>
 #include <vector>
 #include <iostream>
+#include <boost/algorithm/string.hpp>
 #include "Compound.h"
 #include "Main.h"
+#include "Parameter.h"
 
 using namespace std;
 
@@ -11,11 +13,15 @@ Compound::Compound()
   cerr << "Compound\n";  
 }
 
-void Compound::CreateVocab(std::ifstream &corpusStrme)
+void Compound::CreateVocab(std::ifstream &corpusStrme, const Parameter &params)
 {
   string line;
 	vector<string> toks;
 	while (getline(corpusStrme, line)) {
+    if (params.lowercase) {
+        boost::algorithm::to_lower(line);
+    }
+
 		Tokenize(toks, line);
 		for (size_t i = 0; i < toks.size(); ++i) {
 			const string &tok = toks[i];
@@ -27,13 +33,17 @@ void Compound::CreateVocab(std::ifstream &corpusStrme)
 
 }
 
-void Compound::CalcOOV(std::ifstream &testStrme, bool outWords) const
+void Compound::CalcOOV(std::ifstream &testStrme, const Parameter &params) const
 {
   size_t totalToks = 0, oovToks = 0;
 	std::unordered_set<std::string> oovTypes, foundTypes;
 	
 	string line;
 	while (getline(testStrme, line)) {
+    if (params.lowercase) {
+        boost::algorithm::to_lower(line);
+    }
+
     vector<string> toks;
 		 Tokenize(toks, line);
 		 for (size_t i = 0; i < toks.size(); ++i) {
@@ -42,7 +52,7 @@ void Compound::CalcOOV(std::ifstream &testStrme, bool outWords) const
 			bool found = Decode(tok);
 
   		if ( !found ) {
-       if (outWords) {
+       if (params.outWords) {
          cout << tok << " ";      
        }
        ++oovToks;
@@ -63,7 +73,7 @@ void Compound::CalcOOV(std::ifstream &testStrme, bool outWords) const
 	float totalTypes = oovTypes.size() + foundTypes.size();
 	float typeRatio = (float) oovTypes.size() / totalTypes;
 	
-  if (outWords) {
+  if (params.outWords) {
     cout << endl; 
   }
 	cout << "totalToks=" << totalToks 

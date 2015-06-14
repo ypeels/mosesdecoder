@@ -8,8 +8,8 @@ class Compound: public Base
 {
 public:
   Compound();
-  void CreateVocab(std::ifstream &corpusStrme);
-  void CalcOOV(std::ifstream &testStrme, bool outWords) const;
+  void CreateVocab(std::ifstream &corpusStrme, const Parameter &params);
+  void CalcOOV(std::ifstream &testStrme, const Parameter &params) const;
 
 protected:
   Node m_root;
