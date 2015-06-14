@@ -4,7 +4,7 @@ clean:
 	rm -f *.o calc-oov
 
 .cpp.o:
-	g++ -I../../../boost/include -I../../../ -O3 -g -c $<
+	g++ -std=c++11 -I../../../boost/include -I../../../ -O3 -g -c $<
 
 OBJECTS = Main.o Base.o Simple.o Compound.o Node.o
 
