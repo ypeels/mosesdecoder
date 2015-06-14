@@ -13,7 +13,7 @@ public:
   
   bool isAWord;
 protected:
-  typedef std::unordered_map<char, Node> Children;
+  typedef std::unordered_map<char, Node*> Children;
   Children m_children;
 
   void Insert(const std::string &tok, size_t pos);

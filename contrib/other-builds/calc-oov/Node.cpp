@@ -1,3 +1,4 @@
+#include <cassert>
 #include "Node.h"
 
 using namespace std;
@@ -20,8 +21,9 @@ void Node::Insert(const std::string &tok, size_t pos)
   }
   else {
     char c = tok[pos];
-    Node &child = m_children[c];
-    child.Insert(tok, pos + 1);
+    Node *child = new Node();
+    m_children[c] = child;
+    child->Insert(tok, pos + 1);
   }
 }
 
@@ -45,8 +47,8 @@ bool Node::Find(const std::string &tok, size_t pos) const
       return false;
     }
     else {
-      const Node &child = iter->second;
-      return child.Find(tok, pos + 1);
+      const Node *child = iter->second;
+      return child->Find(tok, pos + 1);
     }
   }
 }
@@ -59,6 +61,8 @@ const Node *Node::Find(char c) const
       return NULL;
     }
     else {
-      return &iter->second;
+      Node *child = iter->second;
+      assert(child);
+      return child;
     }  
 }
