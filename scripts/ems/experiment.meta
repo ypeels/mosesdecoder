@@ -1490,8 +1490,16 @@ analysis-precision
 	rerun-on-change: precision-by-coverage-base
 	final-model: yes
 
+hh-analysis-compound
+	in: TRAINING:corpus TUNING:reference EVALUATION:tokenized-reference
+	out: analysis-compound
+	default-name: evaluation/analysis-compound
+	ignore-unless: analysis-compound
+	template: $analysis-compound OUT $input-extension $output-extension IN
+	final-model: yes
+
 [REPORTING] single
 report
-	in: EVALUATION:nist-bleu-score EVALUATION:nist-bleu-c-score EVALUATION:bolt-bleu-score EVALUATION:bolt-bleu-c-score EVALUATION:multi-bleu-score EVALUATION:multi-bleu-c-score EVALUATION:multi-bleu-detok-score EVALUATION:multi-bleu-c-detok-score EVALUATION:meteor-score EVALUATION:ter-score EVALUATION:wer-score EVALUATION:ibm-bleu-score EVALUATION:ibm-bleu-c-score EVALUATION:analysis EVALUATION:analysis-coverage EVALUATION:analysis-prec TRAINING:biconcor-model EVALUATION:wade-analysis
+	in: EVALUATION:nist-bleu-score EVALUATION:nist-bleu-c-score EVALUATION:bolt-bleu-score EVALUATION:bolt-bleu-c-score EVALUATION:multi-bleu-score EVALUATION:multi-bleu-c-score EVALUATION:multi-bleu-detok-score EVALUATION:multi-bleu-c-detok-score EVALUATION:meteor-score EVALUATION:ter-score EVALUATION:wer-score EVALUATION:ibm-bleu-score EVALUATION:ibm-bleu-c-score EVALUATION:analysis EVALUATION:analysis-coverage EVALUATION:analysis-prec TRAINING:biconcor-model EVALUATION:wade-analysis EVALUATION:analysis-compound
 	out: report
 	default-name: evaluation/report
