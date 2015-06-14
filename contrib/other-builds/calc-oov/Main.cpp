@@ -44,10 +44,9 @@ int main(int argc, char **argv)
   
   
   // BEGIN
-	string corpusPath, testPath, outPath;
+	string corpusPath, testPath;
 	corpusPath = argv[1];
 	testPath = argv[2];
-  outPath = argv[3];
 
 	// get training data vocab
 	ifstream corpusStrme;
@@ -72,11 +71,8 @@ int main(int argc, char **argv)
 	// look up each word in test set
 	ifstream testStrme;
 	testStrme.open(testPath.c_str());
-	
-  ofstream outStream;
-  outStream.open(outPath.c_str());
-  
-	obj->CalcOOV(testStrme, outStream);
+	  
+	obj->CalcOOV(testStrme);
 
   testStrme.close();
 	
