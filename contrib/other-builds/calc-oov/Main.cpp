@@ -11,14 +11,12 @@ int main(int argc, char **argv)
 	cerr << "starting" << endl;
 
   int method = 1; // 1=simple, 2=compound
-  string oovPath;
   
   namespace po = boost::program_options;
   po::options_description desc("Options");
   desc.add_options()
   ("help", "Print help messages")
   ("method", po::value<int>()->default_value(method), "Method. 1=Simple(default), 2=Compound")
-  ("output-file", po::value<string>()->default_value(oovPath), "Output oov to file")
   ;
   
   po::variables_map vm;
@@ -43,13 +41,13 @@ int main(int argc, char **argv)
   }
 
   if (vm.count("method")) method = vm["method"].as<int>();
-  if (vm.count("output-file")) oovPath = vm["output-file"].as<string>();
   
   
   // BEGIN
-	string corpusPath, testPath;
+	string corpusPath, testPath, outPath;
 	corpusPath = argv[1];
 	testPath = argv[2];
+  outPath = argv[3];
 
 	// get training data vocab
 	ifstream corpusStrme;
@@ -75,16 +73,12 @@ int main(int argc, char **argv)
 	ifstream testStrme;
 	testStrme.open(testPath.c_str());
 	
-  ofstream *oovStream = NULL;
-  if (!oovPath.empty()) {
-    oovStream = new ofstream();
-    oovStream->open(oovPath.c_str());
-  }
+  ofstream outStream;
+  outStream.open(outPath.c_str());
   
-	obj->CalcOOV(testStrme, oovStream);
+	obj->CalcOOV(testStrme, outStream);
 
-  delete oovStream;
-	testStrme.close();
+  testStrme.close();
 	
   delete obj;
   

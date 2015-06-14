@@ -7,7 +7,7 @@ class Simple: public Base
 {
 public:
   void CreateVocab(std::ifstream &corpusStrme);
-  void CalcOOV(std::ifstream &testStrme, std::ofstream *oovStream) const;
+  void CalcOOV(std::ifstream &testStrme, std::ofstream &outStream) const;
 
 protected:
   	std::unordered_set<std::string> vocab;
