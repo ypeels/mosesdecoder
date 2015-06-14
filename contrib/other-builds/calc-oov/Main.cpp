@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 	cerr << "starting" << endl;
 
   int method = 1; // 1=simple, 2=compound
-  bool outWords = true;
+  bool outWords = false;
   
   namespace po = boost::program_options;
   po::options_description desc("Options");
