@@ -19,5 +19,6 @@ protected:
   void Insert(const std::string &tok, size_t pos);
   bool Find(const std::string &tok, size_t pos) const;
   
+  Node *GetOrCreateNode(char c);
 };
 

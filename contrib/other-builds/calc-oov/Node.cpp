@@ -21,8 +21,8 @@ void Node::Insert(const std::string &tok, size_t pos)
   }
   else {
     char c = tok[pos];
-    Node *child = new Node();
-    m_children[c] = child;
+    
+    Node *child = GetOrCreateNode(c);
     child->Insert(tok, pos + 1);
   }
 }
@@ -61,8 +61,25 @@ const Node *Node::Find(char c) const
       return NULL;
     }
     else {
-      Node *child = iter->second;
+      const Node *child = iter->second;
       assert(child);
       return child;
     }  
 }
+
+Node *Node::GetOrCreateNode(char c)
+{
+	Children::iterator iter;
+	iter = m_children.find(c);
+	if (iter == m_children.end()) {
+		return new Node();
+	}
+	else {
+		Node *child = iter->second;
+		assert(child);
+		return child;
+	}  
+
+}
+
+

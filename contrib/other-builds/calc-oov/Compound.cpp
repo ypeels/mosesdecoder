@@ -21,7 +21,8 @@ void Compound::CreateVocab(std::ifstream &corpusStrme, const Parameter &params)
     if (params.lowercase) {
         boost::algorithm::to_lower(line);
     }
-
+		//cerr << line << endl;
+		
 		Tokenize(toks, line);
 		for (size_t i = 0; i < toks.size(); ++i) {
 			const string &tok = toks[i];
@@ -43,7 +44,8 @@ void Compound::CalcOOV(std::ifstream &testStrme, const Parameter &params) const
     if (params.lowercase) {
         boost::algorithm::to_lower(line);
     }
-
+		//cerr << line << endl;
+		
     vector<string> toks;
 		 Tokenize(toks, line);
 		 for (size_t i = 0; i < toks.size(); ++i) {
