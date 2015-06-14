@@ -70,7 +70,6 @@ const Node *Node::Find(char c) const
 
 Node *Node::GetOrCreateNode(char c)
 {
-  cerr << "c=" << c << " ";
 	Children::iterator iter;
 	iter = m_children.find(c);
 	if (iter == m_children.end()) {
