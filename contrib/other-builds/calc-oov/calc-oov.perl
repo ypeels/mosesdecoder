@@ -5,6 +5,12 @@ use strict;
 use Getopt::Long "GetOptions";
 use FindBin qw($RealBin);
 
+my $methodTarget = 1;
+
+GetOptions(
+  "method-target=i" => \$methodTarget,
+) or exit(1);
+
 my $outPath = $ARGV[0];
 my $inExt = $ARGV[1];
 my $outExt = $ARGV[2];
@@ -13,7 +19,8 @@ my $corpusPath = $ARGV[3];
 
 print STDERR "ARGV=" .scalar(@ARGV) ."\n";
 
-my $cmd = "$RealBin/calc-oov $corpusPath.$outExt ";
+# target
+my $cmd = "$RealBin/calc-oov --method " .$methodTarget ." $corpusPath.$outExt ";
 for (my $i = 4; $i < scalar(@ARGV); ++$i) {
   my $testPath = $ARGV[$i];
   $cmd .= "$testPath "
