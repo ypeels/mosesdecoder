@@ -103,6 +103,7 @@ post-split-clean
 	ignore-if: input-parser output-parser
 	pass-unless: input-splitter output-splitter
 	template: $SPLITTER:post-split-cleaner IN $input-extension $output-extension OUT 1 $max-sentence-length OUT.lines-retained
+	rerun-on-change: SPLITTER:post-split-cleaner
 	error: there is a blank factor
 post-split-clean-syntax
 	in: split-stem 
