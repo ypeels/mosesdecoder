@@ -6,6 +6,7 @@
 class Simple: public Base
 {
 public:
+  Simple();
   void CreateVocab(std::ifstream &corpusStrme);
   void CalcOOV(std::ifstream &testStrme, std::ofstream &outStream) const;
 

@@ -5,6 +5,11 @@
 
 using namespace std;
 
+Simple::Simple()
+{
+  cerr << "Simple\n";  
+}
+
 void Simple::CreateVocab(std::ifstream &corpusStrme)
 {
 	string line;

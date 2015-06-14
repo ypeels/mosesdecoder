@@ -7,6 +7,7 @@
 class Compound: public Base
 {
 public:
+  Compound();
   void CreateVocab(std::ifstream &corpusStrme);
   void CalcOOV(std::ifstream &testStrme, std::ofstream &outStream) const;
 

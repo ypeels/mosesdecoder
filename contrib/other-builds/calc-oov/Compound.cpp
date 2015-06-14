@@ -6,6 +6,11 @@
 
 using namespace std;
 
+Compound::Compound()
+{
+  cerr << "Compound\n";  
+}
+
 void Compound::CreateVocab(std::ifstream &corpusStrme)
 {
   string line;
