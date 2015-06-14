@@ -87,7 +87,7 @@ int main(int argc, char **argv)
     testStrme.open(testPath.c_str());
       
     boost::filesystem::path p(testPath);
-    cout << p.filename() << ": ";
+    cout << p.filename() << endl;
 
     obj->CalcOOV(testStrme, outWords);
 
