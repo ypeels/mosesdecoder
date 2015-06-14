@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include "Main.h"
 #include "Simple.h"
 #include "Compound.h"
@@ -47,12 +48,11 @@ int main(int argc, char **argv)
   // BEGIN
 	string corpusPath, testPath;
 	corpusPath = argv[1];
-	testPath = argv[2];
 
-	// get training data vocab
-	ifstream corpusStrme;
-	corpusStrme.open(corpusPath.c_str());
-	
+  // get training data vocab
+  ifstream corpusStrme;
+  corpusStrme.open(corpusPath.c_str());
+  
   Base *obj;
   switch (method) {
     case 1:
@@ -65,20 +65,28 @@ int main(int argc, char **argv)
       abort();
   }
   
-	obj->CreateVocab(corpusStrme);
-	
-	corpusStrme.close();
-	
-	// look up each word in test set
-	ifstream testStrme;
-	testStrme.open(testPath.c_str());
-	  
-	obj->CalcOOV(testStrme, outWords);
+  obj->CreateVocab(corpusStrme);
+  corpusStrme.close();
+    
+  for (size_t i = 2; i < argc; ++i) {
+    testPath = argv[i];
 
-  testStrme.close();
-	
-  delete obj;
+    // look up each word in test set
+    ifstream testStrme;
+    testStrme.open(testPath.c_str());
+      
+    boost::filesystem::path p(testPath);
+    cout << p.filename();
+
+    obj->CalcOOV(testStrme, outWords);
+
+    testStrme.close();
+    
+    cout << "----------------------------" << endl;
+  }
   
+  delete obj;
+
 	cerr << "finished" << endl;
 	return 0;
 }
