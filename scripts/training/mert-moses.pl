@@ -163,7 +163,7 @@ my $prev_aggregate_nbl_size = -1; # number of previous step to consider when loa
                                   # 0 means no previous data, i.e. from actual iteration
                                   # 1 means 1 previous data , i.e. from the actual iteration and from the previous one
                                   # and so on
-my $maximum_iterations = 25;
+my $maximum_iterations = 35;
 
 # Simulated post-editing
 my $___MOSES_SIM_PE = "$SCRIPTS_ROOTDIR/generic/moses_sim_pe.py";
