@@ -2,11 +2,13 @@
 #include "JoinScore.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
+#include "moses/InputFileStream.h"
 
 using namespace std;
 
 namespace Moses
 {
+////////////////////////////////////////////////////////////////
 int JoinScoreState::Compare(const FFState& other) const
 {
   const JoinScoreState &otherState = static_cast<const JoinScoreState&>(other);
@@ -14,6 +16,47 @@ int JoinScoreState::Compare(const FFState& other) const
   if (m_morphemes == otherState.m_morphemes)
     return 0;
   return (m_morphemes < otherState.m_morphemes) ? -1 : +1;
+}
+////////////////////////////////////////////////////////////////
+JoinScore::Node::Node()
+:isAWord(false)
+{  
+}
+
+JoinScore::Node *JoinScore::Node::Insert(const std::string &tok)
+{
+  return Insert(tok, 0);
+}
+
+JoinScore::Node *JoinScore::Node::Insert(const std::string &tok, size_t pos)
+{
+  if (pos == tok.size()) {
+    this->isAWord = true;
+    return this;
+  }
+  else {
+    char c = tok[pos];
+    
+    Node *child = GetOrCreateNode(c);
+    return child->Insert(tok, pos + 1);
+  }
+}
+
+JoinScore::Node *JoinScore::Node::GetOrCreateNode(char c)
+{
+	Children::iterator iter;
+	iter = m_children.find(c);
+	if (iter == m_children.end()) {
+		Node *node = new Node();
+    m_children[c] = node;
+    return node;
+	}
+	else {
+		Node *child = iter->second;
+		assert(child);
+		return child;
+	}  
+
 }
 
 ////////////////////////////////////////////////////////////////
@@ -27,6 +70,23 @@ JoinScore::JoinScore(const std::string &line)
   ,m_multiplier(1)
 {
   ReadParameters();
+}
+
+void JoinScore::Load()
+{
+  if (!m_vocabPath.empty()) {
+    InputFileStream vocabStrme(m_vocabPath);
+
+    string line;
+    while (getline(vocabStrme, line)) {
+      vector<string> toks;
+      Tokenize(toks, line);
+      for (size_t i = 0; i < toks.size(); ++i) {
+        const string &tok = toks[i];
+        m_vocabRoot.Insert(tok);
+      }
+    }
+  }
 }
 
 void JoinScore::EvaluateInIsolation(const Phrase &source
@@ -317,13 +377,19 @@ void JoinScore::SetParameter(const std::string& key, const std::string& value)
   }
   else if (key == "score-compound-word") {
     m_scoreCompoundWord = Scan<bool>(value);  
-  } 
+  }
+  else if (key == "score-compound-oov") {
+    m_scoreCompoundOOV = Scan<bool>(value);  
+  }
   else if (key == "max-morpheme-state") {
     m_maxMorphemeState = Scan<int>(value);  
   } 
   else if (key == "multiplier") {
     m_multiplier = Scan<float>(value);  
   } 
+  else if (key == "vocab-path") {
+    m_vocabPath = value;
+  }
   else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
