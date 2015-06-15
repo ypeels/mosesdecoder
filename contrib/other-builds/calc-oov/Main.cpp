@@ -25,6 +25,7 @@ int main(int argc, char **argv)
   ("method", po::value<int>()->default_value(params.method), "Method. 1=Simple(default), 2=Compound")
   ("output-oov", po::value<bool>()->default_value(params.outWords), "Output all oov words")
   ("lowercase", po::value<bool>()->default_value(params.lowercase), "Lowercase data")
+  ("juncture", po::value<string>()->default_value(params.juncture), "Compounds can only join with juncture")
   ("input", po::value<vector<string> >()->composing(), "")
   ;
   
@@ -59,6 +60,7 @@ int main(int argc, char **argv)
   if (vm.count("method")) params.method = vm["method"].as<int>();
   if (vm.count("output-oov")) params.outWords = vm["output-oov"].as<bool>();
   if (vm.count("lowercase")) params.lowercase = vm["lowercase"].as<bool>();
+  if (vm.count("juncture")) params.juncture = vm["juncture"].as<string>();
   
   if (params.lowercase) {
     std::setlocale(LC_ALL, "C");

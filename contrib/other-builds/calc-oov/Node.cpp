@@ -6,25 +6,27 @@ using namespace std;
 
 Node::Node()
 :isAWord(false)
+,endJuncture(false)
 {
   
 }
 
-void Node::Insert(const std::string &tok)
+void Node::Insert(const std::string &tok, bool endJuncture, bool isAWord)
 {
-  Insert(tok, 0);
+  Insert(tok, endJuncture, isAWord, 0);
 }
 
-void Node::Insert(const std::string &tok, size_t pos)
+void Node::Insert(const std::string &tok, bool endJuncture, bool isAWord, size_t pos)
 {
   if (pos == tok.size()) {
-    isAWord = true;
+    this->endJuncture = endJuncture;
+    this->isAWord = isAWord;
   }
   else {
     char c = tok[pos];
     
     Node *child = GetOrCreateNode(c);
-    child->Insert(tok, pos + 1);
+    child->Insert(tok, endJuncture, isAWord, pos + 1);
   }
 }
 
