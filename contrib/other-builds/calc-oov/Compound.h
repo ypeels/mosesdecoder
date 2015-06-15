@@ -13,6 +13,7 @@ public:
 
 protected:
   Node m_root;
+  const Node *m_rootJuncture;
   
   bool Decode(const std::string &tok, const Parameter &params) const;
   bool Decode(std::unordered_set<size_t> &stack, 

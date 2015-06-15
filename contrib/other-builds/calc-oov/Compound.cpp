@@ -54,6 +54,13 @@ void Compound::CreateVocab(std::ifstream &corpusStrme, const Parameter &params)
 		toks.clear();
 	}
 
+  // juncture root
+  if (params.juncture.empty()) {
+    m_rootJuncture = &m_root;
+  }
+  else {
+    m_rootJuncture = m_root.Insert(params.juncture, false, false);
+  }
 }
 
 void Compound::CalcOOV(std::ifstream &testStrme, const Parameter &params) const
@@ -131,13 +138,7 @@ bool Compound::Decode(std::unordered_set<size_t> &stack,
                     const std::string &tok, size_t startPos,
                     const Parameter &params) const
 {
-  const Node *node;
-  if (startPos == 0 || params.juncture.empty()) {
-    node = &m_root;
-  }
-  else {
-    //node = m_root.Find(params.juncture);
-  }
+  const Node *node = (startPos == 0 ? &m_root : m_rootJuncture);
   
   // start loop
   for (size_t currPos = startPos; currPos < tok.size(); ++currPos) {
