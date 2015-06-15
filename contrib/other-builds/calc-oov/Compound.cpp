@@ -73,7 +73,7 @@ void Compound::CalcOOV(std::ifstream &testStrme, const Parameter &params) const
 		 for (size_t i = 0; i < toks.size(); ++i) {
       const string &tok = toks[i];
 			
-			bool found = Decode(tok);
+			bool found = Decode(tok, params);
 
   		if ( !found ) {
        if (params.outWords) {
@@ -106,7 +106,7 @@ void Compound::CalcOOV(std::ifstream &testStrme, const Parameter &params) const
 			<< " oovTypes=" << oovTypes.size() << "(" << typeRatio << ")" << endl;
 }
 
-bool Compound::Decode(const std::string &tok) const
+bool Compound::Decode(const std::string &tok, const Parameter &params) const
 {
   std::unordered_set<size_t> stack;
   stack.insert(0);
@@ -116,7 +116,7 @@ bool Compound::Decode(const std::string &tok) const
     size_t startPos = *iter;
     stack.erase(iter);
     
-    bool ret = Decode(stack, tok, startPos);
+    bool ret = Decode(stack, tok, startPos, params);
     if (ret) {
       return true;
     }
@@ -127,15 +127,25 @@ bool Compound::Decode(const std::string &tok) const
   
 }
 
-bool Compound::Decode(std::unordered_set<size_t> &stack, const std::string &tok, size_t startPos) const
+bool Compound::Decode(std::unordered_set<size_t> &stack, 
+                    const std::string &tok, size_t startPos,
+                    const Parameter &params) const
 {
-  const Node *node = &m_root;
+  const Node *node;
+  if (startPos == 0 || params.juncture.empty()) {
+    node = &m_root;
+  }
+  else {
+    //node = m_root.Find(params.juncture);
+  }
+  
+  // start loop
   for (size_t currPos = startPos; currPos < tok.size(); ++currPos) {
     char c = tok[currPos];
     node = node->Find(c);
     
     if (node) {
-      if (node->isAWord) {
+      if (node->endJuncture) {
         stack.insert(currPos + 1);
       }
     }
@@ -145,7 +155,7 @@ bool Compound::Decode(std::unordered_set<size_t> &stack, const std::string &tok,
     }
   }
   
-  // got to the end but not is still not a word
+  // got to the end. Is it a word?
   return node->isAWord;
 }
 

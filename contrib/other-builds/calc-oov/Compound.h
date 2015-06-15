@@ -14,6 +14,8 @@ public:
 protected:
   Node m_root;
   
-  bool Decode(const std::string &tok) const;
-  bool Decode(std::unordered_set<size_t> &stack, const std::string &tok, size_t startPos) const;
+  bool Decode(const std::string &tok, const Parameter &params) const;
+  bool Decode(std::unordered_set<size_t> &stack, 
+              const std::string &tok, size_t startPos,
+              const Parameter &params) const;
 };
