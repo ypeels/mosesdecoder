@@ -92,6 +92,7 @@ int main(int argc, char **argv)
   // each test set
   for (size_t i = 1; i < additionalParameters.size(); ++i) {
     testPath = additionalParameters[i];
+    cerr << "testPath=" << testPath << endl;
     
     // look up each word in test set
     ifstream testStrme;
