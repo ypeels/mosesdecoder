@@ -19,8 +19,8 @@ Node *Node::Insert(const std::string &tok, bool endJuncture1, bool isAWord1)
 Node *Node::Insert(const std::string &tok, bool endJuncture1, bool isAWord1, size_t pos)
 {
   if (pos == tok.size()) {
-    endJuncture = endJuncture1;
-    isAWord = isAWord1;
+    endJuncture = endJuncture || endJuncture1;
+    isAWord = isAWord || isAWord1;
     return this;
   }
   else {
@@ -33,17 +33,17 @@ Node *Node::Insert(const std::string &tok, bool endJuncture1, bool isAWord1, siz
 
 const Node *Node::Find(char c) const
 {
-  cerr << "c=" << c << " ";
+  //cerr << "c=" << c << " ";
     Children::const_iterator iter;
     iter = m_children.find(c);
     if (iter == m_children.end()) {
-      cerr << "NULL";
+      //cerr << "NULL";
       return NULL;
     }
     else {
       const Node *child = iter->second;
       assert(child);
-      cerr << child->isAWord;
+      //cerr << child->isAWord;
       return child;
     }  
 }
