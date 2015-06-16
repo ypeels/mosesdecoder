@@ -1,4 +1,5 @@
 #include <vector>
+#include <boost/algorithm/string.hpp>
 #include "JoinScore.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
@@ -57,6 +58,33 @@ JoinScore::Node *JoinScore::Node::GetOrCreateNode(char c)
 		return child;
 	}  
 
+}
+
+const JoinScore::Node *JoinScore::Node::Find(const std::string &tok) const
+{
+  const Node *ret = Find(tok, 0);
+  return ret;
+}
+
+const JoinScore::Node *JoinScore::Node::Find(const std::string &tok, size_t pos) const
+{
+  if (pos == tok.size()) {
+    return this;
+  }
+  else {
+    char c = tok[pos];
+    
+    Children::const_iterator iter;
+    iter = m_children.find(c);
+    if (iter == m_children.end()) {
+      return NULL;
+    }
+    else {
+      const Node *child = iter->second;
+      assert(child);
+      return child->Find(tok, pos + 1);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -191,7 +219,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -226,7 +254,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -256,13 +284,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
           
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -271,7 +299,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -290,13 +318,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -305,7 +333,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -323,13 +351,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize());
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -337,7 +365,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -347,7 +375,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -417,10 +445,31 @@ int JoinScore::GetJuncture(const Word &morpheme) const
   return ret;
 }
 
-float JoinScore::CalcMorphemeScore(const Phrase &morphemes) const
+float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const
 {
-  // use this function to score orthography of word
-  return 0;
+  string wordStr = morphemes.ToString();
+  wordStr = Trim(wordStr);
+  boost::replace_all(wordStr, "+ +", "");
+  boost::replace_all(wordStr, "+", "");
+  
+  const Node *node = m_vocabRoot.Find(wordStr);
+  
+  float ret;
+  if (node) {
+    if (wholeWord) {
+      bool isAWord = node->isAWord;
+      ret = isAWord ? 0 : 1;
+    }
+    else {
+      ret = 0;
+    }
+    
+  }
+  else {
+    ret = 1;
+  }
+  
+  return ret;
 }
 
 void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const

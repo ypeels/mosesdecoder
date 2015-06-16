@@ -49,6 +49,7 @@ class JoinScore : public StatefulFeatureFunction
 
     Node();
     Node *Insert(const std::string &tok);
+    const Node *Find(const std::string &tok) const;
 
   protected:
     typedef std::unordered_map<char, Node*> Children;
@@ -56,6 +57,8 @@ class JoinScore : public StatefulFeatureFunction
 
     Node *Insert(const std::string &tok, size_t pos);
     Node *GetOrCreateNode(char c);
+
+    const Node *Find(const std::string &tok, size_t pos) const;
   };
 
 public:
@@ -109,7 +112,7 @@ protected:
                           size_t &numInvalidJoin, float &compoundWordScore,
                           Phrase &morphemes, const Word *morpheme,
                           int prevJuncture, int currJuncture) const;
-  float CalcMorphemeScore(const Phrase &morphemes) const;
+  float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const;
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;
   float CalcScore(size_t count) const;
