@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
@@ -52,7 +52,7 @@ class JoinScore : public StatefulFeatureFunction
     const Node *Find(const std::string &tok) const;
 
   protected:
-    typedef std::unordered_map<char, Node*> Children;
+    typedef std::map<char, Node*> Children;
     Children m_children;
 
     Node *Insert(const std::string &tok, size_t pos);
