@@ -9,5 +9,5 @@ void Base::OutputOOV(const std::set<std::string> &oovTypes)
   {
     std::cout << c << " ";
   }
-  
+  cout << endl;
 }
