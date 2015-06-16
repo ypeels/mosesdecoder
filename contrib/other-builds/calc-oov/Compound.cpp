@@ -85,9 +85,6 @@ void Compound::CalcOOV(std::unordered_set<std::string> &oovTypes,
 			bool found = Decode(tok, params);
 
   		if ( !found ) {
-       if (params.outWords) {
-         cout << tok << " ";      
-       }
        ++oovToks;
     		
     		oovTypes.insert(tok);
@@ -106,9 +103,6 @@ void Compound::CalcOOV(std::unordered_set<std::string> &oovTypes,
 	float totalTypes = oovTypes.size() + foundTypes.size();
 	float typeRatio = (float) oovTypes.size() / totalTypes;
 	
-  if (params.outWords) {
-    cout << endl; 
-  }
 	cout << "totalToks=" << totalToks 
 			<< " oovToks=" << oovToks << "(" << tokRatio << ")"
 			<< " totalTypes=" << totalTypes

@@ -52,9 +52,6 @@ void Simple::CalcOOV(std::unordered_set<std::string> &oovTypes,
 			std::unordered_set<std::string>::const_iterator got = vocab.find (tok);
 
   		if ( got == vocab.end() ) {
-       if (params.outWords) {
-         cout << tok << " ";      
-       }
     		++oovToks;
     		
     		oovTypes.insert(tok);
@@ -73,9 +70,6 @@ void Simple::CalcOOV(std::unordered_set<std::string> &oovTypes,
 	float totalTypes = oovTypes.size() + foundTypes.size();
 	float typeRatio = (float) oovTypes.size() / totalTypes;
 	
-  if (params.outWords) {
-    cout << endl; 
-  }
 	cout << "totalToks=" << totalToks 
 			<< " oovToks=" << oovToks << "(" << tokRatio << ")"
 			<< " totalTypes=" << totalTypes
