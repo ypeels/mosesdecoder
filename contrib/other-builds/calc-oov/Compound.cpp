@@ -28,25 +28,26 @@ void Compound::CreateVocab(std::ifstream &corpusStrme, const Parameter &params)
 		Tokenize(toks, line);
 		for (size_t i = 0; i < toks.size(); ++i) {
 			const string &tok = toks[i];
-  		cerr << "tok=" << tok << " j=" << j << " " 
+  		/*cerr << "tok=" << tok << " j=" << j << " " 
           << tok.size() << " " << j.size() << " "
           << tok.rfind(j) << endl;
+      */
       
       if (params.juncture.empty()) {
         // not using juncture. endjuncture == isWord
-        cerr << "insert a " << tok << endl;
+        //cerr << "insert a " << tok << endl;
         m_root.Insert(tok, true, true);
       }
       else if (tok.size() > j.size() 
           && tok.rfind(j) == (tok.size() - j.size())) {
         // has end juncture
         string tempTok = tok.substr(0, tok.size() - j.size());
-        cerr << "insert b " << tempTok << endl;
+        //cerr << "insert b " << tempTok << endl;
         m_root.Insert(tempTok, true, false);        
       }
       else {
         // using juncture but this word doesn't have endJuncture
-        cerr << "insert c " << tok << endl;
+        //cerr << "insert c " << tok << endl;
         m_root.Insert(tok, false, true);                
       }
 		}

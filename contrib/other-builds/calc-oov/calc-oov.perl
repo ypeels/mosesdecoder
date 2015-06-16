@@ -7,12 +7,12 @@ use FindBin qw($RealBin);
 
 my $methodTarget = 1;
 my $outputOOVTarget = 0;
-my $juncture;
+my $juncture = "";
 
 GetOptions(
   "method-target=i" => \$methodTarget,
   "output-oov-target" => \$outputOOVTarget,
-  "juncture" => \$juncture
+  "juncture=s" => \$juncture
 ) or exit(1);
 
 my $outPath = $ARGV[0];
@@ -26,9 +26,7 @@ print STDERR "ARGV=" .scalar(@ARGV) ."\n";
 # target
 my $cmd = "$RealBin/calc-oov --method " .$methodTarget 
 				. " --output-oov " .$outputOOVTarget;
-if (defined($juncture)) {
-		$cmd .= " --juncture " .$juncture ;
-}
+$cmd .= " --juncture \"" .$juncture ."\"";
 $cmd .= " $corpusPath.$outExt ";
 				
 for (my $i = 4; $i < scalar(@ARGV); ++$i) {

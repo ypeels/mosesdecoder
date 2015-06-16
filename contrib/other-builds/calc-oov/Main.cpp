@@ -62,6 +62,8 @@ int main(int argc, char **argv)
   if (vm.count("lowercase")) params.lowercase = vm["lowercase"].as<bool>();
   if (vm.count("juncture")) params.juncture = vm["juncture"].as<string>();
   
+  cerr << "params.juncture=" << params.juncture << endl;
+  
   if (params.lowercase) {
     std::setlocale(LC_ALL, "C");
   }
