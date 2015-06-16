@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <unordered_set>
 #include "Base.h"
 #include "Node.h"
 
@@ -8,7 +9,7 @@ class Compound: public Base
 public:
   Compound();
   void CreateVocab(std::ifstream &corpusStrme, const Parameter &params);
-  void CalcOOV(std::unordered_set<std::string> &oovTypes,
+  void CalcOOV(std::set<std::string> &oovTypes,
               std::ifstream &testStrme, const Parameter &params) const;
 
 protected:

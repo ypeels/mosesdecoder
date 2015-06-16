@@ -32,7 +32,7 @@ void Simple::CreateVocab(std::ifstream &corpusStrme, const Parameter &params)
 }
 
 
-void Simple::CalcOOV(std::unordered_set<std::string> &oovTypes,
+void Simple::CalcOOV(std::set<std::string> &oovTypes,
                     std::ifstream &testStrme, const Parameter &params) const
 {
 	size_t totalToks = 0, oovToks = 0;

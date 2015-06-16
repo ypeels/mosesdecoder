@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void Base::OutputOOV(const std::unordered_set<std::string> &oovTypes)
+void Base::OutputOOV(const std::set<std::string> &oovTypes)
 {
   for (auto c : oovTypes)
   {

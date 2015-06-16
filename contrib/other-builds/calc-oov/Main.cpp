@@ -103,7 +103,7 @@ int main(int argc, char **argv)
     boost::filesystem::path p(testPath);
     cout << p.filename() << endl;
 
-    std::unordered_set<std::string> oovTypes;
+    std::set<std::string> oovTypes;
     obj->CalcOOV(oovTypes, testStrme, params);
     
     if (params.outWords) {
