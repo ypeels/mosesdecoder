@@ -103,6 +103,8 @@ int main(int argc, char **argv)
     boost::filesystem::path p(testPath);
     cout << p.filename() << endl;
 
+    cout << "----------------------------" << endl;
+
     std::set<std::string> oovTypes;
     obj->CalcOOV(oovTypes, testStrme, params);
     
@@ -110,9 +112,7 @@ int main(int argc, char **argv)
       obj->OutputOOV(oovTypes);
     }
 
-    testStrme.close();
-    
-    cout << "----------------------------" << endl;
+    testStrme.close();    
   }
   
   delete obj;
