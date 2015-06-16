@@ -115,7 +115,7 @@ protected:
   float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const;
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;
-  float CalcScore(size_t count) const;
+  float CalcScore(float count) const;
 };
 
 

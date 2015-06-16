@@ -69,6 +69,7 @@ const JoinScore::Node *JoinScore::Node::Find(const std::string &tok) const
 const JoinScore::Node *JoinScore::Node::Find(const std::string &tok, size_t pos) const
 {
   if (pos == tok.size()) {
+    //cerr << " ret=" << this;
     return this;
   }
   else {
@@ -77,10 +78,12 @@ const JoinScore::Node *JoinScore::Node::Find(const std::string &tok, size_t pos)
     Children::const_iterator iter;
     iter = m_children.find(c);
     if (iter == m_children.end()) {
+      //cerr << " " << c << "=NULL";
       return NULL;
     }
     else {
       const Node *child = iter->second;
+      //cerr << " " << c << "=" << child;
       assert(child);
       return child->Find(tok, pos + 1);
     }
@@ -98,6 +101,8 @@ JoinScore::JoinScore(const std::string &line)
   ,m_multiplier(1)
 {
   ReadParameters();
+  
+  UTIL_THROW_IF2(m_scoreCompoundWord && m_vocabPath.empty(), "Must provide path to vocab file");
 }
 
 void JoinScore::Load()
@@ -185,14 +190,15 @@ FFState* JoinScore::EvaluateWhenApplied(
   }
   UTIL_THROW_IF2(ind > m_numScoreComponents, "Vector element out-of-range:" << ind << ">" << m_numScoreComponents);
   
+  //cerr << "score=" << scores[0] << endl;
   accumulator->PlusEquals(this, scores);
   
   return new JoinScoreState(morphemes, prevJuncture);
 }
 
-float JoinScore::CalcScore(size_t count) const
+float JoinScore::CalcScore(float count) const
 {
-  float ret = m_tuneable ? (float) count * m_multiplier
+  float ret = m_tuneable ? count * m_multiplier
                         : (count?-std::numeric_limits<float>::infinity():0);
   return ret;
 }
@@ -449,8 +455,10 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) cons
 {
   string wordStr = morphemes.ToString();
   wordStr = Trim(wordStr);
+  //cerr << "wordStr==" << wordStr;
   boost::replace_all(wordStr, "+ +", "");
   boost::replace_all(wordStr, "+", "");
+  //cerr << "==" << wordStr;
   
   const Node *node = m_vocabRoot.Find(wordStr);
   
@@ -468,6 +476,7 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) cons
   else {
     ret = 1;
   }
+  //cerr << "==" << ret << endl;
   
   return ret;
 }
