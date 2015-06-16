@@ -11,23 +11,23 @@ Node::Node()
   
 }
 
-Node *Node::Insert(const std::string &tok, bool endJuncture, bool isAWord)
+Node *Node::Insert(const std::string &tok, bool endJuncture1, bool isAWord1)
 {
-  return Insert(tok, endJuncture, isAWord, 0);
+  return Insert(tok, endJuncture1, isAWord1, 0);
 }
 
-Node *Node::Insert(const std::string &tok, bool endJuncture, bool isAWord, size_t pos)
+Node *Node::Insert(const std::string &tok, bool endJuncture1, bool isAWord1, size_t pos)
 {
   if (pos == tok.size()) {
-    this->endJuncture = endJuncture;
-    this->isAWord = isAWord;
+    endJuncture = endJuncture1;
+    isAWord = isAWord1;
     return this;
   }
   else {
     char c = tok[pos];
     
     Node *child = GetOrCreateNode(c);
-    return child->Insert(tok, endJuncture, isAWord, pos + 1);
+    return child->Insert(tok, endJuncture1, isAWord1, pos + 1);
   }
 }
 
