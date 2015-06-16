@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <string>
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
@@ -41,8 +42,29 @@ public:
 
 class JoinScore : public StatefulFeatureFunction
 {
+  class Node
+  {
+  public:
+    bool isAWord;
+
+    Node();
+    Node *Insert(const std::string &tok);
+    const Node *Find(const std::string &tok) const;
+
+  protected:
+    typedef std::unordered_map<char, Node*> Children;
+    Children m_children;
+
+    Node *Insert(const std::string &tok, size_t pos);
+    Node *GetOrCreateNode(char c);
+
+    const Node *Find(const std::string &tok, size_t pos) const;
+  };
+
 public:
   JoinScore(const std::string &line);
+
+  virtual void Load();
 
   bool IsUseable(const FactorMask &mask) const {
     return true;
@@ -77,16 +99,20 @@ public:
   void SetParameter(const std::string& key, const std::string& value);
     
 protected:
-  bool m_scoreRealWords, m_scoreNumCompounds, m_scoreInvalidJoins, m_scoreCompoundWord;
+  bool m_scoreRealWords, m_scoreNumCompounds, 
+        m_scoreInvalidJoins, m_scoreCompoundWord, 
+        m_scoreCompoundOOV;
   int m_maxMorphemeState;
   float m_multiplier;
+  std::string m_vocabPath;
+  Node m_vocabRoot;
   
   int GetJuncture(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord, 
                           size_t &numInvalidJoin, float &compoundWordScore,
                           Phrase &morphemes, const Word *morpheme,
                           int prevJuncture, int currJuncture) const;
-  float CalcMorphemeScore(const Phrase &morphemes) const;
+  float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const;
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;
   float CalcScore(size_t count) const;
