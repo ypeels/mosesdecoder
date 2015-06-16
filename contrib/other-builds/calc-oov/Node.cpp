@@ -33,14 +33,17 @@ Node *Node::Insert(const std::string &tok, bool endJuncture, bool isAWord, size_
 
 const Node *Node::Find(char c) const
 {
+  cerr << "c=" << c << " ";
     Children::const_iterator iter;
     iter = m_children.find(c);
     if (iter == m_children.end()) {
+      cerr << "NULL";
       return NULL;
     }
     else {
       const Node *child = iter->second;
       assert(child);
+      cerr << child->isAWord;
       return child;
     }  
 }
