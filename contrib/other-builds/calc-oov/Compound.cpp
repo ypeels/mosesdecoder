@@ -64,10 +64,11 @@ void Compound::CreateVocab(std::ifstream &corpusStrme, const Parameter &params)
   }
 }
 
-void Compound::CalcOOV(std::ifstream &testStrme, const Parameter &params) const
+void Compound::CalcOOV(std::unordered_set<std::string> &oovTypes, 
+                    std::ifstream &testStrme, const Parameter &params) const
 {
   size_t totalToks = 0, oovToks = 0;
-	std::unordered_set<std::string> oovTypes, foundTypes;
+	std::unordered_set<std::string> foundTypes;
 	
 	string line;
 	while (getline(testStrme, line)) {

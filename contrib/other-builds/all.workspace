@@ -11,8 +11,8 @@
   <Project Name="consolidate" Path="consolidate/consolidate.project" Active="No"/>
   <Project Name="ar-detok" Path="ar-detok/ar-detok.project" Active="No"/>
   <Project Name="tok-align" Path="tok-align/tok-align.project" Active="No"/>
-  <Project Name="moses" Path="moses/moses.project" Active="Yes"/>
-  <Project Name="calc-oov" Path="calc-oov/calc-oov.project" Active="No"/>
+  <Project Name="moses" Path="moses/moses.project" Active="No"/>
+  <Project Name="calc-oov" Path="calc-oov/calc-oov.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="manual-label" ConfigName="Debug"/>
