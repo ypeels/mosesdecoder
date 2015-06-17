@@ -15,29 +15,61 @@ GetOptions(
   "juncture=s" => \$juncture
 ) or exit(1);
 
-my $outPath = $ARGV[0];
+my $outStem = $ARGV[0];
 my $inExt = $ARGV[1];
 my $outExt = $ARGV[2];
 
-my $corpusPath = $ARGV[3];
+my $corpusStem = $ARGV[3];
+my $cmd;
 
-print STDERR "ARGV=" .scalar(@ARGV) ."\n";
+safesystem("rm -rf $outStem.$inExt");
+safesystem("rm -rf $outStem.$outExt");
+
+CalcParallelCorpusStat($corpusStem, $inExt, $outExt, $outStem);
 
 # target
-my $cmd = "$RealBin/calc-oov --method " .$methodTarget 
+$cmd = "$RealBin/calc-oov --method " .$methodTarget 
 				. " --output-oov " .$outputOOVTarget;
 $cmd .= " --juncture \"" .$juncture ."\"";
-$cmd .= " $corpusPath.$outExt ";
+$cmd .= " $corpusStem.$outExt ";
 				
 for (my $i = 4; $i < scalar(@ARGV); ++$i) {
   my $testPath = $ARGV[$i];
   $cmd .= "$testPath "
 }
 
-$cmd .= "> $outPath.$outExt";
+$cmd .= ">> $outStem.$outExt";
 safesystem($cmd);
 
 #########################################
+sub CalcParallelCorpusStat {
+  my ($corpusStem, $inExt, $outExt, $outStem) = (shift, shift, shift, shift);
+  
+	CalcCorpusStat("$corpusStem.$inExt", "$outStem.$inExt");
+	CalcCorpusStat("$corpusStem.$outExt", "$outStem.$outExt");
+}
+
+sub CalcCorpusStat {
+  my ($corpusPath, $outPath) = (shift, shift);
+  
+  print STDERR "corpusPath=$corpusPath\n";
+  print STDERR "outPath=$outPath\n";
+  
+  my $cmd = "cat $corpusPath | wc -w";
+  my $numToks = `$cmd`;
+  chomp($numToks);
+  
+  $cmd = "cat $corpusPath | tr ' ' '\n' | LC_ALL=C sort | uniq | wc -w";
+  my $numTypes = `$cmd`;
+  chomp($numTypes);
+  
+  my $ratio = $numToks / $numTypes;
+  
+  $cmd = "echo numToks=$numToks numTypes=$numTypes ratio=$ratio >> $outPath";
+  safesystem($cmd);
+  
+}
+
 sub safesystem {
   print STDERR "Executing: @_\n";
   system("bash", "-c", @_);
