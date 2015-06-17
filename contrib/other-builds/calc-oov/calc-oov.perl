@@ -59,15 +59,17 @@ sub CalcCorpusStat {
   my $numToks = `$cmd`;
   chomp($numToks);
   
+  safesystem("echo ---------------------------- >> $outPath");
+
   $cmd = "cat $corpusPath | tr ' ' '\n' | LC_ALL=C sort | uniq | wc -w";
   my $numTypes = `$cmd`;
   chomp($numTypes);
   
   my $ratio = $numToks / $numTypes;
   
+  safesystem("echo Stats for $corpusPath >> $outPath");
   $cmd = "echo numToks=$numToks numTypes=$numTypes ratio=$ratio >> $outPath";
   safesystem($cmd);
-  
 }
 
 sub safesystem {
