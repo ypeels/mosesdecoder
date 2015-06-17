@@ -96,14 +96,14 @@ int main(int argc, char **argv)
     testPath = additionalParameters[i];
     cerr << "testPath=" << testPath << endl;
     
+    cout << "----------------------------" << endl;
+
     // look up each word in test set
     ifstream testStrme;
     testStrme.open(testPath.c_str());
       
     boost::filesystem::path p(testPath);
     cout << p.filename() << endl;
-
-    cout << "----------------------------" << endl;
 
     std::set<std::string> oovTypes;
     obj->CalcOOV(oovTypes, testStrme, params);
