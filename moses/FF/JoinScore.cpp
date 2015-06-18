@@ -10,7 +10,7 @@ using namespace std;
 namespace Moses
 {
 ////////////////////////////////////////////////////////////////
-int JoinScoreState::Compare(const FFState& other) const
+int JoinScore::JoinScoreState::Compare(const FFState& other) const
 {
   const JoinScoreState &otherState = static_cast<const JoinScoreState&>(other);
 

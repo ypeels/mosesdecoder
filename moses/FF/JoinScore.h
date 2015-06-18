@@ -8,40 +8,10 @@
 namespace Moses
 {
 
-class JoinScoreState : public FFState
-{
-  //std::string m_concat;
-  Phrase m_morphemes;
-  size_t m_juncture;
-    //None  =  0,
-    //Left  =  1,
-    //Right =  2
-
-public:
-  JoinScoreState()
-  :m_juncture(0)
-  {}
-  
-  JoinScoreState(const Phrase &morphemes, size_t juncture)
-  :m_morphemes(morphemes)
-  ,m_juncture(juncture)
-  {
-  }
-
-  int Compare(const FFState& other) const;
-  
-  const Phrase &GetMorphemes() const {
-    return m_morphemes;
-  }
-
-  int GetJuncture() const {
-    return m_juncture;
-  }
-
-};
 
 class JoinScore : public StatefulFeatureFunction
 {
+////////////////////////////////////////////////////////////////
   class Node
   {
   public:
@@ -60,6 +30,42 @@ class JoinScore : public StatefulFeatureFunction
 
     const Node *Find(const std::string &tok, size_t pos) const;
   };
+
+////////////////////////////////////////////////////////////////
+
+  class JoinScoreState : public FFState
+  {
+    //std::string m_concat;
+    Phrase m_morphemes;
+    size_t m_juncture;
+      //None  =  0,
+      //Left  =  1,
+      //Right =  2
+    const Node *m_node;
+    
+  public:
+    JoinScoreState()
+    :m_juncture(0)
+    {}
+    
+    JoinScoreState(const Phrase &morphemes, size_t juncture)
+    :m_morphemes(morphemes)
+    ,m_juncture(juncture)
+    {
+    }
+
+    int Compare(const FFState& other) const;
+    
+    const Phrase &GetMorphemes() const {
+      return m_morphemes;
+    }
+
+    int GetJuncture() const {
+      return m_juncture;
+    }
+
+  };
+////////////////////////////////////////////////////////////////
 
 public:
   JoinScore(const std::string &line);
