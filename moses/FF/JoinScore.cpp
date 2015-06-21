@@ -50,7 +50,7 @@ JoinScore::Node *JoinScore::Node::GetOrCreateNode(char c)
 	if (iter == m_children.end()) {
 		 Node *node = new Node();
     m_children[c] = node;
-    cerr << c << " " << node << endl;
+    //cerr << c << " " << node << endl;
     return node;
 	}
 	else {
@@ -100,6 +100,7 @@ JoinScore::JoinScore(const std::string &line)
   ,m_scoreCompoundWord(true)
   ,m_maxMorphemeState(-1)
   ,m_multiplier(1)
+  ,m_scorePartialCompound(false)
 {
   ReadParameters();
   
@@ -166,10 +167,11 @@ FFState* JoinScore::EvaluateWhenApplied(
               morphemes, prevNode, &word, 
               prevJuncture, currJuncture);
 
-    if (morphemes.GetSize()) {
+    if (m_scorePartialCompound) {
       if (currJuncture == 2 || currJuncture == 3) {
         float score = CalcMorphemeScore(prevNode, morphemes, false);
         compoundWordScore += score;
+        //cerr << morphemes.ToString() << "=" << score << endl;
       }
     }
     else {
@@ -440,6 +442,9 @@ void JoinScore::SetParameter(const std::string& key, const std::string& value)
   } 
   else if (key == "vocab-path") {
     m_vocabPath = value;
+  }
+  else if (key == "score-partial-compound") {
+    m_scorePartialCompound = Scan<bool>(value);  
   }
   else {
     StatefulFeatureFunction::SetParameter(key, value);

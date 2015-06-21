@@ -111,8 +111,9 @@ public:
     
 protected:
   bool m_scoreRealWords, m_scoreNumCompounds, 
-        m_scoreInvalidJoins, m_scoreCompoundWord, 
-        m_scoreCompoundOOV;
+        m_scoreInvalidJoins, m_scoreCompoundOOV,
+        m_scoreCompoundWord, m_scorePartialCompound
+        ;
   int m_maxMorphemeState;
   float m_multiplier;
   std::string m_vocabPath;
