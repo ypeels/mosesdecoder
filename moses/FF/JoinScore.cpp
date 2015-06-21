@@ -165,11 +165,11 @@ FFState* JoinScore::EvaluateWhenApplied(
               countInvalidJoin, compoundWordScore, 
               morphemes, prevNode, &word, 
               prevJuncture, currJuncture);
-    cerr << "AFTER:" << morphemes.ToString() << "=" << prevNode << endl;            
 
     if (morphemes.GetSize()) {
       if (currJuncture == 2 || currJuncture == 3) {
-        //CalcMorphemeScore(prevNode, morphemes, false);
+        float score = CalcMorphemeScore(prevNode, morphemes, false);
+        compoundWordScore += score;
       }
     }
     else {
@@ -476,7 +476,7 @@ float JoinScore::CalcMorphemeScore(const Node *&node, const Phrase &morphemes, b
   boost::replace_all(wordStr, "+", "");
   
   node = m_vocabRoot.Find(wordStr);
-  cerr << wordStr << "=" << node << endl;
+  //cerr << wordStr << "=" << node << endl;
   
   float ret;
   if (node) {
