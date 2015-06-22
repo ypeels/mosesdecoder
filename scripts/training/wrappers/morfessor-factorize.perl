@@ -19,6 +19,10 @@ while (my $line = <STDIN>) {
 			if ($suffix eq  "") {
 			  $suffix = "BLANK";
 			}
+			else {
+				$suffix = "+$suffix";
+			}
+			
   		print "$fullWord|$stem|$suffix ";
 			$stem = "";
 			$fullWord = "";
