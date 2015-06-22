@@ -16,7 +16,7 @@ while (my $line = <STDIN>) {
 		
 		
 		if ($end == 0) {
-  		print "$stem|$fullWord ";
+  		print "$fullWord|$stem ";
 			$stem = "";
 			$fullWord = "";
 		}
