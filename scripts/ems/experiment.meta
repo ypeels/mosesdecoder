@@ -257,6 +257,7 @@ post-split-clean
 	ignore-if: output-parser
 	pass-unless: SPLITTER:lm-post-split-cleaner
 	template: $SPLITTER:lm-post-split-cleaner IN OUT
+	rerun-on-change: SPLITTER:lm-post-split-cleaner
 	error: there is a blank factor
 strip
         in: clean-split-corpus
