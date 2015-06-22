@@ -2,9 +2,52 @@
 
 use strict;
 use warnings;
+use Getopt::Long "GetOptions";
+use FindBin qw($RealBin);
+
+my $FACTOR;
+my $CONFIG;
+my $MORFDIR;
+my $LC = 0;
+
+GetOptions(
+  "factor=i" => \$FACTOR,
+  "config=s" => \$CONFIG,
+  "morfessor-dir=s" => \$MORFDIR,
+  "lowercase=i" => \$LC
+    ) or die("ERROR: unknown options");
+
+die("must provide -factor and -config args") if !defined($FACTOR) or !defined($CONFIG) or !defined($MORFDIR);
+
+my $INPATH = $ARGV[0];
+my $OUTPATH = $ARGV[1];
+my $TMPDIR = $ARGV[2];
+my $MOSESDIR = "$RealBin/../../../";
+my $cmd;
+
+print STDERR "LC=$LC\n";
+
+my $tmp1;
+if ($LC) {
+	$tmp1 = "$TMPDIR/tmp1.$$";
+	$cmd = "$MOSESDIR/scripts/tokenizer/lowercase.perl < $INPATH > $tmp1";
+	safesystem($cmd);
+}
+else {
+	$tmp1 = $INPATH;
+}
+
+# run morfessor
+my $tmp2 = "$TMPDIR/tmp2.$$";
+$cmd = "$MOSESDIR/scripts/generic/morfessor-wrapper.perl --morfessor-dir $MORFDIR -model $CONFIG < $tmp1 > $tmp2";
+safesystem($cmd);
 
 
-while (my $line = <STDIN>) {
+# MAIN LOOP
+open(INFILE, $tmp2) or die("Can't open file $tmp2");
+open(OUTFILE, ">$OUTPATH") or die("Can't open file $OUTPATH");
+
+while (my $line = <INFILE>) {
 	chomp($line);
 	my @toks = split(/\s/,$line);
 	
@@ -23,7 +66,19 @@ while (my $line = <STDIN>) {
 				$suffix = "+$suffix";
 			}
 			
-  		print "$fullWord|$stem|$suffix ";
+			if ($FACTOR == 0) {
+	  		print OUTFILE "$fullWord ";
+	  	}
+			elsif ($FACTOR == 1) {
+	  		print OUTFILE "$stem ";
+	  	}
+			elsif ($FACTOR == 2) {
+	  		print OUTFILE "$suffix ";
+	  	}
+			else {
+				die("Unknown factor $FACTOR");
+			}
+				  	
 			$stem = "";
 			$fullWord = "";
 			$suffix = "";
@@ -33,6 +88,10 @@ while (my $line = <STDIN>) {
 	print "\n";
 }
 
+close(INFILE);
+close(OUTFILE);
+
+############################################
 sub CreateFactors {
 	my $fullWord = shift;
 	my $stem = shift;
@@ -74,3 +133,24 @@ sub CreateFactors {
 	
 	return $end;
 }
+
+
+sub safesystem {
+  print STDERR "Executing: @_\n";
+  system("bash", "-c", @_);
+  if ($? == -1) {
+      print STDERR "Failed to execute: @_\n  $!\n";
+      exit(1);
+  }
+  elsif ($? & 127) {
+      printf STDERR "Execution of: @_\n  died with signal %d, %s coredump\n",
+          ($? & 127),  ($? & 128) ? 'with' : 'without';
+      exit(1);
+  }
+  else {
+    my $exitcode = $? >> 8;
+    print STDERR "Exit code: $exitcode\n" if $exitcode;
+    return ! $exitcode;
+  }
+}
+
