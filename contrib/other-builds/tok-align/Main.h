@@ -28,18 +28,18 @@ inline void Tokenize(std::vector<std::string> &output
   }
 }
 
-void ProcessLineChar(std::vector<Point> &alignments, 
+bool ProcessLineChar(std::vector<Point> &alignments, 
                     const Parameter &params, 
                     const std::vector<std::string> &toksX,
                     const std::vector<std::string> &toksY,
                     size_t lineNum);
-void ProcessLineLCS(std::vector<Point> &alignments, 
+bool ProcessLineLCS(std::vector<Point> &alignments, 
                     const Parameter &params, 
                     const std::vector<std::string> &toksX,  
                     const std::vector<std::string> &toksY,
                     size_t lineNum);
 void CreateMismatches(std::vector<Point> &mismatches, int startMismatchX, int endMismatchX, int startMismatchY, int endMismatchY);
 void CreateCrossProduct(std::vector<Point> &alignments, const std::vector<int> &indsX, const std::vector<int> &indsY);
-void OutputJunctured(std::ofstream &outSplit, const std::vector<std::string> &toksSplit, 
-                const std::vector<Point> &alignments, const Parameter &params);
+void OutputJunctured(std::ofstream &outSplit, const std::vector<std::string> &toksSplit, const std::vector<std::string> &toksUnsplit,
+                const std::vector<Point> &alignments, const Parameter &params, bool error);
 

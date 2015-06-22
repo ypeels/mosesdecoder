@@ -77,11 +77,12 @@ int main(int argc, char **argv)
     
     std::vector<Point> alignments;
     
+    bool error;
     if (params.method == 1) {
-      ProcessLineLCS(alignments, params, toksSplit, toksUnsplit, lineNum);
+      error = ProcessLineLCS(alignments, params, toksSplit, toksUnsplit, lineNum);
     }
     else if (params.method == 2) {
-      ProcessLineChar(alignments, params, toksSplit, toksUnsplit, lineNum);
+      error = ProcessLineChar(alignments, params, toksSplit, toksUnsplit, lineNum);
     }
     else {
       abort();
@@ -94,7 +95,7 @@ int main(int argc, char **argv)
     cout << endl;
 
     if (!params.juncturedPath.empty()) {
-        OutputJunctured(*outJunctured, toksSplit, alignments, params);
+        OutputJunctured(*outJunctured, toksSplit, toksUnsplit, alignments, params, error);
     }
     
     toksSplit.clear();
@@ -117,9 +118,18 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void OutputJunctured(ofstream &outJunctured, const vector<string> &toksSplit, 
-                const std::vector<Point> &alignments, const Parameter &params)
+void OutputJunctured(ofstream &outJunctured, const vector<string> &toksSplit, const vector<string> &toksUnsplit,
+                const std::vector<Point> &alignments, const Parameter &params, bool error)
 {
+  if (error) {
+    // # char. just output the unsplit version
+    for (size_t i = 0; i < toksUnsplit.size(); ++i) {
+      outJunctured << toksUnsplit[i] << " ";
+    }
+    outJunctured << endl;
+    return;
+  }
+  
   // compute which Split words should have prefixes and suffixes
   typedef pair<bool, bool> PreAndSuff;
   vector<PreAndSuff> preAndSuffs(toksSplit.size(), PreAndSuff(false,false));
@@ -185,7 +195,7 @@ void CreateCrossProduct(std::vector<Point> &alignments, const vector<int> &indsS
   }
 }
 
-void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, 
+bool ProcessLineChar(std::vector<Point> &alignments, const Parameter &params, 
                   const std::vector<std::string> &toksSplit, 
                   const std::vector<std::string> &toksUnsplit,
                   size_t lineNum)
@@ -209,7 +219,7 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
         if (indUnsplit >= toksUnsplit.size()) {
           cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
-          return;
+          return true;
         }
         
         posSplit += toksSplit[indSplit].size();  
@@ -229,7 +239,7 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
         if (indUnsplit != toksUnsplit.size()) {
             cerr << "Ignoring(B) line " << lineNum << ". Number of characters don't match" << endl;  
             alignments.clear();
-            return;
+            return true;
         }
 
         break;
@@ -241,7 +251,7 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
       if (indSplit >= toksSplit.size()) {
           cerr << "Ignoring(C) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
-          return;
+          return true;
       }
 
       posSplit += toksSplit[indSplit].size();  
@@ -255,9 +265,9 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
       // mismatch
       //assert(indUnsplit < toksUnsplit.size())
       if (indUnsplit >= toksUnsplit.size()) {
-          cerr << "Ignoring(A) line " << lineNum << ". Number of characters don't match" << endl;  
+          cerr << "Ignoring(D) line " << lineNum << ". Number of characters don't match" << endl;  
           alignments.clear();
-          return;
+          return true;
       }
       
       posUnsplit += toksUnsplit[indUnsplit].size();  
@@ -272,9 +282,10 @@ void ProcessLineChar(std::vector<Point> &alignments, const Parameter &params,
     }
   }
   
+  return false;
 }
 
-void ProcessLineLCS(std::vector<Point> &alignments, 
+bool ProcessLineLCS(std::vector<Point> &alignments, 
                     const Parameter &params, 
                     const std::vector<std::string> &toksSplit, 
                     const std::vector<std::string> &toksUnsplit,
@@ -337,6 +348,7 @@ void ProcessLineLCS(std::vector<Point> &alignments,
   std::copy(matches.begin(), matches.end(), std::inserter(alignments, alignments.end()));
   std::copy(mismatches.begin(), mismatches.end(), std::inserter(alignments, alignments.end()));
 
+  return false;
 }
 
 void CreateMismatches(std::vector<Point> &mismatches, int startMismatchX, int endMismatchX, int startMismatchY, int endMismatchY)
