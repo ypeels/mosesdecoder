@@ -85,7 +85,7 @@ while (my $line = <INFILE>) {
 		}
 	}
 	
-	print "\n";
+	print OUTFILE "\n";
 }
 
 close(INFILE);
