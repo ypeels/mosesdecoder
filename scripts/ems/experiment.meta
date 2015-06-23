@@ -58,7 +58,7 @@ post-parse-clean
 factorize
 	in: clean-parsed-stem
 	out: factorized-stem
-	rerun-on-change: TRAINING:input-factors TRAINING:output-factors
+	rerun-on-change: TRAINING:input-factors TRAINING:output-factors rerun-factorize
 	default-name: corpus/factored
 	pass-unless: TRAINING:input-factors TRAINING:output-factors
 	parallelizable: yes
@@ -221,6 +221,7 @@ factorize
 	pass-unless: factors
 	ignore-if: concatenate-files concatenate-files-split
 	parallelizable: yes
+  rerun-on-change: rerun-factorize
 	error: can't open
 	error: incompatible number of words in factor
 lowercase
