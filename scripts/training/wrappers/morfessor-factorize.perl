@@ -42,9 +42,13 @@ my $tmp2 = "$TMPDIR/tmp2.$$";
 $cmd = "$MOSESDIR/scripts/generic/morfessor-wrapper.perl --morfessor-dir $MORFDIR -model $CONFIG < $tmp1 > $tmp2";
 safesystem($cmd);
 
+#add juncture to target side of corpus
+my $tmp3 = "$TMPDIR/tmp3.$$";
+$cmd = "$MOSESDIR/contrib/other-builds/tok-align/tok-align $tmp2 $tmp1 --method 2 --junctured-path $tmp3 > /dev/null";
+safesystem($cmd);
 
 # MAIN LOOP
-open(INFILE, $tmp2) or die("Can't open file $tmp2");
+open(INFILE, $tmp3) or die("Can't open file $tmp3");
 open(OUTFILE, ">$OUTPATH") or die("Can't open file $OUTPATH");
 
 while (my $line = <INFILE>) {
