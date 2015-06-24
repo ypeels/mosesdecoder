@@ -13,7 +13,7 @@
   <Project Name="tok-align" Path="tok-align/tok-align.project" Active="No"/>
   <Project Name="moses" Path="moses/moses.project" Active="No"/>
   <Project Name="calc-oov" Path="calc-oov/calc-oov.project" Active="No"/>
-  <Project Name="PruneGeneration" Path="prune-generation/PruneGeneration.project" Active="Yes"/>
+  <Project Name="pruneGeneration" Path="pruneGeneration/pruneGeneration.project" Active="Yes"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="manual-label" ConfigName="Debug"/>
@@ -30,7 +30,6 @@
       <Project Name="tok-align" ConfigName="Debug"/>
       <Project Name="tok-align" ConfigName="Debug"/>
       <Project Name="moses" ConfigName="Debug"/>
-      <Project Name="calc-oov" ConfigName="Debug"/>
       <Project Name="calc-oov" ConfigName="Debug"/>
       <Project Name="PruneGeneration" ConfigName="Debug"/>
     </WorkspaceConfiguration>
@@ -49,7 +48,6 @@
       <Project Name="tok-align" ConfigName="Release"/>
       <Project Name="tok-align" ConfigName="Release"/>
       <Project Name="moses" ConfigName="Release"/>
-      <Project Name="calc-oov" ConfigName="Release"/>
       <Project Name="calc-oov" ConfigName="Release"/>
       <Project Name="PruneGeneration" ConfigName="Release"/>
     </WorkspaceConfiguration>
