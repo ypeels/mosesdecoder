@@ -1,39 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="calc-oov" InternalType="Console">
-  <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
-    </Plugin>
-    <Plugin Name="CMakePlugin">
-      <![CDATA[[{
-  "name": "Debug",
-  "enabled": false,
-  "buildDirectory": "build",
-  "sourceDirectory": "$(ProjectPath)",
-  "generator": "",
-  "buildType": "",
-  "arguments": [],
-  "parentProject": ""
- }]]]>
-    </Plugin>
-  </Plugins>
+<CodeLite_Project Name="PruneGeneration" InternalType="Console">
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="src">
-    <File Name="Main.cpp"/>
-    <File Name="Main.h"/>
-    <File Name="Simple.h"/>
-    <File Name="Simple.cpp"/>
-    <File Name="Base.h"/>
-    <File Name="Base.cpp"/>
-    <File Name="Compound.h"/>
-    <File Name="Compound.cpp"/>
-    <File Name="Makefile"/>
-    <File Name="Node.h"/>
-    <File Name="Node.cpp"/>
-    <File Name="Parameter.cpp"/>
-    <File Name="Parameter.h"/>
-  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -47,16 +15,8 @@
     <Configuration Name="Debug" CompilerType="GCC ( XCode )" DebuggerType="LLDB Debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
-        <IncludePath Value="../../../boost/include"/>
       </Compiler>
-      <Linker Options="" Required="yes">
-        <LibraryPath Value="../../../boost/lib64"/>
-        <Library Value="boost_system"/>
-        <Library Value="boost_iostreams"/>
-        <Library Value="boost_program_options"/>
-        <Library Value="boost_filesystem"/>
-        <Library Value="z"/>
-      </Linker>
+      <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
@@ -130,6 +90,8 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
+  <VirtualDirectory Name="src">
+    <File Name="Main.cpp"/>
+    <File Name="Main.h"/>
+  </VirtualDirectory>
 </CodeLite_Project>

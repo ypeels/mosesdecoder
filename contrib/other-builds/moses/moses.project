@@ -837,8 +837,6 @@
     <File Name="../../../moses/PP/RuleLengthPhraseProperty.cpp"/>
     <File Name="../../../moses/PP/RuleLengthPhraseProperty.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
   <VirtualDirectory Name="parameters">
     <File Name="../../../moses/parameters/ContextParameters.cpp"/>
     <File Name="../../../moses/parameters/ContextParameters.h"/>
@@ -941,4 +939,6 @@
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>
