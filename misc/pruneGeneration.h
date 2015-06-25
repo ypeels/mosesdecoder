@@ -1,18 +1,19 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <iostream>
 
 class Rec
 {
 public:
   float prob;
   std::string line;
-  
+
   Rec(float aprob, const std::string &aline)
-  :prob(aprob)
-  ,line(aline)
+    :prob(aprob)
+    ,line(aline)
   {}
-  
+
   inline bool operator< (const Rec &compare) const {
     return prob < compare.prob;
   }
@@ -20,8 +21,8 @@ public:
 
 ////////////////////////////////////////////////////////////
 
-void Output(int limit, std::vector<Rec> &records);
-void Prune(int limit, std::vector<Rec> &records);
+void Process(int limit, std::istream &inStrme, std::ostream &outStrme);
+void Output(std::ostream &outStrme, std::vector<Rec> &records, int limit);
 
 ////////////////////////////////////////////////////////////
 inline void Tokenize(std::vector<std::string> &output
