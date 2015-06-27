@@ -64,7 +64,7 @@ while (my $line = <INFILE>) {
 		
 		if ($end == 0) {
 			if ($suffix eq  "") {
-			  $suffix = "BLANK";
+			  $suffix = "$fullWord";
 			}
 			else {
 				$suffix = "+$suffix";
