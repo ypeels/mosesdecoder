@@ -3,8 +3,6 @@
 # This file is part of moses.  Its use is licensed under the GNU Lesser General
 # Public License version 2.1 or, at your option, any later version.
 
-use warnings;
-
 # Sample Tokenizer
 ### Version 1.1
 # written by Pidong Wang, based on the code written by Josh Schroeder and Philipp Koehn
@@ -23,6 +21,7 @@ use warnings;
 use FindBin qw($RealBin);
 use strict;
 use Time::HiRes;
+use utf8;
 
 if  (eval {require Thread;1;}) {
   #module loaded
@@ -235,7 +234,12 @@ sub tokenize
     chomp($text);
     $text = " $text ";
 
-    # remove ASCII junk
+    if (!utf8::valid($text)) {
+	$text = "";
+	return;
+    }
+
+    # remove ASCII junk                                                                                                                    
     $text =~ s/\s+/ /g;
     $text =~ s/[\000-\037]//g;
 
