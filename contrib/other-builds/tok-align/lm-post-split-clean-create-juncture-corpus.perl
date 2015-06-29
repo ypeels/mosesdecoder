@@ -6,8 +6,10 @@ use Getopt::Long "GetOptions";
 use FindBin qw($RealBin);
 
 my $DO_JUNCTURE = 0;
+my $BIN_SPLIT = 0;
 
-GetOptions("no-juncture" => \$DO_JUNCTURE
+GetOptions("no-juncture" => \$DO_JUNCTURE,
+				  "binary-split" => \$BIN_SPLIT
            );
 die("Must provide 3 args: unsplit.input split.input output \n") if (scalar(@ARGV) != 3);
 
@@ -26,7 +28,11 @@ if ($DO_JUNCTURE) {
   $cmd = "$MOSES_SCRIPT_DIR/tokenizer/escape-special-chars.perl < $UNSPLIT_INPUT > $UNSPLIT_INPUT.esc";
   safesystem($cmd);
 
-  $cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT $UNSPLIT_INPUT.esc --method 2 --junctured-path $OUTPUT > /dev/null";
+  $cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT $UNSPLIT_INPUT.esc --method 2 --junctured-path $OUTPUT ";
+  if ($BIN_SPLIT) {
+  	 $cmd .= " --binary-split ";
+  }
+  $cmd .= " > /dev/null";
   safesystem($cmd);
 }
 else {

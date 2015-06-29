@@ -6,13 +6,16 @@ use FindBin qw($RealBin);
 use Getopt::Long "GetOptions";
 
 my $DO_FILTER = 0;
+my $BIN_SPLIT = 0;
+
 GetOptions(
-  "no-filter" => \$DO_FILTER
+  "no-filter" => \$DO_FILTER,
+  "binary-split" => \$BIN_SPLIT
     );
 
-$DO_FILTER = ! $DO_FILTER;
-
 die("Must provide 8 args: unsplit.input.stem split.input.stem source target output.stem min.length max.length lines-retained \n") if (scalar(@ARGV) != 8);
+
+$DO_FILTER = ! $DO_FILTER;
 
 my $UNSPLIT_INPUT_STEM = $ARGV[0];
 my $SPLIT_INPUT_STEM = $ARGV[1];
@@ -28,7 +31,11 @@ my $MOSES_SCRIPT_DIR = "$MOSES_DIR/scripts";
 my $cmd;
 
 #add juncture to target side of corpus
-$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.$TARGET --method 2 --junctured-path $SPLIT_INPUT_STEM.juncture.$TARGET > /dev/null";
+$cmd = "$MOSES_DIR/contrib/other-builds/tok-align/tok-align $SPLIT_INPUT_STEM.$TARGET $UNSPLIT_INPUT_STEM.$TARGET --method 2 --junctured-path $SPLIT_INPUT_STEM.juncture.$TARGET ";
+if ($BIN_SPLIT) {
+  $cmd .= " --binary-split ";
+}
+$cmd .=" > /dev/null";
 safesystem($cmd);
 
 $cmd = "rm -f $SPLIT_INPUT_STEM.juncture.$SOURCE";
