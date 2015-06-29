@@ -22,6 +22,7 @@ int main(int argc, char **argv)
   ("help", "Print help messages")
   ("method", po::value<int>()->default_value(params.method), "Method. 1=LCS(default), 2=char-based")
   ("junctured-path", po::value<string>()->default_value(params.juncturedPath), "Add prefixes and suffixes to splitted words")
+  ("binary-split", "Only split into stem+ +suffix")
   ;
 
     po::variables_map vm;
@@ -47,6 +48,7 @@ int main(int argc, char **argv)
 
   if (vm.count("method")) params.method = vm["method"].as<int>();
   if (vm.count("junctured-path")) params.juncturedPath = vm["junctured-path"].as<string>();
+  if (vm.count("binary-split")) params.binarySplit = true;
 
 
   // BEGIN
@@ -169,16 +171,45 @@ void OutputJunctured(ofstream &outJunctured, const vector<string> &toksSplit, co
   }
 
   // output to file
+  string binSuffix = "";
   for (size_t i = 0; i < toksSplit.size(); ++i) {
     const PreAndSuff &preAndSuff = preAndSuffs[i];
-    if (preAndSuff.first) {
-      outJunctured << params.prefix;
+    
+    if (params.binarySplit) {
+      if (preAndSuff.first) {
+        if (preAndSuff.second) {
+          //  middle part of word. defer to the end
+          binSuffix += toksSplit[i];
+        }
+        else {
+          // the end
+          binSuffix = params.prefix + binSuffix + toksSplit[i];
+          outJunctured << binSuffix << " ";
+          binSuffix = "";
+        }
+      }
+      else {
+        if (preAndSuff.second) {
+          // 1st part of word
+          outJunctured << toksSplit[i] << params.prefix << " ";
+        }
+        else {
+          // not a compound word
+          outJunctured << toksSplit[i] << " ";     
+        }
+      } // if  (preAndSuff.first) {
     }
-    outJunctured << toksSplit[i];
-    if (preAndSuff.second) {
-      outJunctured << params.suffix;
+    else {
+      if (preAndSuff.first) {
+        outJunctured << params.prefix;
+      }
+      outJunctured << toksSplit[i];
+      if (preAndSuff.second) {
+        outJunctured << params.suffix;
+      }
+      outJunctured << " ";          
     }
-    outJunctured << " ";    
+    
   } 
   outJunctured << endl;
 }

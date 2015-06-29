@@ -3,6 +3,7 @@
 Parameter::Parameter()
 {
   method = 1;
+  binarySplit = false;
   
   juncturedPath = "";
   prefix = "+";
