@@ -16,6 +16,8 @@ exe prunePhraseTable : prunePhraseTable.cpp ..//boost_filesystem ../moses//moses
 
 exe pruneGeneration : pruneGeneration.cpp ..//boost_filesystem ../moses//moses ..//boost_program_options  ;
 
+exe processVocab : processVocab.cpp ..//boost_filesystem ../moses//moses ..//boost_program_options  ;
+
 local with-cmph = [ option.get "with-cmph" ] ;
 if $(with-cmph) {
     exe processPhraseTableMin : processPhraseTableMin.cpp ..//boost_filesystem ../moses//moses ;
@@ -48,6 +50,6 @@ $(TOP)//boost_iostreams
 $(TOP)//boost_program_options 
 ; 
 
-alias programs : 1-1-Extraction TMining generateSequences processLexicalTable queryLexicalTable programsMin programsProbing merge-sorted prunePhraseTable pruneGeneration  ;
+alias programs : 1-1-Extraction TMining generateSequences processLexicalTable queryLexicalTable programsMin programsProbing merge-sorted prunePhraseTable pruneGeneration processVocab ;
 #processPhraseTable queryPhraseTable
 
