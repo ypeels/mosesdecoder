@@ -65,6 +65,7 @@ namespace Moses
     
     void Save()
     {
+      m_root.m_value = m_params.m_prefixV;
       m_root.Save(m_params);
     }
   protected:
@@ -82,19 +83,37 @@ namespace Moses
       InputFileStream inStrme(params.m_inPath);
     
       std::ofstream outStrme;
-      outStrme.open(params.m_outPath, std::ios::in | std::ios::binary);
+      outStrme.open(params.m_outPath, std::ios::out | std::ios::in | std::ios::binary | std::ios::ate | std::ios::trunc);
       UTIL_THROW_IF(!outStrme.is_open(),
                     util::FileOpenException,
                     std::string("Couldn't open file ") + params.m_outPath);
 
       std::string line;
+      size_t lineNum = 0;
       while (getline(inStrme, line)) {
+        lineNum++;
+        /*
+        if (lineNum%10000 == 0) std::cerr << "." << std::flush;
+        if (lineNum%100000 == 0) std::cerr << ":" << std::flush;
+        if (lineNum%1000000 == 0) std::cerr << "!" << std::flush;
+        */
+        if (lineNum%100000 == 0) std::cerr << lineNum << " " << std::flush;
+        //std::cerr << lineNum << " " << std::flush;
         
-        if (line.empty()) {
+        if (line.empty() || line.size() > 150) {
           continue;
         }
+        
         Save(line, outStrme, 0, params);
       }
+      
+      // write root node;
+      std::cerr << "Saving root " << m_value << std::endl;
+      WriteToDisk(outStrme);
+      outStrme.write((char*)&m_value, sizeof(m_value));
+
+      outStrme.close();
+      inStrme.Close();
   }
 
   template <typename V>
@@ -102,6 +121,7 @@ namespace Moses
                     std::ostream &outStrme, size_t pos,
                     const Parameters &params)
   {
+    //std::cerr << "line=" << line << std::endl;
     if (pos >= line.size()) {
       m_value = params.m_fullV;
     }
@@ -116,7 +136,9 @@ namespace Moses
         child.m_value = params.m_prefixV;
       }
       
+      //std::cerr << "Saving " << child.m_value << std::endl;
       child.Save(line, outStrme, pos + 1, params);
+      m_prevChild = &child;
     }
   }
   
@@ -124,31 +146,36 @@ namespace Moses
   void Trie<V>::Node::WriteToDisk(std::ostream &outStrme)
   {
     // recursively write children 1st    
-    BOOST_FOREACH(typename Children::value_type mapPair, m_children) {
+    BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
       Node &node = mapPair.second;
-      UTIL_THROW_IF2(node.m_saved, "Child already saved");
-
-      node.WriteToDisk(outStrme);
+      if (!node.m_saved) {
+        node.WriteToDisk(outStrme);
+      }
     }
     
     // THIS NODE 
     // value
     m_filePos = outStrme.tellp();
     outStrme.write((char*)&m_value, sizeof(m_value));
-    std::cerr << m_value << "=" << m_filePos << std::endl;
     
     // pointers to children
     uint64_t var = m_children.size();
     outStrme.write((char*)&var, sizeof(uint64_t));
+
+    //std::cerr << m_value << "=" << var << "=" << m_filePos << ": " << std::flush;
     
-    BOOST_FOREACH(typename Children::value_type mapPair, m_children) {
+    BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
       const char &key = mapPair.first;
       Node &node = mapPair.second;
       UTIL_THROW_IF2(!node.m_saved, "Child not saved");
       
       outStrme.write(&key, sizeof(char));
       outStrme.write((char*) &node.m_filePos, sizeof(node.m_filePos));
+      
+      //std::cerr << key << "=" << node.m_filePos << " " << std::flush;
     }
+    
+    //std::cerr << std::endl;
     
     m_saved = true;
   }
