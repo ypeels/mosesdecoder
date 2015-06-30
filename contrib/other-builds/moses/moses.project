@@ -611,6 +611,10 @@
     <File Name="../../../moses/FF/JoinScore.h"/>
     <File Name="../../../moses/FF/JoinCompound.cpp"/>
     <File Name="../../../moses/FF/JoinCompound.h"/>
+    <VirtualDirectory Name="JoinScore">
+      <File Name="../../../moses/FF/JoinScore/Trie.h"/>
+      <File Name="../../../moses/FF/JoinScore/Trie.inc"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
