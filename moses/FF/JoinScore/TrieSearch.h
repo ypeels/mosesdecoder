@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <boost/iostreams/device/mapped_file.hpp>
+#include "util/exception.hh"
 
 namespace Moses
 {
@@ -111,6 +113,32 @@ namespace Moses
       
     }
 
+    static std::pair<NodeSearch<bool>*, const char *> Create(const std::string &inPath)
+    {    	
+    	boost::iostreams::mapped_file_source *file = new boost::iostreams::mapped_file_source();
+			file->open(inPath.c_str());
+			UTIL_THROW_IF(!file->is_open(),
+											 util::FileOpenException,
+											 std::string("Couldn't open file ") + inPath);
+
+			size_t size = file->size();
+			std::cerr << "size=" << size << std::endl;
+	
+			const char *data = file->data();
+	
+			uint64_t rootPos = size - sizeof(uint64_t);
+			std::cerr << "BEFORE rootPos=" << rootPos << std::endl;
+	
+			const uint64_t *ptr = (const uint64_t*) (data + rootPos);
+			rootPos = ptr[0];
+			NodeSearch<bool> *rootNode = new NodeSearch<bool>(data, rootPos);
+	
+			std::cerr << "AFTER rootPos=" << rootPos << std::endl;
+
+    	std::pair<NodeSearch<bool>*, const char *> ret(rootNode, data);
+			return ret;
+    }
+    
   };
 
 
