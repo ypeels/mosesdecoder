@@ -45,6 +45,8 @@ int main(int argc, char* argv[])
 		else {
 			cerr << "NOT FOUND" << endl;	
 		}
+		
+		rootNode.Clear();
 	}
 	
 	cerr << "Finished" << endl;

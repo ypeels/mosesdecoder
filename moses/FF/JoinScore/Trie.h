@@ -32,7 +32,13 @@ namespace Moses
     
     ~NodeSearch()
     {
+      Clear();
+    }
+    
+    void Clear()
+    {
       delete m_child;
+      m_child = NULL;
     }
     
     bool Find(V &value, const std::string &str, size_t pos, const char *data)
@@ -49,7 +55,7 @@ namespace Moses
         const char *childrenPtr = numChildrenPtr + sizeof(uint64_t);
         
         char keySought = str[pos];
-        std::cerr << "searching for " << keySought << " at " << (size_t) m_ptr << std::endl;
+        //std::cerr << "searching for " << keySought << " at " << (size_t) m_ptr << std::endl;
         
         m_child = Search(numChildren, data, childrenPtr, keySought);
         if (m_child) {
@@ -75,9 +81,9 @@ namespace Moses
 
         char keyFound;
         GetChild(keyFound, *ret, data, childrenPtr, x);
-        std::cerr << "found " << keyFound << " at " << (size_t) ret->m_ptr << std::endl;
         
         if (keySought == keyFound) {
+          //std::cerr << "found " << keyFound << " at " << (size_t) ret->m_ptr << std::endl;
           found = true;
           break;
         }
@@ -235,18 +241,22 @@ namespace Moses
       char c = line[pos];
       Node &child = m_children[c];
 
-      if (m_prevChild && m_prevChild != &child) {
+      if (m_prevChild != &child) {
         // new child
-        m_prevChild->WriteToDisk(outStrme);
-
         child.m_value = params.m_prefixV;
+        
+        if (m_prevChild) {
+          m_prevChild->WriteToDisk(outStrme);
+        }
+
+        m_prevChild = &child;
       }
       
       //std::cerr << "Saving " << child.m_value << std::endl;
+      // recursively add next char
       child.Save(line, outStrme, pos + 1, params);
-      m_prevChild = &child;
-    }
-  }
+    } // if (pos >= line.size()) {
+  } // void Trie<V>::Node::Save(...)
   
   template <typename V>
   void Trie<V>::Node::WriteToDisk(std::ostream &outStrme)

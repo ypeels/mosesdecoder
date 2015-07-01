@@ -4,6 +4,7 @@
 #include <string>
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
+#include "JoinScore/Trie.h"
 
 namespace Moses
 {
