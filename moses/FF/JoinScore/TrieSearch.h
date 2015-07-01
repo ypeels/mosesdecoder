@@ -119,19 +119,10 @@ namespace Moses
   template<typename V>
 	class TrieSearch
 	{
-	public:
-		boost::iostreams::mapped_file_source file;
-		const char *data;
-		NodeSearch<V> *rootNode;
-	
-    TrieSearch()
-    :rootNode(NULL)
-    {}
-    virtual ~TrieSearch()
-    {
-        delete rootNode;
-    }
-    
+		 boost::iostreams::mapped_file_source file;
+		 const char *data;
+    uint64_t rootPos;
+	public:	    
     void Create(const std::string &inPath)
     {    	
 			file.open(inPath.c_str());
@@ -144,20 +135,20 @@ namespace Moses
 	
 			data = file.data();
 	
-			uint64_t rootPos = size - sizeof(uint64_t);
+			rootPos = size - sizeof(uint64_t);
 			std::cerr << "BEFORE rootPos=" << rootPos << std::endl;
 	
 			const uint64_t *ptr = (const uint64_t*) (data + rootPos);
 			rootPos = ptr[0];
-			rootNode = new NodeSearch<V>(data, rootPos);
-	
+		
 			std::cerr << "AFTER rootPos=" << rootPos << std::endl;
     }
     
     bool Find(V &value, const std::string &str) const
     {
-      bool ret = rootNode->Find(value, str, 0, data);
-      rootNode->Clear();
+      NodeSearch<V> rootNode(data, rootPos);
+      bool ret = rootNode.Find(value, str, 0, data);
+      
       return ret;
     }
 	};
