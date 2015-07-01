@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/iostreams/device/mapped_file.hpp>
-#include "moses/FF/JoinScore/Trie.h"
+#include "moses/FF/JoinScore/TrieSearch.h"
+#include "util/exception.hh"
 
 using namespace std;
 using namespace Moses;

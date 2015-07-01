@@ -613,7 +613,7 @@
     <File Name="../../../moses/FF/JoinCompound.h"/>
     <VirtualDirectory Name="JoinScore">
       <File Name="../../../moses/FF/JoinScore/Trie.h"/>
-      <File Name="../../../moses/FF/JoinScore/Trie.inc"/>
+      <File Name="../../../moses/FF/JoinScore/TrieSearch.h"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <Description/>
