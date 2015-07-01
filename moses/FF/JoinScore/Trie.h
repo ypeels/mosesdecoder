@@ -84,7 +84,7 @@ namespace Moses
       InputFileStream inStrme(params.m_inPath);
     
       std::ofstream outStrme;
-      outStrme.open(params.m_outPath, std::ios::out | std::ios::in | std::ios::binary | std::ios::ate | std::ios::trunc);
+      outStrme.open(params.m_outPath.c_str(), std::ios::out | std::ios::in | std::ios::binary | std::ios::ate | std::ios::trunc);
       UTIL_THROW_IF(!outStrme.is_open(),
                     util::FileOpenException,
                     std::string("Couldn't open file ") + params.m_outPath);
