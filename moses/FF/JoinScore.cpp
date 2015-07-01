@@ -150,7 +150,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   const JoinScoreState *classState = static_cast<const JoinScoreState*>(prev_state);
   int prevJuncture = classState->GetJuncture();
   Phrase morphemes = classState->GetMorphemes();
-  const Node *prevNode = classState->GetNode();
+  const Node *prevNode;
   
   size_t countWord = 0;
   size_t countCompound = 0;
@@ -169,7 +169,7 @@ FFState* JoinScore::EvaluateWhenApplied(
 
     if (m_scorePartialCompound) {
       if (currJuncture == 2 || currJuncture == 3) {
-        float score = CalcMorphemeScore(prevNode, morphemes, false);
+        float score = CalcMorphemeScore(morphemes, false);
         compoundWordScore += score;
         //cerr << morphemes.ToString() << "=" << score << endl;
       }
@@ -211,7 +211,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   //cerr << "score=" << scores[0] << endl;
   accumulator->PlusEquals(this, scores);
   
-  return new JoinScoreState(morphemes, prevJuncture, prevNode);
+  return new JoinScoreState(morphemes, prevJuncture);
 }
 
 float JoinScore::CalcScore(float count) const
@@ -244,7 +244,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -279,7 +279,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -309,13 +309,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
           
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -324,7 +324,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -343,13 +343,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -358,7 +358,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -376,13 +376,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize());
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           break;
         case 2:
@@ -390,7 +390,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -400,7 +400,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(node, morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -473,14 +473,14 @@ int JoinScore::GetJuncture(const Word &morpheme) const
   return ret;
 }
 
-float JoinScore::CalcMorphemeScore(const Node *&node, const Phrase &morphemes, bool wholeWord) const
+float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const
 {
   string wordStr = morphemes.ToString();
   wordStr = Trim(wordStr);
   boost::replace_all(wordStr, "+ +", "");
   boost::replace_all(wordStr, "+", "");
   
-  node = m_vocabRoot.Find(wordStr);
+  const Node *node = m_vocabRoot.Find(wordStr);
   //cerr << wordStr << "=" << node << endl;
   
   float ret;

@@ -26,8 +26,26 @@ int main(int argc, char* argv[])
 	
 	const uint64_t *ptr = (const uint64_t*) (data + rootPos);
 	rootPos = ptr[0];
+	NodeSearch<bool> rootNode(data, rootPos);
 	
 	cerr << "AFTER rootPos=" << rootPos << endl;
+	
+	// MAIN LOOP
+	string line;
+	while (getline(cin, line)) {
+  	if (line.empty()) {
+			continue;
+		}
+
+		bool value;
+		bool found = rootNode.Find(value, line, 0, data);
+		if (found) {
+			cerr << "FOUND=" << value << endl;	
+		}
+		else {
+			cerr << "NOT FOUND" << endl;	
+		}
+	}
 	
 	cerr << "Finished" << endl;
 }
