@@ -110,17 +110,20 @@ JoinScore::JoinScore(const std::string &line)
 void JoinScore::Load()
 {
   if (!m_vocabPath.empty()) {
-    InputFileStream vocabStrme(m_vocabPath);
+    m_trieSearch.Create(m_vocabPath);
+    /*
+      InputFileStream vocabStrme(m_vocabPath);
 
-    string line;
-    while (getline(vocabStrme, line)) {
-      vector<string> toks;
-      Tokenize(toks, line);
-      for (size_t i = 0; i < toks.size(); ++i) {
-        const string &tok = toks[i];
-        m_vocabRoot.Insert(tok);
+      string line;
+      while (getline(vocabStrme, line)) {
+        vector<string> toks;
+        Tokenize(toks, line);
+        for (size_t i = 0; i < toks.size(); ++i) {
+          const string &tok = toks[i];
+          m_vocabRoot.Insert(tok);
+        }
       }
-    }
+    */
   }
 }
 
@@ -480,13 +483,13 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) cons
   boost::replace_all(wordStr, "+ +", "");
   boost::replace_all(wordStr, "+", "");
   
-  const Node *node = m_vocabRoot.Find(wordStr);
+  bool isAWord;
+  bool found = m_trieSearch.Find(isAWord, wordStr);
   //cerr << wordStr << "=" << node << endl;
   
   float ret;
-  if (node) {
+  if (found) {
     if (wholeWord) {
-      bool isAWord = node->isAWord;
       ret = isAWord ? 0 : 1;
     }
     else {

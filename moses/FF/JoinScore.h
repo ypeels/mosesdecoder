@@ -4,7 +4,7 @@
 #include <string>
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
-#include "JoinScore/Trie.h"
+#include "JoinScore/TrieSearch.h"
 
 namespace Moses
 {
@@ -112,7 +112,9 @@ protected:
   int m_maxMorphemeState;
   float m_multiplier;
   std::string m_vocabPath;
-  Node m_vocabRoot;
+
+  //Node m_vocabRoot;
+  TrieSearch<bool> m_trieSearch;
   
   int GetJuncture(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord, 

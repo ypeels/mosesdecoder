@@ -112,34 +112,54 @@ namespace Moses
       nodeFound.SetPtr(data, filePos);
       
     }
+    
+  };
 
-    static std::pair<NodeSearch<bool>*, const char *> Create(const std::string &inPath)
+	// container class
+  template<typename V>
+	class TrieSearch
+	{
+	public:
+		boost::iostreams::mapped_file_source file;
+		const char *data;
+		NodeSearch<V> *rootNode;
+	
+    TrieSearch()
+    :rootNode(NULL)
+    {}
+    virtual ~TrieSearch()
+    {
+        delete rootNode;
+    }
+    
+    void Create(const std::string &inPath)
     {    	
-    	boost::iostreams::mapped_file_source *file = new boost::iostreams::mapped_file_source();
-			file->open(inPath.c_str());
-			UTIL_THROW_IF(!file->is_open(),
+			file.open(inPath.c_str());
+			UTIL_THROW_IF(!file.is_open(),
 											 util::FileOpenException,
 											 std::string("Couldn't open file ") + inPath);
 
-			size_t size = file->size();
+			size_t size = file.size();
 			std::cerr << "size=" << size << std::endl;
 	
-			const char *data = file->data();
+			data = file.data();
 	
 			uint64_t rootPos = size - sizeof(uint64_t);
 			std::cerr << "BEFORE rootPos=" << rootPos << std::endl;
 	
 			const uint64_t *ptr = (const uint64_t*) (data + rootPos);
 			rootPos = ptr[0];
-			NodeSearch<bool> *rootNode = new NodeSearch<bool>(data, rootPos);
+			rootNode = new NodeSearch<V>(data, rootPos);
 	
 			std::cerr << "AFTER rootPos=" << rootPos << std::endl;
-
-    	std::pair<NodeSearch<bool>*, const char *> ret(rootNode, data);
-			return ret;
     }
     
-  };
-
+    bool Find(V &value, const std::string &str) const
+    {
+      bool ret = rootNode->Find(value, str, 0, data);
+      rootNode->Clear();
+      return ret;
+    }
+	};
 
 } // namespce
