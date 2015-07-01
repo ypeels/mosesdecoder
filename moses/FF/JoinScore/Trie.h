@@ -92,11 +92,6 @@ namespace Moses
       size_t lineNum = 0;
       while (getline(inStrme, line)) {
         lineNum++;
-        /*
-        if (lineNum%10000 == 0) std::cerr << "." << std::flush;
-        if (lineNum%100000 == 0) std::cerr << ":" << std::flush;
-        if (lineNum%1000000 == 0) std::cerr << "!" << std::flush;
-        */
         if (lineNum%100000 == 0) std::cerr << lineNum << " " << std::flush;
         //std::cerr << lineNum << " " << std::flush;
         
@@ -108,9 +103,13 @@ namespace Moses
       }
       
       // write root node;
-      std::cerr << "Saving root " << m_value << std::endl;
       WriteToDisk(outStrme);
-      outStrme.write((char*)&m_value, sizeof(m_value));
+      std::cerr << "Saved root " 
+                << m_filePos << "=" 
+                << m_value << "=" 
+                << m_children.size() << std::endl;
+                
+      outStrme.write((char*)&m_filePos, sizeof(m_filePos));
 
       outStrme.close();
       inStrme.Close();
@@ -159,10 +158,10 @@ namespace Moses
     outStrme.write((char*)&m_value, sizeof(m_value));
     
     // pointers to children
-    uint64_t var = m_children.size();
-    outStrme.write((char*)&var, sizeof(uint64_t));
+    uint64_t numChildren = m_children.size();
+    outStrme.write((char*)&numChildren, sizeof(uint64_t));
 
-    //std::cerr << m_value << "=" << var << "=" << m_filePos << ": " << std::flush;
+    //std::cerr << m_filePos << "=" << m_value << "=" << numChildren << ": " << std::flush;
     
     BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
       const char &key = mapPair.first;
