@@ -42,15 +42,18 @@ class JoinScore : public StatefulFeatureFunction
       //None  =  0,
       //Left  =  1,
       //Right =  2
+    bool m_validCompound;
     
   public:
     JoinScoreState()
     :m_juncture(0)
+    ,m_validCompound(true)
     {}
     
-    JoinScoreState(const Phrase &morphemes, size_t juncture)
+    JoinScoreState(const Phrase &morphemes, size_t juncture, bool validCompound)
     :m_morphemes(morphemes)
     ,m_juncture(juncture)
+    ,m_validCompound(validCompound)
     {
     }
 
@@ -64,6 +67,8 @@ class JoinScore : public StatefulFeatureFunction
       return m_juncture;
     }
 
+    bool GetValidCompound() const
+    { return m_validCompound; }
   };
 ////////////////////////////////////////////////////////////////
 
@@ -118,11 +123,11 @@ protected:
   
   int GetJuncture(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord, 
-                          size_t &numInvalidJoin, float &compoundWordScore,
+                          size_t &numInvalidJoin, float &compoundWordScore, bool &validCompound,
                           Phrase &morphemes, 
                           const Word *morpheme,
                           int prevJuncture, int currJuncture) const;
-  float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const;
+  float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool &validCompound) const;
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;
   float CalcScore(float count) const;

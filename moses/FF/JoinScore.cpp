@@ -105,6 +105,7 @@ JoinScore::JoinScore(const std::string &line)
   ReadParameters();
   
   UTIL_THROW_IF2(m_scoreCompoundWord && m_vocabPath.empty(), "Must provide path to vocab file");
+  UTIL_THROW_IF2(!m_scorePartialCompound, "Must score partial compound");
 }
 
 void JoinScore::Load()
@@ -153,6 +154,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   const JoinScoreState *classState = static_cast<const JoinScoreState*>(prev_state);
   int prevJuncture = classState->GetJuncture();
   Phrase morphemes = classState->GetMorphemes();
+  bool validCompound = classState->GetValidCompound();
   
   size_t countWord = 0;
   size_t countCompound = 0;
@@ -165,16 +167,13 @@ FFState* JoinScore::EvaluateWhenApplied(
     int currJuncture = GetJuncture(word);
     
     CalcScores(countWord, countCompound, 
-              countInvalidJoin, compoundWordScore, 
+              countInvalidJoin, compoundWordScore, validCompound,
               morphemes, &word, 
               prevJuncture, currJuncture);
-
-    if (m_scorePartialCompound) {
-      if (currJuncture == 2 || currJuncture == 3) {
-        float score = CalcMorphemeScore(morphemes, false);
-        compoundWordScore += score;
-        //cerr << morphemes.ToString() << "=" << score << endl;
-      }
+    
+    if (morphemes.GetSize() == 0) {
+      // reset
+      validCompound = true;
     }
     
     prevJuncture = currJuncture;
@@ -183,7 +182,8 @@ FFState* JoinScore::EvaluateWhenApplied(
   // end of sentence
   if (cur_hypo.IsSourceCompleted()) {
     int currJuncture = 0;
-    CalcScores(countWord, countCompound, countInvalidJoin, compoundWordScore, 
+    CalcScores(countWord, countCompound, 
+              countInvalidJoin, compoundWordScore, validCompound,
               morphemes, NULL, 
               prevJuncture, currJuncture);  
     //cerr << morphemes.ToString() << "=" << prevNode << endl;            
@@ -209,7 +209,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   //cerr << "score=" << scores[0] << endl;
   accumulator->PlusEquals(this, scores);
 
-  return new JoinScoreState(morphemes, prevJuncture);
+  return new JoinScoreState(morphemes, prevJuncture, validCompound);
 }
 
 float JoinScore::CalcScore(float count) const
@@ -220,7 +220,7 @@ float JoinScore::CalcScore(float count) const
 }
 
 void JoinScore::CalcScores(size_t &countWord, size_t&countCompound, 
-                          size_t &countInvalidJoin, float &compoundWordScore, 
+                          size_t &countInvalidJoin, float &compoundWordScore, bool &validCompound,
                           Phrase &morphemes, 
                           const Word *morpheme,
                           int prevJuncture, int currJuncture) const
@@ -242,7 +242,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 2:
@@ -277,7 +277,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 2:
@@ -307,13 +307,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
           
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 2:
@@ -322,7 +322,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -341,13 +341,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 2:
@@ -356,7 +356,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -374,13 +374,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 1:
           assert(morphemes.GetSize());
           AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           break;
         case 2:
@@ -388,7 +388,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countCompound;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -398,7 +398,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
 
           assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes, true);
+          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
           morphemes.Clear();
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -471,11 +471,17 @@ int JoinScore::GetJuncture(const Word &morpheme) const
   return ret;
 }
 
-float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const
+float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool &validCompound) const
 {
 	if (m_vocabPath.empty()) {
+    // not doing morpheme score
 		return 0;
 	}
+  
+  if (!validCompound) {
+    // prev is invalid. Don't bother calculating extension.
+    return 0;
+  }
 	
   string wordStr = morphemes.ToString();
   wordStr = Trim(wordStr);
@@ -483,24 +489,26 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) cons
   boost::replace_all(wordStr, "+", "");
   
   bool isAWord;
-  bool found = m_trieSearch.Find(isAWord, wordStr);
-  //cerr << wordStr << "=" << node << endl;
+  validCompound = m_trieSearch.Find(isAWord, wordStr);
   
   float ret;
-  if (found) {
+  if (validCompound) {
     if (wholeWord) {
       ret = isAWord ? 0 : 1;
     }
     else {
       ret = 0;
     }
-    
   }
   else {
     ret = 1;
   }
-  //cerr << "==" << ret << endl;
-  
+  /*
+  cerr << wordStr 
+      << "=" << validCompound 
+      << "=" << isAWord 
+      << "=" << ret << endl;
+  */
   return ret;
 }
 
