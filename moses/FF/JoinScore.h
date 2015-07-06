@@ -119,7 +119,7 @@ protected:
   int GetJuncture(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord, 
                           size_t &numInvalidJoin, float &compoundWordScore,
-                          Phrase &morphemes, const Node *&node, 
+                          Phrase &morphemes, 
                           const Word *morpheme,
                           int prevJuncture, int currJuncture) const;
   float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const;

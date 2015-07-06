@@ -153,7 +153,6 @@ FFState* JoinScore::EvaluateWhenApplied(
   const JoinScoreState *classState = static_cast<const JoinScoreState*>(prev_state);
   int prevJuncture = classState->GetJuncture();
   Phrase morphemes = classState->GetMorphemes();
-  const Node *prevNode;
   
   size_t countWord = 0;
   size_t countCompound = 0;
@@ -167,7 +166,7 @@ FFState* JoinScore::EvaluateWhenApplied(
     
     CalcScores(countWord, countCompound, 
               countInvalidJoin, compoundWordScore, 
-              morphemes, prevNode, &word, 
+              morphemes, &word, 
               prevJuncture, currJuncture);
 
     if (m_scorePartialCompound) {
@@ -177,10 +176,6 @@ FFState* JoinScore::EvaluateWhenApplied(
         //cerr << morphemes.ToString() << "=" << score << endl;
       }
     }
-    else {
-        // whole world or end of compound.
-        prevNode = NULL;
-    }
     
     prevJuncture = currJuncture;
   }
@@ -189,7 +184,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   if (cur_hypo.IsSourceCompleted()) {
     int currJuncture = 0;
     CalcScores(countWord, countCompound, countInvalidJoin, compoundWordScore, 
-              morphemes, prevNode, NULL, 
+              morphemes, NULL, 
               prevJuncture, currJuncture);  
     //cerr << morphemes.ToString() << "=" << prevNode << endl;            
   }
@@ -226,7 +221,7 @@ float JoinScore::CalcScore(float count) const
 
 void JoinScore::CalcScores(size_t &countWord, size_t&countCompound, 
                           size_t &countInvalidJoin, float &compoundWordScore, 
-                          Phrase &morphemes, const Node *&node, 
+                          Phrase &morphemes, 
                           const Word *morpheme,
                           int prevJuncture, int currJuncture) const
 {
