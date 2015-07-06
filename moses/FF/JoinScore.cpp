@@ -210,10 +210,10 @@ FFState* JoinScore::EvaluateWhenApplied(
     scores[ind++] = CalcScore(compoundWordScore);
   }
   UTIL_THROW_IF2(ind > m_numScoreComponents, "Vector element out-of-range:" << ind << ">" << m_numScoreComponents);
-  
+
   //cerr << "score=" << scores[0] << endl;
   accumulator->PlusEquals(this, scores);
-  
+
   return new JoinScoreState(morphemes, prevJuncture);
 }
 
@@ -478,6 +478,10 @@ int JoinScore::GetJuncture(const Word &morpheme) const
 
 float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord) const
 {
+	if (m_vocabPath.empty()) {
+		return 0;
+	}
+	
   string wordStr = morphemes.ToString();
   wordStr = Trim(wordStr);
   boost::replace_all(wordStr, "+ +", "");
