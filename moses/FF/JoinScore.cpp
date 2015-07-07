@@ -100,7 +100,7 @@ JoinScore::JoinScore(const std::string &line)
   ,m_scoreCompoundWord(true)
   ,m_maxMorphemeState(-1)
   ,m_multiplier(1)
-  ,m_scorePartialCompound(false)
+  ,m_scorePartialCompound(true)
 {
   ReadParameters();
   
