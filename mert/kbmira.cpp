@@ -223,6 +223,7 @@ int main(int argc, char** argv)
         exit(1);
       }*/
       // Write to a file
+      cerr << "outputFile=" << outputFile << endl;
       ostream* out;
       ofstream outFile;
       if (!outputFile.empty() ) {

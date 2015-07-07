@@ -85,6 +85,7 @@ void FeatureDataIterator::readNext()
   try {
     StringPiece marker = m_in->ReadDelimited();
     if (marker != StringPiece(FEATURES_TXT_BEGIN)) {
+    	cerr << "Error A" << endl;
       throw FileFormatException(m_in->FileName(), marker.as_string());
     }
     // size_t sentenceId =
@@ -97,7 +98,10 @@ void FeatureDataIterator::readNext()
       m_next.push_back(FeatureDataItem());
       for (TokenIter<AnyCharacter, true> token(line, AnyCharacter(" \t")); token; ++token) {
         TokenIter<AnyCharacterLast,false> value(*token,AnyCharacterLast("="));
-        if (!value) throw FileFormatException(m_in->FileName(), line.as_string());
+        if (!value) {
+   	    	cerr << "Error B" << endl;
+        	throw FileFormatException(m_in->FileName(), line.as_string());
+        }
         StringPiece first = *value;
         ++value;
         if (!value) {
@@ -112,11 +116,13 @@ void FeatureDataIterator::readNext()
         }
       }
       if (length != m_next.back().dense.size()) {
+	    	cerr << "Error C m_in=" << m_in->FileName() << " " << length << " " << m_next.back().dense.size() << endl;
         throw FileFormatException(m_in->FileName(), line.as_string());
       }
     }
     StringPiece line = m_in->ReadLine();
     if (line != StringPiece(FEATURES_TXT_END)) {
+    	cerr << "Error D" << endl;
       throw FileFormatException(m_in->FileName(), line.as_string());
     }
   } catch (EndOfFileException &e) {
