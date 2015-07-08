@@ -232,8 +232,10 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
   
   switch (prevJuncture) {
     case 0:
+    case 4:
       switch (currJuncture) {
         case 0:
+        case 4:
           ++countWord;
           break;
         case 1:
@@ -262,15 +264,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-        case 4:
-          ++countWord;
           break;
       }
       break;
     case 1:
       switch (currJuncture) {
         case 0:
+        case 4:
           ++countWord;
           break;
         case 1:
@@ -299,15 +299,13 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-        case 4:
-          ++countWord;
           break;
       }
       break;
     case 2:
       switch (currJuncture) {
         case 0:
+        case 4:
           ++countInvalidJoin;
           ++countWord;
           
@@ -337,13 +335,12 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           AddMorphemeToState(morphemes, morpheme);
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
-        case 4:
-          break;
       }
       break;
     case 3:
       switch (currJuncture) {
         case 0:
+        case 4:
           ++countInvalidJoin;
           ++countWord;
 
@@ -373,44 +370,6 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           AddMorphemeToState(morphemes, morpheme);
 
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-        case 4:
-          break;
-      }
-      break;
-    case 4:
-      switch (currJuncture) {
-        case 0:
-          ++countWord;
-
-          assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 1:
-          assert(morphemes.GetSize());
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 2:
-          ++countWord;
-          ++countCompound;
-
-          assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          AddMorphemeToState(morphemes, morpheme);
-          break;
-        case 3:
-          break;
-        case 4:
-          ++countWord;
-
-          assert(morphemes.GetSize());
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          AddMorphemeToState(morphemes, morpheme);
           break;
       }
       break;
