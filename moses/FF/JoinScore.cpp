@@ -252,6 +252,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 3:
           ++countInvalidJoin;
@@ -260,6 +261,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
 
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 4:
           ++countWord;
@@ -287,6 +289,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 3:
           ++countInvalidJoin;
@@ -295,6 +298,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
 
           assert(morphemes.GetSize() == 0);
           AddMorphemeToState(morphemes, morpheme);
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 4:
           ++countWord;
@@ -331,6 +335,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 4:
           break;
@@ -366,6 +371,8 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
           AddMorphemeToState(morphemes, morpheme);
+
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 4:
           break;
@@ -506,13 +513,13 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool
   else {
     ret = 1;
   }
-  
+  /*
   cerr << wordStr 
       << " validCompound=" << validCompound 
       << " isAWord=" << isAWord 
       << " wholeWord=" << wholeWord 
       << " ret=" << ret << endl;
-  
+  */
   return ret;
 }
 
