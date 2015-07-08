@@ -1,4 +1,5 @@
 #include <vector>
+#include <cassert>
 #include <boost/algorithm/string.hpp>
 #include "JoinScore.h"
 #include "moses/ScoreComponentCollection.h"
@@ -103,7 +104,7 @@ JoinScore::JoinScore(const std::string &line)
   ,m_scorePartialCompound(true)
 {
   ReadParameters();
-  
+    
   UTIL_THROW_IF2(m_scoreCompoundWord && m_vocabPath.empty(), "Must provide path to vocab file");
   UTIL_THROW_IF2(!m_scorePartialCompound, "Must score partial compound");
 }
@@ -327,6 +328,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           AddMorphemeToState(morphemes, morpheme);
           break;
         case 3:
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
           AddMorphemeToState(morphemes, morpheme);
           break;
@@ -362,6 +364,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           break;
         case 3:
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
           AddMorphemeToState(morphemes, morpheme);
           break;
         case 4:
@@ -503,12 +506,13 @@ float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool
   else {
     ret = 1;
   }
-  /*
+  
   cerr << wordStr 
-      << "=" << validCompound 
-      << "=" << isAWord 
-      << "=" << ret << endl;
-  */
+      << " validCompound=" << validCompound 
+      << " isAWord=" << isAWord 
+      << " wholeWord=" << wholeWord 
+      << " ret=" << ret << endl;
+  
   return ret;
 }
 
