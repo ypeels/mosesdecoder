@@ -97,14 +97,15 @@ JoinScore::JoinScore(const std::string &line)
   :StatefulFeatureFunction(4, line)
   ,m_scoreRealWords(true)
   ,m_scoreNumCompounds(true) 
-  ,m_scoreInvalidJoins(true)
   ,m_scoreCompoundWord(true)
   ,m_maxMorphemeState(-1)
   ,m_multiplier(1)
   ,m_scorePartialCompound(true)
+  ,m_scoreInvalidJoins(3)
 {
   ReadParameters();
     
+  SetInvalidJoins();
   UTIL_THROW_IF2(m_scoreCompoundWord && m_vocabPath.empty(), "Must provide path to vocab file");
   UTIL_THROW_IF2(!m_scorePartialCompound, "Must score partial compound");
 }
@@ -239,7 +240,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
           break;
         case 1:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
           ++countWord;
           ++countCompound;
           
@@ -257,7 +258,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 3:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
           ++countWord;
           ++countCompound;
 
@@ -274,7 +275,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           ++countWord;
           break;
         case 1:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
           ++countWord;
           ++countCompound;
           
@@ -292,7 +293,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
           break;
         case 3:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
           ++countWord;
           ++countCompound;
 
@@ -306,7 +307,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
       switch (currJuncture) {
         case 0:
         case 4:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
           ++countWord;
           
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
@@ -320,7 +321,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           morphemes.Clear();
           break;
         case 2:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
           ++countWord;
           ++countCompound;
 
@@ -341,7 +342,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
       switch (currJuncture) {
         case 0:
         case 4:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
           ++countWord;
 
           assert(morphemes.GetSize() || m_maxMorphemeState == 0);
@@ -355,7 +356,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
           morphemes.Clear();
           break;
         case 2:
-          ++countInvalidJoin;
+          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
           ++countWord;
           ++countCompound;
 
@@ -393,7 +394,11 @@ void JoinScore::SetParameter(const std::string& key, const std::string& value)
     m_scoreNumCompounds = Scan<bool>(value);  
   }
   else if (key == "score-invalid-joins") {
-    m_scoreInvalidJoins = Scan<bool>(value);      
+    bool tmp = Scan<bool>(value);  
+    m_scoreInvalidJoins = tmp?3:0;
+  }
+  else if (key == "score-invalid-joins-detailed") {
+    m_scoreInvalidJoins = Scan<size_t>(value);      
   }
   else if (key == "score-compound-word") {
     m_scoreCompoundWord = Scan<bool>(value);  
@@ -504,6 +509,17 @@ void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word *morpheme) cons
   
   assert(morpheme);
   morphemes.AddWord(*morpheme);
+}
+
+void JoinScore::SetInvalidJoins()
+{
+  m_scoreInvalidJoinsPrefix = m_scoreInvalidJoins & 1;
+  m_scoreInvalidJoinsSuffix = m_scoreInvalidJoins & 2;
+  
+  cerr << "m_scoreInvalidJoins: " 
+      << m_scoreInvalidJoins << " "
+      << m_scoreInvalidJoinsPrefix << " "
+      << m_scoreInvalidJoinsSuffix << endl;
 }
 
 }

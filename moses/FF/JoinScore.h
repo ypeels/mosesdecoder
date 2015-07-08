@@ -111,9 +111,14 @@ public:
     
 protected:
   bool m_scoreRealWords, m_scoreNumCompounds, 
-        m_scoreInvalidJoins, m_scoreCompoundOOV,
+        m_scoreCompoundOOV,
         m_scoreCompoundWord, m_scorePartialCompound
         ;
+  size_t m_scoreInvalidJoins;
+  // 1 = a+|+a+ a|a+ = penalise dangling prefix
+  // 2 = a|+a +a|+a+ = penalise dangling suffix
+  bool m_scoreInvalidJoinsPrefix, m_scoreInvalidJoinsSuffix;
+  
   int m_maxMorphemeState;
   float m_multiplier;
   std::string m_vocabPath;
@@ -131,6 +136,8 @@ protected:
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;
   float CalcScore(float count) const;
+  void SetInvalidJoins();
+
 };
 
 
