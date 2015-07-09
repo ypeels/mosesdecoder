@@ -1051,7 +1051,7 @@ sub printout_report
 	{
 		foreach my $sys (sort @tst_sys)
 		{
-			printf "NIST score = %2.4f  BLEU score = %.4f for system \"$sys\"\n",$NISTmt{5}{$sys}{cum},$BLEUmt{4}{$sys}{cum};
+			printf "NIST score = %2.4f  BLEU score = %.4f for system \"$sys\"\n",$NISTmt{5}{$sys}{cum},$BLEUmt{1}{$sys}{cum};
 		}
 	}
 	elsif ($METHOD eq "NIST" )
