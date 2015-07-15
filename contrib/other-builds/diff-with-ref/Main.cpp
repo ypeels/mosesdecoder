@@ -3,8 +3,12 @@
 #include <cassert>
 #include "Main.h"
 #include "moses/Util.h"
+#include "moses/FF/JoinScore/TrieSearch.h"
 
 using namespace std;
+
+Moses::TrieSearch<bool> *m_trieSearch = NULL;
+vector<int> analysis(4, 0);
 
 int main(int argc, char **argv)
 {
@@ -14,6 +18,12 @@ int main(int argc, char **argv)
   string in1Path = argv[2];
   string in2Path = argv[3];
 
+	if (argc >= 5) {
+	  string m_vocabPath = argv[4];
+	  m_trieSearch = new Moses::TrieSearch<bool>;
+		m_trieSearch->Create(m_vocabPath);
+	}
+	
 	/*
   Moses::InputFileStream refStrme(refPath);
   Moses::InputFileStream in1Strme(in1Path);
@@ -26,13 +36,19 @@ int main(int argc, char **argv)
 	
   Compare(refStrme, in1Strme, in2Strme);
   
+  cout << "analysis=";
+  for (size_t i = 0; i < analysis.size(); ++i) {
+		cout << analysis[i] << " ";
+	}
+	cout << endl;
+	
 	cerr << "finished" << endl;
 	return 0;
 }
 
 void Compare(std::ifstream &refStrme, std::ifstream &in1Strme, std::ifstream &in2Strme)
 {
-  
+  int lineNum = 1;
   string refLine, in1Line, in2Line;
   while (getline(refStrme, refLine)) {
     getline(in1Strme, in1Line);
@@ -42,12 +58,13 @@ void Compare(std::ifstream &refStrme, std::ifstream &in1Strme, std::ifstream &in
     Moses::Tokenize(toksRef, refLine);
     Moses::Tokenize(toksIn1, in1Line);
     Moses::Tokenize(toksIn2, in2Line);
-    Compare(toksRef, toksIn1, toksIn2);
+    Compare(toksRef, toksIn1, toksIn2, lineNum);
     
+    ++lineNum;
   }
 }
 
-void Compare(const std::vector<std::string> &toksRef, const std::vector<std::string> &toksIn1, const std::vector<std::string> &toksIn2)
+void Compare(const std::vector<std::string> &toksRef, const std::vector<std::string> &toksIn1, const std::vector<std::string> &toksIn2, int lineNum)
 {
   Counts counts1, counts2;
   AddToCounts(counts1, toksIn1);
@@ -57,6 +74,36 @@ void Compare(const std::vector<std::string> &toksRef, const std::vector<std::str
   	const string &tok = toksRef[i];
     bool exist1 = SubtractFromCounts(counts1, tok);
     bool exist2 = SubtractFromCounts(counts2, tok);
+
+		if (exist1) {
+			if (exist2) {
+				++analysis[3];
+			}
+			else {
+				++analysis[1];
+			}		
+		}
+		else {
+			if (exist2) {
+				++analysis[2];
+				cout << lineNum << "=" << tok;
+
+				if (m_trieSearch) {
+					bool found, isAWord;
+					found = m_trieSearch->Find(isAWord, tok);
+					if (found && isAWord) {
+						cout << " FOUND";
+					}
+					else {
+						cout << " NOT";
+					}
+				}			
+				cout << endl;
+			}
+			else {
+				++analysis[0];
+			}
+		}    
   }   
 }
 
