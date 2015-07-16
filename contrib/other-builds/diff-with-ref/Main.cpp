@@ -14,17 +14,23 @@ int main(int argc, char **argv)
   string in1Path = argv[2];
   string in2Path = argv[3];
 
+	/*
   Moses::InputFileStream refStrme(refPath);
   Moses::InputFileStream in1Strme(in1Path);
   Moses::InputFileStream in2Strme(in2Path);
-
+	*/
+	ifstream refStrme, in1Strme, in2Strme;
+	refStrme.open(refPath.c_str());
+	in1Strme.open(in1Path.c_str());
+	in2Strme.open(in2Path.c_str());
+	
   Compare(refStrme, in1Strme, in2Strme);
   
 	cerr << "finished" << endl;
 	return 0;
 }
 
-void Compare(Moses::InputFileStream &refStrme, Moses::InputFileStream &in1Strme, Moses::InputFileStream &in2Strme)
+void Compare(std::ifstream &refStrme, std::ifstream &in1Strme, std::ifstream &in2Strme)
 {
   
   string refLine, in1Line, in2Line;
@@ -47,7 +53,8 @@ void Compare(const std::vector<std::string> &toksRef, const std::vector<std::str
   AddToCounts(counts1, toksIn1);
   AddToCounts(counts2, toksIn2);
 
-  for (auto &tok : toksRef ) {
+  for (size_t i = 0; i < toksRef.size(); ++i) {
+  	const string &tok = toksRef[i];
     bool exist1 = SubtractFromCounts(counts1, tok);
     bool exist2 = SubtractFromCounts(counts2, tok);
   }   
@@ -55,7 +62,8 @@ void Compare(const std::vector<std::string> &toksRef, const std::vector<std::str
 
 void AddToCounts(Counts &counts, const std::vector<std::string> &toks)
 {
-  for (auto &tok : toks ) {
+  for (size_t i = 0; i < toks.size(); ++i) {
+  	const string &tok = toks[i];
     Counts::iterator iter = counts.find(tok);
     if (iter == counts.end()) {
       counts[tok] = 1;
