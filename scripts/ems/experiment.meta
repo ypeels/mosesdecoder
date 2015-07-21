@@ -164,7 +164,7 @@ consolidate
 	ignore-unless: input-splitter output-splitter
 	template: $moses-script-dir/ems/support/consolidate-training-data.perl $input-extension $output-extension OUT IN
 train
-        in: truecased-stem
+  in: truecased-stem
 	out: splitter-model
 	default-name: splitter/split-model
 	ignore-unless: input-splitter output-splitter

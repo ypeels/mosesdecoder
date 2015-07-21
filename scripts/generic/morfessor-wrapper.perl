@@ -9,6 +9,7 @@ my $TRAIN = 0;
 my $TRAIN_ARGS = "";
 my $MORF_DIR;
 my $MODEL;
+my $LANGUAGE;
 my $TMP_DIR = ".";
 my $MOSES_DIR = "$RealBin/../..";
 
@@ -19,7 +20,8 @@ GetOptions("morfessor-dir=s" => \$MORF_DIR,
            "tmpdir=s" => \$TMP_DIR,
            "train" => \$TRAIN,
            "training-args=s" => \$TRAIN_ARGS,
-           "corpus=s" => \$CORPUS
+           "corpus=s" => \$CORPUS,
+           "language=s" => \$LANGUAGE
            );
 
 die("Must provide --model=s argument") if (!defined($MODEL));
@@ -34,7 +36,9 @@ if ($TRAIN) {
   mkdir $TMP_DIR;
 
   # vocab list
-  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | $MOSES_DIR/scripts/tokenizer/deescape-special-chars.perl | gzip -c > $TMP_DIR/vocab.gz";
+  my $tokAlignPath = "$MOSES_DIR/contrib/other-builds/tok-align";
+  
+  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | $MOSES_DIR/scripts/tokenizer/deescape-special-chars.perl | java -cp $tokAlignPath FilterAlphabet $tokAlignPath/alpha.$LANGUAGE | gzip -c > $TMP_DIR/vocab.gz";
   print STDERR "Executing: $cmd\n";
   `$cmd`;
 
