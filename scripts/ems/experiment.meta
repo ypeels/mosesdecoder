@@ -172,20 +172,18 @@ train
 	rerun-on-change: input-splitter output-splitter
 
 [LM] multiple
-prepare-bilingual-nplm
+prepare-bilingual-lm
 	in: TRAINING:corpus TRAINING:word-alignment
 	out: numberized_ngrams
 	ignore-unless: bilingual-lm
 	rerun-on-change: TRAINING:corpus TRAINING:word-alignment
-	template: $moses-script-dir/training/bilingual-lm/extract_training.py -c IN0 -e $output-extension -f $input-extension -a IN1.$TRAINING:alignment-symmetrization-method -w $working-dir/$bilingual-lm-workdir -n $order -m $source-window $bilingual-lm-settings
-	default-name: lm/bilingualLM_prep
+	default-name: lm/blm
 train-bilingual-lm
 	in: numberized_ngrams TRAINING:corpus 
 	out: binlm
 	ignore-unless: bilingual-lm
 	rerun-on-change: numberized_ngrams
-	template: $moses-script-dir/training/bilingual-lm/train_nplm.py -w $working-dir/$bilingual-lm-workdir -c IN1 -r $working-dir/$nplm-output-dir -n $train_order $nplm-settings
-	default-name: lm/bilingualLM
+	default-name: lm/blm
 get-corpus
 	in: get-corpus-script
 	out: raw-corpus
@@ -545,14 +543,14 @@ fast-align
 	in: prepared-data-fast-align
 	out: fast-alignment
 	rerun-on-change: fast-align-settings
-	ignore-if: fast-align-max-lines
+	ignore-if: fast-align-max-lines fast-align-save-model
 	template: $external-bin-dir/fast_align -i IN $fast-align-settings > OUT
 	default-name: fast-align
 fast-align-inverse
 	in: prepared-data-fast-align
 	out: fast-alignment-inverse
 	rerun-on-change: fast-align-settings
-	ignore-if: fast-align-max-lines
+	ignore-if: fast-align-max-lines fast-align-save-model
 	template: $external-bin-dir/fast_align -i IN -r $fast-align-settings > OUT
 	default-name: fast-align-inverse
 fast-align-in-parts
@@ -561,7 +559,7 @@ fast-align-in-parts
 	rerun-on-change: fast-align-settings fast-align-max-lines
 	ignore-unless: fast-align-max-lines
 	tmp-name: training/tmp.fast-align
-	template: $moses-script-dir/ems/support/fast-align-in-parts.perl -bin $external-bin-dir/fast_align -i IN -max-lines $fast-align-max-lines -tmp TMP -settings '$fast-align-settings' > OUT
+	template: $moses-script-dir/ems/support/fast-align-in-parts.perl -bin $external-bin-dir/fast_align -i IN -max-lines $fast-align-max-lines -tmp TMP -settings '$fast-align-settings' -save-model '$?fast-align-save-model' -o OUT
 	default-name: fast-align
 fast-align-in-parts-inverse
 	in: prepared-data-fast-align
@@ -569,8 +567,24 @@ fast-align-in-parts-inverse
 	rerun-on-change: fast-align-settings fast-align-max-lines
 	ignore-unless: fast-align-max-lines
 	tmp-name: training/tmp.fast-align-inverse
-	template: $moses-script-dir/ems/support/fast-align-in-parts.perl -bin $external-bin-dir/fast_align -i IN -r -max-lines $fast-align-max-lines -tmp TMP -settings '$fast-align-settings' > OUT
+	template: $moses-script-dir/ems/support/fast-align-in-parts.perl -bin $external-bin-dir/fast_align -i IN -r -max-lines $fast-align-max-lines -tmp TMP -settings '$fast-align-settings' -save-model '$?fast-align-save-model' -o OUT
+	default-name: fast-align-inverse
+fast-align-save-model
+	in: prepared-data-fast-align
+	out: fast-alignment
+	ignore-unless: fast-align-save-model
+	ignore-if: fast-align-max-lines
 	default-name: fast-align
+	tmp-name: training/tmp.fast-align-inverse
+	template: $external-bin-dir/fast_align -i IN $fast-align-settings -p OUT.parameters > OUT 2> OUT.log
+fast-align-save-model-inverse
+	in: prepared-data-fast-align
+	out: fast-alignment-inverse
+	ignore-unless: fast-align-save-model
+	ignore-if: fast-align-max-lines
+	default-name: fast-align-inverse
+	tmp-name: training/tmp.fast-align-inverse
+	template: $external-bin-dir/fast_align -r -i IN $fast-align-settings -p OUT.parameters > OUT 2> OUT.log
 symmetrize-fast-align
 	in: fast-alignment fast-alignment-inverse corpus-mml-prefilter=OR=corpus
 	out: word-alignment
@@ -783,6 +797,7 @@ create-config
 	rerun-on-change: decoding-steps alignment-factors translation-factors reordering-factors generation-factors lexicalized-reordering training-options script decoding-graph-backoff score-settings additional-ini mmsapt no-glue-grammar dont-tune-glue-grammar use-syntax-input-weight-feature
 	default-name: model/moses.ini
 	error: Unknown option
+	error: requires an argument
 	final-model: yes
 binarize-config
 	in: config
