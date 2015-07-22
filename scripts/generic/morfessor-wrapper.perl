@@ -35,10 +35,14 @@ if ($TRAIN) {
   $TMP_DIR = "$MODEL.tmp";
   mkdir $TMP_DIR;
 
-  # vocab list
-  my $tokAlignPath = "$MOSES_DIR/contrib/other-builds/tok-align";
+  # vocab list  
+  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | $MOSES_DIR/scripts/tokenizer/deescape-special-chars.perl";
+  if (defined($LANGUAGE)) {
+    my $tokAlignPath = "$MOSES_DIR/contrib/other-builds/tok-align";
+  	$cmd .= " | java -cp $tokAlignPath FilterAlphabet $tokAlignPath/alpha.$LANGUAGE";
+  }
+  $cmd .= " | gzip -c > $TMP_DIR/vocab.gz";
   
-  $cmd = "cat $CORPUS  | tr ' ' '\\n' | LC_ALL=C sort -T $TMP_DIR | uniq | $MOSES_DIR/scripts/tokenizer/deescape-special-chars.perl | java -cp $tokAlignPath FilterAlphabet $tokAlignPath/alpha.$LANGUAGE | gzip -c > $TMP_DIR/vocab.gz";
   print STDERR "Executing: $cmd\n";
   `$cmd`;
 
