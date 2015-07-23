@@ -1767,7 +1767,9 @@ void Manager::OutputSurface(std::ostream &out, const Hypothesis &edge, const std
       //preface surface form with UNK if marking unknowns
       const Word &word = phrase.GetWord(pos);
       if(markUnknown && word.IsOOV()) {
-        out << "UNK" << *factor;
+        out << StaticData::Instance().GetUnknownWordPrefix()
+            << *factor
+            << StaticData::Instance().GetUnknownWordSuffix();
       } else {
         out << *factor;
       }

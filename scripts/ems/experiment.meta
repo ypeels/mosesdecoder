@@ -61,6 +61,7 @@ factorize
 	rerun-on-change: TRAINING:input-factors TRAINING:output-factors rerun-factorize
 	default-name: corpus/factored
 	pass-unless: TRAINING:input-factors TRAINING:output-factors
+	pass-if: factorize-after-split
 	parallelizable: yes
 	error: can't open
 	error: incompatible number of words in factor
@@ -113,6 +114,15 @@ post-split-clean-syntax
 	pass-unless: input-splitter output-splitter
 	template: $moses-script-dir/training/clean-corpus-n.perl IN $input-extension $output-extension OUT 1 10000 OUT.lines-retained --ignore-xml
 	error: there is a blank factor
+post-split-factorize
+        in: clean-split-stem
+        out: post-split-factorized-stem
+        rerun-on-change: TRAINING:input-factors TRAINING:output-factors
+        default-name: corpus/split-factored
+        pass-unless: AND TRAINING:input-factors factorize-after-split
+        parallelizable: yes
+        error: can't open
+        error: incompatible number of words in factor
 
 [JOIN] single
 train
@@ -184,6 +194,12 @@ train-bilingual-lm
 	ignore-unless: bilingual-lm
 	rerun-on-change: numberized_ngrams
 	default-name: lm/blm
+train-nplm
+  in: stripped-corpus
+  out: binlm
+  ignore-unless: nplm
+  rerun-on-change: stripped-corpus
+  default-name: lm/nplm
 get-corpus
 	in: get-corpus-script
 	out: raw-corpus
@@ -217,6 +233,7 @@ factorize
 	out: factorized-corpus
 	default-name: lm/factored
 	pass-unless: factors
+	pass-if: factorize-after-split
 	ignore-if: concatenate-files concatenate-files-split
 	parallelizable: yes
   rerun-on-change: rerun-factorize
@@ -249,6 +266,7 @@ split
 	pass-unless: output-splitter
 	ignore-if: concatenate-files concatenate-files-split
 	template: $output-splitter -model IN1.$output-extension < IN > OUT
+
 post-split-clean
 	in: lowercased-corpus split-corpus
 	out: clean-split-corpus
@@ -258,8 +276,18 @@ post-split-clean
 	template: $SPLITTER:lm-post-split-cleaner IN OUT
 	rerun-on-change: SPLITTER:lm-post-split-cleaner
 	error: there is a blank factor
-strip
+
+post-split-factorize
         in: clean-split-corpus
+        out: split-factorized-corpus
+        default-name: lm/split-factored
+        pass-unless: AND factors factorize-after-split
+        ignore-if: concatenate-files concatenate-files-split
+        parallelizable: yes
+        error: can't open
+        error: incompatible number of words in factor
+strip
+        in: split-factorized-corpus
         out: stripped-corpus
         default-name: lm/stripped
         pass-unless: mock-output-parser-lm
@@ -281,7 +309,7 @@ train
 	in: stripped-corpus
 	out: lm
 	default-name: lm/lm
-	ignore-if: rlm-training custom-training bilingual-lm
+	ignore-if: rlm-training custom-training bilingual-lm nplm
 	rerun-on-change: lm-training order settings
 	template: $lm-training -order $order $settings -text IN -lm OUT
 	error: cannot execute binary file
@@ -298,7 +326,7 @@ train-custom
 	template: $custom-training -text IN -lm OUT
 	final-model: yes
 train-custom-syntax
-	in: split-corpus
+	in: split-factorized-corpus
 	out: binlm
 	default-name: lm/custom-lm
 	rerun-on-change: custom-training
@@ -357,6 +385,7 @@ factorize-tuning
 	out: factorized-tuning
 	default-name: lm/interpolate-tuning.factored
 	pass-unless: TRAINING:output-factors	
+	pass-if: factorize-after-split
 	parallelizable: yes
 	error: can't open
 	error: incompatible number of words in factor
@@ -381,8 +410,16 @@ split-tuning
 	default-name: lm/interpolate-tuning.split
 	pass-unless: output-splitter
 	template: $output-splitter -model IN1.$output-extension < IN > OUT
+post-split-factorize-tuning
+        in: split-tuning
+        out: post-split-factorized-tuning
+        default-name: lm/interpolate-tuning.split-factored
+        pass-unless: AND TRAINING:output-factors factorize-after-split
+        parallelizable: yes
+        error: can't open
+        error: incompatible number of words in factor
 strip-tuning
-	in: split-tuning
+	in: post-split-factorized-tuning
 	out: stripped-tuning
 	default-name: lm/interpolate-tuning.stripped
 	pass-unless: mock-output-parser-lm
@@ -510,12 +547,12 @@ train-in-mono
 	template: $moses-script-dir/ems/support/mml-train.perl -in-source IN -in-target IN1 -out-source IN2.$input-extension -out-target IN2.$output-extension -model OUT -lm-training "$lm-training" -order $order -lm-settings "$lm-settings" -lm-binarizer $lm-binarizer $settings
 [TRAINING] single
 consolidate
-	in: CORPUS:clean-split-stem
+	in: CORPUS:post-split-factorized-stem
 	out: corpus
 	default-name: corpus
 	template: $moses-script-dir/ems/support/consolidate-training-data.perl $input-extension $output-extension OUT IN
 build-domains
-	in: CORPUS:clean-split-stem
+	in: CORPUS:post-split-factorized-stem
 	out: domains
 	default-name: model/domains
 	ignore-unless: domain-features mml-filter-corpora
@@ -652,7 +689,7 @@ build-biconcor
 	final-model: yes
 build-suffix-array
 	in: corpus-mml-postfilter=OR=word-alignment corpus-mml-postfilter=OR=corpus-mml-prefilter=OR=corpus
-	out: phrase-translation-table
+	out: sigtest-filter-phrase-translation-table
 	default-name: model/suffix-array
 	ignore-unless: suffix-array
 	error: usage
@@ -724,11 +761,18 @@ build-ttable
 	final-model: yes
 build-mmsapt
 	in: corpus-mml-postfilter=OR=word-alignment corpus-mml-postfilter=OR=corpus-mml-prefilter=OR=corpus
-	out: phrase-translation-table
+	out: sigtest-filter-phrase-translation-table
 	ignore-unless: mmsapt
 	default-name: model/phrase-table-mmsapt
 	template: $moses-script-dir/training/build-mmsapt.perl --alignment IN.$alignment-symmetrization-method --corpus IN1 --f $input-extension --e $output-extension --dir OUT --settings '$mmsapt'
 	final-model: yes
+custom-phrase-table-pruning
+	in: phrase-translation-table
+	out: sigtest-filter-phrase-translation-table
+	ignore-unless: custom-phrase-table-pruning
+	ignore-if: mmsapt
+	template: $custom-phrase-table-pruning IN OUT
+	default-name: model/phrase-table-pruned
 sigtest-filter-suffix-array
 	in: corpus-mml-postfilter=OR=corpus-mml-prefilter=OR=corpus
 	out: sigtest-filter-suffix-array
@@ -750,7 +794,7 @@ sigtest-filter-ttable
 	out: sigtest-filter-phrase-translation-table
 	default-name: model/phrase-table-sigtest-filter
 	pass-unless: sigtest-filter
-	ignore-if: TRAINING:config
+	ignore-if: TRAINING:config custom-phrase-table-pruning
 	final-model: yes
 sigtest-filter-reordering
 	in: reordering-table sigtest-filter-suffix-array
