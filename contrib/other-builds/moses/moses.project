@@ -615,6 +615,8 @@
       <File Name="../../../moses/FF/JoinScore/Trie.h"/>
       <File Name="../../../moses/FF/JoinScore/TrieSearch.h"/>
     </VirtualDirectory>
+    <File Name="../../../moses/FF/ConstrainedDecodingDeseg.cpp"/>
+    <File Name="../../../moses/FF/ConstrainedDecodingDeseg.h"/>
   </VirtualDirectory>
   <Description/>
   <Dependencies/>
