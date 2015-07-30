@@ -16,7 +16,7 @@
 namespace MosesTuning
 {
 
-  const size_t kBleuNgramOrder = 1; // HIEU. CHANGE THIS BACK
+  const size_t kBleuNgramOrder = 1; // HIEU. CHANGE THIS BACK TO 4
 
 /**
  * Bleu scoring

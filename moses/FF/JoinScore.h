@@ -38,7 +38,7 @@ class JoinScore : public StatefulFeatureFunction
   {
     //std::string m_concat;
     Phrase m_morphemes;
-    size_t m_juncture;
+    size_t m_marker;
       //None  =  0,
       //Left  =  1,
       //Right =  2
@@ -46,13 +46,13 @@ class JoinScore : public StatefulFeatureFunction
     
   public:
     JoinScoreState()
-    :m_juncture(0)
+    :m_marker(0)
     ,m_validCompound(true)
     {}
     
-    JoinScoreState(const Phrase &morphemes, size_t juncture, bool validCompound)
+    JoinScoreState(const Phrase &morphemes, size_t Marker, bool validCompound)
     :m_morphemes(morphemes)
-    ,m_juncture(juncture)
+    ,m_marker(Marker)
     ,m_validCompound(validCompound)
     {
     }
@@ -63,8 +63,8 @@ class JoinScore : public StatefulFeatureFunction
       return m_morphemes;
     }
 
-    int GetJuncture() const {
-      return m_juncture;
+    int GetMarker() const {
+      return m_marker;
     }
 
     bool GetValidCompound() const
@@ -126,12 +126,12 @@ protected:
   //Node m_vocabRoot;
   TrieSearch<bool> m_trieSearch;
   
-  int GetJuncture(const Word &word) const;
+  int GetMarker(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord, 
                           size_t &numInvalidJoin, float &compoundWordScore, bool &validCompound,
                           Phrase &morphemes, 
                           const Word *morpheme,
-                          int prevJuncture, int currJuncture) const;
+                          int prevMarker, int currMarker) const;
   float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool &validCompound) const;
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;

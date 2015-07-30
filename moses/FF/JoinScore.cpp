@@ -154,7 +154,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   ScoreComponentCollection* accumulator) const
 {
   const JoinScoreState *classState = static_cast<const JoinScoreState*>(prev_state);
-  int prevJuncture = classState->GetJuncture();
+  int prevMarker = classState->GetMarker();
   Phrase morphemes = classState->GetMorphemes();
   bool validCompound = classState->GetValidCompound();
   
@@ -166,28 +166,28 @@ FFState* JoinScore::EvaluateWhenApplied(
   const Phrase &tp = cur_hypo.GetCurrTargetPhrase();
   for (size_t pos = 0; pos < tp.GetSize(); ++pos) {
     const Word &word = tp.GetWord(pos);
-    int currJuncture = GetJuncture(word);
+    int currMarker = GetMarker(word);
     
     CalcScores(countWord, countCompound, 
               countInvalidJoin, compoundWordScore, validCompound,
               morphemes, &word, 
-              prevJuncture, currJuncture);
+              prevMarker, currMarker);
     
     if (morphemes.GetSize() == 0) {
       // reset
       validCompound = true;
     }
     
-    prevJuncture = currJuncture;
+    prevMarker = currMarker;
   }
 
   // end of sentence
   if (cur_hypo.IsSourceCompleted()) {
-    int currJuncture = 0;
+    int currMarker = 0;
     CalcScores(countWord, countCompound, 
               countInvalidJoin, compoundWordScore, validCompound,
               morphemes, NULL, 
-              prevJuncture, currJuncture);  
+              prevMarker, currMarker);  
     //cerr << morphemes.ToString() << "=" << prevNode << endl;            
   }
 
@@ -211,7 +211,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   //cerr << "score=" << scores[0] << endl;
   accumulator->PlusEquals(this, scores);
 
-  return new JoinScoreState(morphemes, prevJuncture, validCompound);
+  return new JoinScoreState(morphemes, prevMarker, validCompound);
 }
 
 float JoinScore::CalcScore(float count) const
@@ -225,16 +225,16 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
                           size_t &countInvalidJoin, float &compoundWordScore, bool &validCompound,
                           Phrase &morphemes, 
                           const Word *morpheme,
-                          int prevJuncture, int currJuncture) const
+                          int prevMarker, int currMarker) const
 {
-  if (prevJuncture < 0 || prevJuncture > 4 || currJuncture < 0 || currJuncture > 4) {
-      UTIL_THROW2("Invalid juncture value: " << prevJuncture << " " << currJuncture);
+  if (prevMarker < 0 || prevMarker > 4 || currMarker < 0 || currMarker > 4) {
+      UTIL_THROW2("Invalid Marker value: " << prevMarker << " " << currMarker);
   }
   
-  switch (prevJuncture) {
+  switch (prevMarker) {
     case 0:
     case 4:
-      switch (currJuncture) {
+      switch (currMarker) {
         case 0:
         case 4:
           ++countWord;
@@ -269,7 +269,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
       }
       break;
     case 1:
-      switch (currJuncture) {
+      switch (currMarker) {
         case 0:
         case 4:
           ++countWord;
@@ -304,7 +304,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
       }
       break;
     case 2:
-      switch (currJuncture) {
+      switch (currMarker) {
         case 0:
         case 4:
           if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
@@ -339,7 +339,7 @@ void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
       }
       break;
     case 3:
-      switch (currJuncture) {
+      switch (currMarker) {
         case 0:
         case 4:
           if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
@@ -423,7 +423,7 @@ void JoinScore::SetParameter(const std::string& key, const std::string& value)
   }
 }
 
-int JoinScore::GetJuncture(const Word &morpheme) const
+int JoinScore::GetMarker(const Word &morpheme) const
 {  
   if (morpheme.IsOOV()) {
       return 4;
