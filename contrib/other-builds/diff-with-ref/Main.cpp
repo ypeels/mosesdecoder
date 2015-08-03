@@ -36,10 +36,10 @@ int main(int argc, char **argv)
 	
   Compare(refStrme, in1Strme, in2Strme);
   
-  cout << "EXISTS in: neither \t 1st, not 2nd \t 2nd, not 1st \t both \n";
-  cout << "\t ";
+  cout << "EXISTS in: \t neither \t 1st, not 2nd \t 2nd, not 1st \t both \n";
+  cout << "\t\t ";
   for (size_t i = 0; i < analysis.size(); ++i) {
-		cout << analysis[i] << "\t ";
+		cout << analysis[i] << "\t\t ";
 	}
 	cout << endl;
 	
