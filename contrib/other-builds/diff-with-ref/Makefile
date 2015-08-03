@@ -9,6 +9,6 @@ clean:
 OBJECTS = Main.o
 
 diff-with-ref: $(OBJECTS)
-	g++ -lz -lbz2 $(OBJECTS)  -L../../../boost/lib -L../../../lib -lmoses -lboost_iostreams -o diff-with-ref
+	g++ -lz -lbz2 $(OBJECTS)  -L../../../boost/lib64 -L../../../lib -lmoses -lboost_iostreams -o diff-with-ref
 
 

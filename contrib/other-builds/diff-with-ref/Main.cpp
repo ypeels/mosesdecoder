@@ -8,7 +8,7 @@
 using namespace std;
 
 Moses::TrieSearch<bool> *m_trieSearch = NULL;
-vector<int> analysis(4, 0);
+vector<int> analysis(5, 0);
 
 int main(int argc, char **argv)
 {
@@ -76,6 +76,8 @@ void Compare(const std::vector<std::string> &toksRef, const std::vector<std::str
     bool exist1 = SubtractFromCounts(counts1, tok);
     bool exist2 = SubtractFromCounts(counts2, tok);
 
+    ++analysis[4];
+  
 		if (exist1) {
 			if (exist2) {
 				++analysis[3];
