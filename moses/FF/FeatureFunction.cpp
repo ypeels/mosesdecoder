@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <boost/foreach.hpp>
 
 #include "util/exception.hh"
 
@@ -19,12 +20,13 @@ namespace Moses
 
 multiset<string> FeatureFunction::description_counts;
 
-std::vector<FeatureFunction*> FeatureFunction::s_staticColl;
+std::vector<std::vector<FeatureFunction*> > FeatureFunction::s_staticColl(1);
 
-FeatureFunction &FeatureFunction::FindFeatureFunction(const std::string& name)
+FeatureFunction &FeatureFunction::FindFeatureFunction(const std::string& name, size_t pass)
 {
-  for (size_t i = 0; i < s_staticColl.size(); ++i) {
-    FeatureFunction &ff = *s_staticColl[i];
+  std::vector<FeatureFunction*> &coll = s_staticColl[pass];
+  for (size_t i = 0; i < coll.size(); ++i) {
+    FeatureFunction &ff = *coll[i];
     if (ff.GetScoreProducerDescription() == name) {
       return ff;
     }
@@ -35,13 +37,18 @@ FeatureFunction &FeatureFunction::FindFeatureFunction(const std::string& name)
 
 void FeatureFunction::Destroy()
 {
-  RemoveAllInColl(s_staticColl);
+  BOOST_FOREACH(std::vector<FeatureFunction*> &coll, s_staticColl ) {
+    RemoveAllInColl(coll);
+  }  
 }
 
 void FeatureFunction::SetupAll(TranslationTask const& ttask)
 {
-  BOOST_FOREACH(FeatureFunction* ff, s_staticColl)
-  ff->Setup(ttask);
+  BOOST_FOREACH(std::vector<FeatureFunction*> &coll, s_staticColl ) {
+    BOOST_FOREACH(FeatureFunction* ff, coll) {
+      ff->Setup(ttask);
+    }
+  }  
 }
 
 FeatureFunction::
@@ -52,6 +59,7 @@ FeatureFunction(const std::string& line, bool registerNow)
   , m_verbosity(std::numeric_limits<std::size_t>::max())
   , m_numScoreComponents(1)
   , m_index(0)
+  , m_pass(0)
 {
   m_numTuneableComponents = m_numScoreComponents;
   ParseLine(line);
@@ -66,6 +74,7 @@ FeatureFunction(size_t numScoreComponents,
   , m_verbosity(std::numeric_limits<std::size_t>::max())
   , m_numScoreComponents(numScoreComponents)
   , m_index(0)
+  , m_pass(0)
 {
   m_numTuneableComponents = m_numScoreComponents;
   ParseLine(line);
@@ -77,7 +86,7 @@ FeatureFunction::
 Register()
 {
   ScoreComponentCollection::RegisterScoreProducer(this);
-  s_staticColl.push_back(this);
+  s_staticColl[m_pass].push_back(this);
 }
 
 FeatureFunction::~FeatureFunction() {}
@@ -136,6 +145,8 @@ void FeatureFunction::SetParameter(const std::string& key, const std::string& va
   } else if (key == "filterable") { //ignore
   } else if (key == "verbosity") {
     m_verbosity = Scan<size_t>(value);
+  } else if (key == "pass") {
+    m_pass = Scan<size_t>(value);
   } else {
     UTIL_THROW2(GetScoreProducerDescription() << ": Unknown argument " << key << "=" << value);
   }
@@ -209,9 +220,9 @@ FeatureFunction
   return this->GetNumScoreComponents() + idx;
 }
 
-void FeatureFunction::DoJoinAll(std::string &output)
+void FeatureFunction::DoJoinAll(std::string &output, size_t pass)
 {
-   BOOST_FOREACH(FeatureFunction* ff, s_staticColl) {
+   BOOST_FOREACH(FeatureFunction* ff, s_staticColl[pass]) {
     ff->DoJoin(output);
    }
 }

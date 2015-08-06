@@ -38,14 +38,15 @@ class FeatureFunction
 {
 protected:
   /**< all the score producers in this run */
-  static std::vector<FeatureFunction*> s_staticColl;
+  static std::vector<std::vector<FeatureFunction*> > s_staticColl;
 
   std::string m_description, m_argLine;
   std::vector<std::vector<std::string> > m_args;
   bool m_tuneable;
   bool m_requireSortingAfterSourceContext;
   bool m_doJoining;
-  
+  size_t m_pass;
+
   size_t m_verbosity;
   size_t m_numScoreComponents;
   size_t m_index; // index into vector covering ALL feature function values
@@ -60,11 +61,11 @@ private:
   void ParseLine(const std::string &line);
 
 public:
-  static const std::vector<FeatureFunction*>& GetFeatureFunctions() {
-    return s_staticColl;
+  static const std::vector<FeatureFunction*>& GetFeatureFunctions(size_t pass = 0) {
+    return s_staticColl[pass];
   }
 
-  static FeatureFunction &FindFeatureFunction(const std::string& name);
+  static FeatureFunction &FindFeatureFunction(const std::string& name, size_t pass = 0);
   static void Destroy();
 
   FeatureFunction(const std::string &line, bool initializeNow);
@@ -203,7 +204,7 @@ public:
   virtual void ReadParameters();
   virtual void SetTuneableComponents(const std::string& value);
 
-  static void DoJoinAll(std::string &output); 
+  static void DoJoinAll(std::string &output, size_t pass = 0); 
   virtual void DoJoin(std::string &output) 
   {}
 

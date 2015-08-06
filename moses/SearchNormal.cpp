@@ -98,6 +98,10 @@ void SearchNormal::Decode()
 
   }
   //OutputHypoStack();
+  if (false) {
+    // multipass
+    m_latticeRescorer.Rescore(m_hypoStackColl);
+  }
 }
 
 

@@ -6,6 +6,7 @@
 #include "HypothesisStackNormal.h"
 #include "TranslationOptionCollection.h"
 #include "Timer.h"
+#include "LatticeRescorer.h"
 
 namespace Moses
 {
@@ -26,6 +27,7 @@ protected:
   size_t interrupted_flag; /**< flag indicating that decoder ran out of time (see switch -time-out) */
   HypothesisStackNormal* actual_hypoStack; /**actual (full expanded) stack of hypotheses*/
   const TranslationOptionCollection &m_transOptColl; /**< pre-computed list of translation options for the phrases in this sentence */
+  LatticeRescorer m_latticeRescorer;
 
   // functions for creating hypotheses
   void ProcessOneHypothesis(const Hypothesis &hypothesis);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="all" Database="all.tags">
+<CodeLite_Workspace Name="all" Database="all.tags" SWTLW="No">
   <Project Name="extract" Path="extract/extract.project" Active="No"/>
   <Project Name="util" Path="util/util.project" Active="No"/>
   <Project Name="extract-mixed-syntax" Path="extract-mixed-syntax/extract-mixed-syntax.project" Active="No"/>

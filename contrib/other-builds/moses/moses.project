@@ -823,6 +823,8 @@
     <File Name="../../../moses/XmlOption.h"/>
     <File Name="../../../moses/OutputFileStream.cpp"/>
     <File Name="../../../moses/OutputFileStream.h"/>
+    <File Name="../../../moses/LatticeRescorer.cpp"/>
+    <File Name="../../../moses/LatticeRescorer.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="PP">
     <File Name="../../../moses/PP/CountsPhraseProperty.cpp"/>
