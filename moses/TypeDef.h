@@ -173,6 +173,13 @@ enum S2TParsingAlgorithm {
   Scope3
 };
 
+enum AddStatus {
+  New,
+  Pruned,
+  RecombinedWin,
+  RecombinedLose
+};
+
 // typedef
 typedef size_t FactorType;
 

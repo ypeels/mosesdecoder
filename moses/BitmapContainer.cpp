@@ -465,8 +465,8 @@ BitmapContainer::ProcessBestHypothesis()
     ret = false;
   } else {
     // Add best hypothesis to hypothesis stack.
-    const bool newstackentry = m_stack.AddPrune(hypo);
-    if (newstackentry)
+    AddStatus newstackentry = m_stack.AddPrune(hypo);
+    if (newstackentry == New)
       m_numStackInsertions++;
 
     IFVERBOSE(3) {

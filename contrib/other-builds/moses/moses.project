@@ -757,8 +757,6 @@
     <File Name="../../../moses/SearchCubePruning.h"/>
     <File Name="../../../moses/SearchNormal.cpp"/>
     <File Name="../../../moses/SearchNormal.h"/>
-    <File Name="../../../moses/SearchNormalBatch.cpp"/>
-    <File Name="../../../moses/SearchNormalBatch.h"/>
     <File Name="../../../moses/Sentence.cpp"/>
     <File Name="../../../moses/Sentence.h"/>
     <File Name="../../../moses/SentenceStats.cpp"/>

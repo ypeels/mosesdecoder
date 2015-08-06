@@ -76,7 +76,7 @@ public:
   			Add()
   				AddNoPrune()
   */
-  bool AddPrune(Hypothesis *hypothesis);
+  AddStatus AddPrune(Hypothesis *hypothesis);
 
   void AddInitial(Hypothesis *hypo);
 

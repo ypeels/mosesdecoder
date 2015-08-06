@@ -80,13 +80,13 @@ pair<HypothesisStackCubePruning::iterator, bool> HypothesisStackCubePruning::Add
   return ret;
 }
 
-bool HypothesisStackCubePruning::AddPrune(Hypothesis *hypo)
+AddStatus HypothesisStackCubePruning::AddPrune(Hypothesis *hypo)
 {
   if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
     m_manager.GetSentenceStats().AddDiscarded();
     VERBOSE(3,"discarded, constraint" << std::endl);
     FREEHYPO(hypo);
-    return false;
+    return Pruned;
   }
 
   if (hypo->GetTotalScore() < m_worstScore) {
@@ -94,14 +94,14 @@ bool HypothesisStackCubePruning::AddPrune(Hypothesis *hypo)
     m_manager.GetSentenceStats().AddDiscarded();
     VERBOSE(3,"discarded, too bad for stack" << std::endl);
     FREEHYPO(hypo);
-    return false;
+    return Pruned;
   }
 
   // over threshold, try to add to collection
   std::pair<iterator, bool> addRet = Add(hypo);
   if (addRet.second) {
     // nothing found. add to collection
-    return true;
+    return New;
   }
 
   // equiv hypo exists, recombine with other hypo
@@ -128,7 +128,7 @@ bool HypothesisStackCubePruning::AddPrune(Hypothesis *hypo)
       iterExisting = m_hypos.find(hypo);
       UTIL_THROW(util::Exception, "Should have added hypothesis " << **iterExisting);
     }
-    return false;
+    return RecombinedWin;
   } else {
     // already storing the best hypo. discard current hypo
     VERBOSE(3,"worse than matching hyp " << hypoExisting->GetId() << ", recombining" << std::endl)
@@ -137,7 +137,7 @@ bool HypothesisStackCubePruning::AddPrune(Hypothesis *hypo)
     } else {
       FREEHYPO(hypo);
     }
-    return false;
+    return RecombinedLose;
   }
 }
 

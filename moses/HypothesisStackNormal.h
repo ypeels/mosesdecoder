@@ -80,7 +80,7 @@ public:
   			Add()
   				AddNoPrune()
   */
-  bool AddPrune(Hypothesis *hypothesis);
+  AddStatus AddPrune(Hypothesis *hypothesis);
 
   /** set maximum number of hypotheses in the collection
    * \param maxHypoStackSize maximum number (typical number: 100)

@@ -16,7 +16,6 @@ class Manager;
  */
 class HypothesisStack
 {
-
 protected:
   typedef std::set< Hypothesis*, HypothesisRecombinationOrderer > _HCType;
   _HCType m_hypos; /**< contains hypotheses */
@@ -47,7 +46,7 @@ public:
   };
 
   virtual ~HypothesisStack();
-  virtual bool AddPrune(Hypothesis *hypothesis) = 0;
+  virtual AddStatus AddPrune(Hypothesis *hypothesis) = 0;
   virtual const Hypothesis *GetBestHypothesis() const = 0;
   virtual std::vector<const Hypothesis*> GetSortedList() const = 0;
 
