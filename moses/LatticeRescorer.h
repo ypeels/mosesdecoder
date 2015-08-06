@@ -11,15 +11,15 @@ class LatticeRescorer
 {
 public:
   
-  void Rescore(const std::vector < HypothesisStack* > &stacks);
-  
+  void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
+
 protected:
-  typedef std::vector<const Hypothesis*> HypoList;
-  typedef std::map<const Hypothesis*, HypoList> FwdPtrs;
-  FwdPtrs m_fwdPtrs;
+  typedef std::vector<Hypothesis*> HypoList;
+  typedef std::map<Hypothesis*, HypoList> FwdPtrs;
+  std::vector<FwdPtrs> m_fwdPtrsColl;
   
-  void Rescore(HypothesisStack &stack);
-  
+  void Rescore(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
+
 };
   
 }

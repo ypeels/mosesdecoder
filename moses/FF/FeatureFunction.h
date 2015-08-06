@@ -65,6 +65,10 @@ public:
     return s_staticColl[pass];
   }
 
+  static size_t GetNumPasses() {
+      return s_staticColl.size();
+  }
+
   static FeatureFunction &FindFeatureFunction(const std::string& name, size_t pass = 0);
   static void Destroy();
 

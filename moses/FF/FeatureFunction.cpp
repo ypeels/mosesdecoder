@@ -20,7 +20,7 @@ namespace Moses
 
 multiset<string> FeatureFunction::description_counts;
 
-std::vector<std::vector<FeatureFunction*> > FeatureFunction::s_staticColl(1);
+std::vector<std::vector<FeatureFunction*> > FeatureFunction::s_staticColl;
 
 FeatureFunction &FeatureFunction::FindFeatureFunction(const std::string& name, size_t pass)
 {
@@ -86,6 +86,10 @@ FeatureFunction::
 Register()
 {
   ScoreComponentCollection::RegisterScoreProducer(this);
+
+  if (s_staticColl.size() <= m_pass) {
+    s_staticColl.resize(m_pass + 1);
+  }
   s_staticColl[m_pass].push_back(this);
 }
 
