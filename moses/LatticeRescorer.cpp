@@ -106,6 +106,9 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
       nextHypo->SetPrevHypo(hypo);
     }
   }
+  else {
+    Multiply(hypo, nodes);
+  }
 }
 
 std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
@@ -126,6 +129,13 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(Hypothesis
 
   std::pair<AddStatus, const Hypothesis*> status = stack.AddPrune(hypo);
   return status;
+}
+
+void LatticeRescorer::Multiply(Hypothesis *hypo, const std::set<const Hypothesis*> &nodes)
+{
+  //FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
+  //HypoList &list = fwdPtrs[hypo];
+
 }
 
 void LatticeRescorer::DeleteHypo(Hypothesis *hypo)

@@ -22,6 +22,7 @@ protected:
   void Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypothesis *hypo, size_t pass);
   std::pair<AddStatus, const Hypothesis*> Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
   void DeleteHypo(Hypothesis *hypo);
+  void Multiply(Hypothesis *hypo, const std::set<const Hypothesis*> &nodes);
 
 };
   
