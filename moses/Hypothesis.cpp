@@ -303,11 +303,6 @@ EvaluateWhenApplied(const SquareMatrix &futureScore)
   }
 }
 
-const Hypothesis* Hypothesis::GetPrevHypo()const
-{
-  return m_prevHypo;
-}
-
 /**
  * print hypothesis information for pharaoh-style logging
  */

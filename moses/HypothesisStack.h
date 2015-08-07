@@ -46,7 +46,7 @@ public:
   };
 
   virtual ~HypothesisStack();
-  virtual AddStatus AddPrune(Hypothesis *hypothesis) = 0;
+  virtual std::pair<AddStatus, const Hypothesis*> AddPrune(Hypothesis *hypothesis) = 0;
   virtual const Hypothesis *GetBestHypothesis() const = 0;
   virtual std::vector<const Hypothesis*> GetSortedList() const = 0;
 

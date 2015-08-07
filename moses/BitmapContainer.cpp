@@ -465,12 +465,12 @@ BitmapContainer::ProcessBestHypothesis()
     ret = false;
   } else {
     // Add best hypothesis to hypothesis stack.
-    AddStatus newstackentry = m_stack.AddPrune(hypo);
-    if (newstackentry == New)
+    std::pair<AddStatus, const Hypothesis*> newstackentry = m_stack.AddPrune(hypo);
+    if (newstackentry.first == New)
       m_numStackInsertions++;
 
     IFVERBOSE(3) {
-      TRACE_ERR("new stack entry flag is " << newstackentry << std::endl);
+      TRACE_ERR("new stack entry flag is " << newstackentry.first << " " << newstackentry.second << std::endl);
     }
   }
 

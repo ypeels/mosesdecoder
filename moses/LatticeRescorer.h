@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include "TypeDef.h"
 
 namespace Moses
 {
@@ -18,7 +19,8 @@ protected:
   typedef std::map<Hypothesis*, HypoList> FwdPtrs;
   std::vector<FwdPtrs> m_fwdPtrsColl;
   
-  void Rescore(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
+  void Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypothesis *hypo, size_t pass);
+  std::pair<AddStatus, const Hypothesis*> Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
   void DeleteHypo(Hypothesis *hypo);
 
 };

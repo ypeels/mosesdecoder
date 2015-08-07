@@ -1,5 +1,6 @@
 #include <boost/foreach.hpp>
 #include <iostream>
+#include <set>
 
 #include "LatticeRescorer.h"
 #include "Hypothesis.h"
@@ -30,14 +31,6 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
       FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
       HypoList &list = fwdPtrs[prevHypo];
       list.push_back(hypo);
-      
-      // losers list
-      const ArcList *arcs = hypo->GetArcList();
-      if (arcs) {
-        BOOST_FOREACH(Hypothesis *arc, *arcs) {
-            list.push_back(arc);
-        } 
-      }
     } //for (iterStack = stack.begin(); iterStack != stack.end(); ++iterStack) {
 
     stack.DetachAll();
@@ -50,41 +43,89 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
       FwdPtrs &fwdPtrs = m_fwdPtrsColl[stackInd];
 
       BOOST_FOREACH(FwdPtrs::value_type val, fwdPtrs ) {
-        Hypothesis *hypo =val.first;
-        Rescore(stack, hypo, pass);
+        Hypothesis *hypo = val.first;
+        HypoList &fwdHypos = val.second;
+        Rescore(stack, fwdHypos, hypo, pass);
       }
   }
 }
 
-void LatticeRescorer::Rescore(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
+void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypothesis *hypo, size_t pass)
 {
-    const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
-    size_t sfInd = 0;
-    BOOST_FOREACH(FeatureFunction *ff, ffs) {
-        if (ff->IsStateless()) {
-          StatelessFeatureFunction *slFF = static_cast<StatelessFeatureFunction*>(ff);
-          hypo->EvaluateWhenApplied(*slFF);
-        }
-        else {
-          StatefulFeatureFunction *sfFF = static_cast<StatefulFeatureFunction*>(ff);
-          hypo->EvaluateWhenApplied(*sfFF, sfInd);
-          ++sfInd;
-        }
-    }
+  ArcList arcs;
+  if (hypo->GetArcList()) {
+    arcs = *hypo->GetArcList();
+    hypo->ClearArcList();
+  }
 
-    AddStatus status = stack.AddPrune(hypo);
-    switch (status) {
-      case New:
-        // split?
-        break;
-      case Pruned:
-        //DeleteHypo(hypo);
-        break;
-      case RecombinedWin:
-        break;
-      case RecombinedLose:
-        break;
+  set<const Hypothesis*> nodes;
+
+  std::pair<AddStatus, const Hypothesis*> status;
+  status = Rescore1Hypo(stack, hypo, pass);
+
+  switch (status.first) {
+  case New:
+    nodes.insert(hypo);
+    break;
+  case Pruned:
+    break;
+  default:
+    UTIL_THROW2("Impossible");
+  }
+
+  // losers list
+  BOOST_FOREACH(Hypothesis *arc, arcs) {
+    status = Rescore1Hypo(stack, arc, pass);
+
+    switch (status.first) {
+    case New:
+      nodes.insert(hypo);
+      break;
+    case Pruned:
+      //DeleteHypo(hypo);
+      break;
+    case RecombinedWin: {
+      const Hypothesis *loser = status.second;
+      size_t ret = nodes.erase(loser);
+      assert(ret == 1);
+      nodes.insert(hypo);
+      break;
     }
+    case RecombinedLose:
+      break;
+    }
+  }
+
+  // sort out graph.
+  if (nodes.size() == 0) {
+    // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
+    DeleteHypo(hypo);
+  }
+  else if (nodes.size() == 1) {
+    BOOST_FOREACH(Hypothesis *nextHypo, fwdHypos) {
+      nextHypo->SetPrevHypo(hypo);
+    }
+  }
+}
+
+std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
+{
+  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+  size_t sfInd = 0;
+  BOOST_FOREACH(FeatureFunction *ff, ffs) {
+      if (ff->IsStateless()) {
+        StatelessFeatureFunction *slFF = static_cast<StatelessFeatureFunction*>(ff);
+        hypo->EvaluateWhenApplied(*slFF);
+      }
+      else {
+        StatefulFeatureFunction *sfFF = static_cast<StatefulFeatureFunction*>(ff);
+        hypo->EvaluateWhenApplied(*sfFF, sfInd);
+        ++sfInd;
+      }
+  }
+
+  std::pair<AddStatus, const Hypothesis*> status = stack.AddPrune(hypo);
+  return status;
 }
 
 void LatticeRescorer::DeleteHypo(Hypothesis *hypo)

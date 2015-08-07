@@ -152,7 +152,13 @@ public:
     return m_id;
   }
 
-  const Hypothesis* GetPrevHypo() const;
+  const Hypothesis* GetPrevHypo() const {
+    return m_prevHypo;
+  }
+
+  void SetPrevHypo(const Hypothesis *prevHypo) {
+    m_prevHypo = prevHypo;
+  }
 
   /** length of the partial translation (from the start of the sentence) */
   inline size_t GetSize() const {
@@ -231,6 +237,9 @@ public:
 
   void AddArc(Hypothesis *loserHypo);
   void CleanupArcList();
+  void ClearArcList() {
+    m_arcList->clear();
+  }
 
   //! returns a list alternative previous hypotheses (or NULL if n-best support is disabled)
   inline const ArcList* GetArcList() const {
