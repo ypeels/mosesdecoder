@@ -76,7 +76,7 @@ public:
   			Add()
   				AddNoPrune()
   */
-  AddStatus AddPrune(Hypothesis *hypothesis);
+  std::pair<AddStatus, const Hypothesis*> AddPrune(Hypothesis *hypothesis);
 
   void AddInitial(Hypothesis *hypo);
 
