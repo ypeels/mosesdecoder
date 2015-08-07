@@ -19,6 +19,7 @@ protected:
   std::vector<FwdPtrs> m_fwdPtrsColl;
   
   void Rescore(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
+  void DeleteHypo(Hypothesis *hypo);
 
 };
   

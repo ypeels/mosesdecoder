@@ -72,7 +72,35 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, Hypothesis *hypo, size_t p
         }
     }
 
-    stack.AddPrune(hypo);
+    AddStatus status = stack.AddPrune(hypo);
+    switch (status) {
+      case New:
+        // split?
+        break;
+      case Pruned:
+        //DeleteHypo(hypo);
+        break;
+      case RecombinedWin:
+        break;
+      case RecombinedLose:
+        break;
+    }
+}
+
+void LatticeRescorer::DeleteHypo(Hypothesis *hypo)
+{
+  delete hypo;
+
+  // delete all hypos that depend on curr hypo
+  size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
+  FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
+  FwdPtrs::const_iterator iter = fwdPtrs.find(hypo);
+  assert(iter != fwdPtrs.end());
+
+  const HypoList &list = iter->second;
+  BOOST_FOREACH(Hypothesis *nextHypo, list) {
+      DeleteHypo(nextHypo);
+  }
 
 }
 
