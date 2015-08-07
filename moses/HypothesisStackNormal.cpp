@@ -87,13 +87,13 @@ pair<HypothesisStackNormal::iterator, bool> HypothesisStackNormal::Add(Hypothesi
   return ret;
 }
 
-AddStatus HypothesisStackNormal::AddPrune(Hypothesis *hypo)
+std::pair<AddStatus, const Hypothesis*> HypothesisStackNormal::AddPrune(Hypothesis *hypo)
 {
   if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
     m_manager.GetSentenceStats().AddDiscarded();
     VERBOSE(3,"discarded, constraint" << std::endl);
     FREEHYPO(hypo);
-    return Pruned;
+    return std::pair<AddStatus, const Hypothesis*>(Pruned, NULL);
   }
 
   // too bad for stack. don't bother adding hypo into collection
@@ -104,14 +104,14 @@ AddStatus HypothesisStackNormal::AddPrune(Hypothesis *hypo)
     m_manager.GetSentenceStats().AddDiscarded();
     VERBOSE(3,"discarded, too bad for stack" << std::endl);
     FREEHYPO(hypo);
-    return Pruned;
+    return std::pair<AddStatus, const Hypothesis*>(Pruned, NULL);
   }
 
   // over threshold, try to add to collection
   std::pair<iterator, bool> addRet = Add(hypo);
   if (addRet.second) {
     // nothing found. add to collection
-    return New;
+    return std::pair<AddStatus, const Hypothesis*>(New, NULL);
   }
 
   // equiv hypo exists, recombine with other hypo
@@ -138,7 +138,7 @@ AddStatus HypothesisStackNormal::AddPrune(Hypothesis *hypo)
       iterExisting = m_hypos.find(hypo);
       UTIL_THROW2("Offending hypo = " << **iterExisting);
     }
-    return RecombinedWin;
+    return std::pair<AddStatus, const Hypothesis*>(RecombinedWin, hypoExisting);
   } else {
     // already storing the best hypo. discard current hypo
     VERBOSE(3,"worse than matching hyp " << hypoExisting->GetId() << ", recombining" << std::endl)
@@ -147,7 +147,7 @@ AddStatus HypothesisStackNormal::AddPrune(Hypothesis *hypo)
     } else {
       FREEHYPO(hypo);
     }
-    return RecombinedLose;
+    return std::pair<AddStatus, const Hypothesis*>(RecombinedLose, hypoExisting);
   }
 }
 
