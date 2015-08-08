@@ -109,6 +109,26 @@ Hypothesis(const Hypothesis &prevHypo, const TranslationOption &transOpt)
   m_manager.GetSentenceStats().AddCreated();
 }
 
+// make a copy of the hypo. Split during 2nd pass
+Hypothesis::
+Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
+:m_sourceCompleted(copyHypo.m_sourceCompleted)
+,m_sourceInput(copyHypo.m_sourceInput)
+,m_currSourceWordsRange(copyHypo.m_currSourceWordsRange)
+,m_currTargetWordsRange(copyHypo.m_currTargetWordsRange)
+,m_wordDeleted(copyHypo.m_wordDeleted)
+,m_totalScore(copyHypo.m_totalScore)
+,m_futureScore(copyHypo.m_futureScore)
+,m_scoreBreakdown(new ScoreComponentCollection(*copyHypo.m_scoreBreakdown.get()))
+,m_transOpt(copyHypo.m_transOpt)
+,m_manager(copyHypo.m_manager)
+
+,m_prevHypo(&prevHypo)
+,m_id(m_manager.GetNextHypoId())
+{
+
+}
+
 Hypothesis::
 ~Hypothesis()
 {

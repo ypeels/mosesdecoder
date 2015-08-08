@@ -101,12 +101,17 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
     // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
     DeleteHypo(hypo);
   }
-  else if (nodes.size() == 1) {
-    BOOST_FOREACH(Hypothesis *nextHypo, fwdHypos) {
-      nextHypo->SetPrevHypo(hypo);
-    }
-  }
   else {
+    const Hypothesis *prevHypo = *nodes.begin();
+    if (prevHypo != hypo) {
+      // winning hypo has changed
+      BOOST_FOREACH(Hypothesis *nextHypo, fwdHypos) {
+        nextHypo->SetPrevHypo(hypo);
+      }
+    }
+    nodes.erase(nodes.begin());
+
+    // add the rest
     Multiply(hypo, nodes);
   }
 }
@@ -131,10 +136,24 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(Hypothesis
   return status;
 }
 
-void LatticeRescorer::Multiply(Hypothesis *hypo, const std::set<const Hypothesis*> &nodes)
+void LatticeRescorer::Multiply(const Hypothesis *hypo, const std::set<const Hypothesis*> &nodes)
 {
   //FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
   //HypoList &list = fwdPtrs[hypo];
+
+  BOOST_FOREACH(const Hypothesis *fwdOrigHypo, nodes) {
+    Multiply(fwdOrigHypo, hypo);
+  }
+}
+
+void LatticeRescorer::Multiply(const Hypothesis *hypo, const Hypothesis *prevHypo)
+{
+    Hypothesis *newFwdHypo = new Hypothesis(*hypo, *prevHypo);
+
+    size_t numWordsCovered = newFwdHypo->GetWordsBitmap().GetNumWordsCovered();
+    FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
+    HypoList &list = fwdPtrs[newFwdHypo];
+    assert(list.size() == 0);
 
 }
 

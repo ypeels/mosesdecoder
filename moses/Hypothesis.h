@@ -105,6 +105,7 @@ public:
     return s_objectPool;
   }
 
+  Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo);
   ~Hypothesis();
 
   /** return the subclass of Hypothesis most appropriate to the given translation option */
