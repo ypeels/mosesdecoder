@@ -100,7 +100,7 @@ void MaxNonTerm::SetParameter(const std::string& key, const std::string& value)
   if (key == "max-non-term") {
     m_maxNonTerm = Scan<size_t>(value);
   } else if (key == "phrase-table") {
-    FeatureFunction &ff = FindFeatureFunction(value);
+    FeatureFunction &ff = FindFeatureFunction(value, 0);
     m_pt = dynamic_cast<const PhraseDictionary*>(&ff);
     UTIL_THROW_IF2(m_pt == NULL, "Not a phrase-table: " << value);
   } else {

@@ -124,7 +124,7 @@ bool KeepOnlyReordering::ContainsReordering(const Phrase &sp, const TargetPhrase
 void KeepOnlyReordering::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "phrase-table") {
-    FeatureFunction &ff = FindFeatureFunction(value);
+    FeatureFunction &ff = FindFeatureFunction(value, 0);
     m_pt = dynamic_cast<const PhraseDictionary*>(&ff);
     UTIL_THROW_IF2(m_pt == NULL, "Not a phrase-table: " << value);
   } else if (key == "keep-all") {

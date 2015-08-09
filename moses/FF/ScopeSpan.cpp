@@ -135,7 +135,7 @@ void ScopeSpan::SetParameter(const std::string& key, const std::string& value)
     UTIL_THROW_IF2(range.size() != 2, "Incorrect value format:" << value);
     m_scopeRange[scope] = std::pair<size_t, size_t>(range[0], range[1]);
   } else if (key == "phrase-table") {
-    FeatureFunction &ff = FindFeatureFunction(value);
+    FeatureFunction &ff = FindFeatureFunction(value, 0);
     m_pt = dynamic_cast<const PhraseDictionary*>(&ff);
     UTIL_THROW_IF2(m_pt == NULL, "Not a phrase-table: " << value);
   } else {

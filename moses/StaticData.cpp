@@ -897,7 +897,7 @@ void StaticData::LoadDecodeGraphsNew(const std::vector<std::string> &mappingVect
       featuresRemaining = &FeatureFunction::GetFeatureFunctions();
     }
 
-    FeatureFunction &ff = FeatureFunction::FindFeatureFunction(token[1]);
+    FeatureFunction &ff = FeatureFunction::FindFeatureFunction(token[1], 0);
 
     DecodeStep* decodeStep = NULL;
     if (typeid(ff) == typeid(PhraseDictionary)) {
@@ -1296,7 +1296,7 @@ void StaticData::OverrideFeatures()
     vector<string> toks = Tokenize(str);
     UTIL_THROW_IF2(toks.size() <= 1, "Incorrect format for feature override: " << str);
 
-    FeatureFunction &ff = FeatureFunction::FindFeatureFunction(toks[0]);
+    FeatureFunction &ff = FeatureFunction::FindFeatureFunction(toks[0], 0);
 
     for (size_t j = 1; j < toks.size(); ++j) {
       const string &keyValStr = toks[j];
@@ -1344,7 +1344,7 @@ void StaticData::ResetWeights(const std::string &denseWeights, const std::string
 
       if (name != "") {
         // save previous ff
-        const FeatureFunction &ff = FeatureFunction::FindFeatureFunction(name);
+        const FeatureFunction &ff = FeatureFunction::FindFeatureFunction(name, 0);
         m_allWeights.Assign(&ff, weights);
         weights.clear();
       }
@@ -1357,7 +1357,7 @@ void StaticData::ResetWeights(const std::string &denseWeights, const std::string
     }
   }
 
-  const FeatureFunction &ff = FeatureFunction::FindFeatureFunction(name);
+  const FeatureFunction &ff = FeatureFunction::FindFeatureFunction(name, 0);
   m_allWeights.Assign(&ff, weights);
 
   // sparse weights
@@ -1370,7 +1370,7 @@ void StaticData::ResetWeights(const std::string &denseWeights, const std::string
     vector<string> names = Tokenize(toks[0], "_");
     UTIL_THROW_IF2(names.size() != 2, "Incorrect sparse weight name. Should be FFName_spareseName");
 
-    const FeatureFunction &ff = FeatureFunction::FindFeatureFunction(names[0]);
+    const FeatureFunction &ff = FeatureFunction::FindFeatureFunction(names[0], 0);
     m_allWeights.Assign(&ff, names[1], Scan<float>(toks[1]));
   }
 }

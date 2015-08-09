@@ -23,7 +23,7 @@ RuleDiscr::RuleDiscr(const std::string &line)
   ,m_maxCacheSize(DEFAULT_MAX_TRANS_OPT_CACHE_SIZE)
   ,m_insideScores(false)
   ,m_whatScores(0)
-  ,m_pt(FeatureFunction::FindFeatureFunction("TranslationModel0"))
+  ,m_pt(FeatureFunction::FindFeatureFunction("TranslationModel0", 0))
 {
   m_requireSortingAfterSourceContext = true;
   ReadParameters();

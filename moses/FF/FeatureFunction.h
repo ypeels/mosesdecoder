@@ -69,7 +69,7 @@ public:
       return s_staticColl.size();
   }
 
-  static FeatureFunction &FindFeatureFunction(const std::string& name, size_t pass = 0);
+  static FeatureFunction &FindFeatureFunction(const std::string& name, size_t pass);
   static void Destroy();
 
   FeatureFunction(const std::string &line, bool initializeNow);
