@@ -14,29 +14,43 @@ namespace Moses
 {
 void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
 {
+  m_stacks = & const_cast<std::vector < HypothesisStack* > &>(stacks);
+  OutputStackSize();
+
   // create forward pointers
   m_fwdPtrsColl.resize(stacks.size());
 
   // all stacks, except 1st
-  for (int stackInd = stacks.size() - 1; stackInd > 0; --stackInd) {
+  for (size_t stackInd = 1; stackInd < stacks.size(); ++stackInd) {
     HypothesisStack &stack = *stacks[stackInd];
     
     // 1 stack
     HypothesisStack::const_iterator iterStack;
     for (iterStack = stack.begin(); iterStack != stack.end(); ++iterStack) {
       Hypothesis *hypo = *iterStack;
-      Hypothesis *prevHypo = const_cast<Hypothesis*>(hypo->GetPrevHypo());
-      size_t numWordsCovered = prevHypo->GetWordsBitmap().GetNumWordsCovered();
+      size_t numWords = hypo->GetWordsBitmap().GetNumWordsCovered();
 
-      FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
+      FwdPtrs &fwdPtrsNext = m_fwdPtrsColl[numWords];
+      fwdPtrsNext[hypo];
+
+      Hypothesis *prevHypo = const_cast<Hypothesis*>(hypo->GetPrevHypo());
+      size_t preNumWords = prevHypo->GetWordsBitmap().GetNumWordsCovered();
+
+      FwdPtrs &fwdPtrs = m_fwdPtrsColl[preNumWords];
       HypoList &list = fwdPtrs[prevHypo];
       list.push_back(hypo);
+
+      AttachLosers(hypo);
     } //for (iterStack = stack.begin(); iterStack != stack.end(); ++iterStack) {
 
     stack.DetachAll();
 
   } //for (iterStacks = stacks.rbegin(); iterStacks != stacks.rend(); ++iterStacks) {
   
+  stacks[0]->DetachAll();
+
+  OutputStackSize();
+
   // rescore
   for (size_t stackInd = 1; stackInd < stacks.size(); ++stackInd) {
       HypothesisStack &stack = *stacks[stackInd];
@@ -47,6 +61,8 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
         HypoList &fwdHypos = val.second;
         Rescore(stack, fwdHypos, hypo, pass);
       }
+      OutputStackSize();
+
   }
 }
 
@@ -99,7 +115,7 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
   // sort out graph.
   if (nodes.size() == 0) {
     // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
-    DeleteHypo(hypo);
+    //DeleteHypo(hypo);
   }
   else {
     const Hypothesis *prevHypo = *nodes.begin();
@@ -136,6 +152,23 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(Hypothesis
   return status;
 }
 
+void LatticeRescorer::AttachLosers(const Hypothesis *hypo)
+{
+  const ArcList* arcs = hypo->GetArcList();
+  if (arcs == NULL) {
+	  return;
+  }
+
+  BOOST_FOREACH(Hypothesis *arc, *arcs) {
+      Hypothesis *prevHypo = const_cast<Hypothesis*>(arc->GetPrevHypo());
+      size_t preNumWords = prevHypo->GetWordsBitmap().GetNumWordsCovered();
+
+      FwdPtrs &fwdPtrs = m_fwdPtrsColl[preNumWords];
+      HypoList &list = fwdPtrs[prevHypo];
+      list.push_back(arc);
+  }
+}
+
 void LatticeRescorer::Multiply(const Hypothesis *hypo, const std::set<const Hypothesis*> &nodes)
 {
   //FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
@@ -159,8 +192,6 @@ void LatticeRescorer::Multiply(const Hypothesis *hypo, const Hypothesis *prevHyp
 
 void LatticeRescorer::DeleteHypo(Hypothesis *hypo)
 {
-  delete hypo;
-
   // delete all hypos that depend on curr hypo
   size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
   FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
@@ -172,6 +203,23 @@ void LatticeRescorer::DeleteHypo(Hypothesis *hypo)
       DeleteHypo(nextHypo);
   }
 
+  delete hypo;
+
+}
+
+void LatticeRescorer::OutputStackSize() const
+{
+  cerr << "stack size:";
+  BOOST_FOREACH(const HypothesisStack *stack, *m_stacks) {
+      cerr << stack->size() << " ";
+  }
+
+  cerr << "fwd ptr size:";
+  BOOST_FOREACH(const FwdPtrs &fwdPtrs, m_fwdPtrsColl) {
+      cerr << fwdPtrs.size() << " ";
+  }
+
+  cerr << endl;
 }
 
 } // namespace

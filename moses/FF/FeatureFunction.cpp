@@ -115,9 +115,14 @@ void FeatureFunction::ParseLine(const std::string &line)
     if (args[0] == "num-features") {
       m_numScoreComponents = Scan<size_t>(args[1]);
       m_numTuneableComponents = m_numScoreComponents;
-    } else if (args[0] == "name") {
+    }
+    else if (args[0] == "name") {
       m_description = args[1];
-    } else {
+    }
+    else if (args[0] == "pass") {
+      m_pass = Scan<size_t>(args[1]);
+    }
+    else {
       m_args.push_back(args);
     }
   }
