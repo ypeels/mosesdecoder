@@ -61,7 +61,7 @@ private:
   void ParseLine(const std::string &line);
 
 public:
-  static const std::vector<FeatureFunction*>& GetFeatureFunctions(size_t pass = 0) {
+  static const std::vector<FeatureFunction*>& GetFeatureFunctions(size_t pass) {
     return s_staticColl[pass];
   }
 

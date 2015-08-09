@@ -181,10 +181,13 @@ void ChartTranslationOptionList::EvaluateWithSourceContext(const InputType &inpu
 
   // let the FF know about the other trans opts when deciding to score/discard
   // useful for tranlation rule backoff
-  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
-  for (size_t i = 0; i < ffs.size(); ++i) {
-    const FeatureFunction &ff = *ffs[i];
-    ff.EvaluateWithAllTransOpts(*this, hypoStackColl);
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+	  for (size_t i = 0; i < ffs.size(); ++i) {
+		const FeatureFunction &ff = *ffs[i];
+		ff.EvaluateWithAllTransOpts(*this, hypoStackColl);
+	  }
   }
 
   DeleteEmpty();

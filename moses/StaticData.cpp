@@ -82,11 +82,14 @@ StaticData::~StaticData()
   RemoveAllInColl(m_decodeGraphs);
 
   /*
-  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions();
-  for(size_t i=0;i<producers.size();++i) {
-  FeatureFunction *ff = producers[i];
-    delete ff;
-  }
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions(pass);
+	  for(size_t i=0;i<producers.size();++i) {
+	  FeatureFunction *ff = producers[i];
+		delete ff;
+	  }
+   }
   */
 
   // memory pools
@@ -781,7 +784,7 @@ void StaticData::LoadDecodeGraphsOld(const vector<string> &mappingVector, const 
   const vector<PhraseDictionary*>& pts = PhraseDictionary::GetColl();
   const vector<GenerationDictionary*>& gens = GenerationDictionary::GetColl();
 
-  const std::vector<FeatureFunction*> *featuresRemaining = &FeatureFunction::GetFeatureFunctions();
+  const std::vector<FeatureFunction*> *featuresRemaining = &FeatureFunction::GetFeatureFunctions(0);
   DecodeStep *prev = 0;
   size_t prevDecodeGraphInd = 0;
 
@@ -807,7 +810,7 @@ void StaticData::LoadDecodeGraphsOld(const vector<string> &mappingVector, const 
       }
 
       if (prevDecodeGraphInd < decodeGraphInd) {
-        featuresRemaining = &FeatureFunction::GetFeatureFunctions();
+        featuresRemaining = &FeatureFunction::GetFeatureFunctions(0);
       }
 
       decodeType = token[1] == "T" ? Translate : Generate;
@@ -877,7 +880,7 @@ void StaticData::LoadDecodeGraphsOld(const vector<string> &mappingVector, const 
 
 void StaticData::LoadDecodeGraphsNew(const std::vector<std::string> &mappingVector, const std::vector<size_t> &maxChartSpans)
 {
-  const std::vector<FeatureFunction*> *featuresRemaining = &FeatureFunction::GetFeatureFunctions();
+  const std::vector<FeatureFunction*> *featuresRemaining = &FeatureFunction::GetFeatureFunctions(0);
   DecodeStep *prev = 0;
   size_t prevDecodeGraphInd = 0;
 
@@ -894,7 +897,7 @@ void StaticData::LoadDecodeGraphsNew(const std::vector<std::string> &mappingVect
     }
 
     if (prevDecodeGraphInd < decodeGraphInd) {
-      featuresRemaining = &FeatureFunction::GetFeatureFunctions();
+      featuresRemaining = &FeatureFunction::GetFeatureFunctions(0);
     }
 
     FeatureFunction &ff = FeatureFunction::FindFeatureFunction(token[1], 0);
@@ -946,7 +949,7 @@ void StaticData::LoadDecodeGraphsNew(const std::vector<std::string> &mappingVect
 void StaticData::ReLoadBleuScoreFeatureParameter(float weight)
 {
   //loop over ScoreProducers to update weights of BleuScoreFeature
-  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions();
+  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions(0);
   for(size_t i=0; i<producers.size(); ++i) {
     FeatureFunction *ff = producers[i];
     std::string ffName = ff->GetScoreProducerDescription();
@@ -998,17 +1001,19 @@ void
 StaticData
 ::InitializeForInput(ttasksptr const& ttask) const
 {
-  const std::vector<FeatureFunction*> &producers
-  = FeatureFunction::GetFeatureFunctions();
-  for(size_t i=0; i<producers.size(); ++i) {
-    FeatureFunction &ff = *producers[i];
-    if (! IsFeatureFunctionIgnored(ff)) {
-      Timer iTime;
-      iTime.start();
-      ff.InitializeForInput(ttask);
-      VERBOSE(3,"InitializeForInput( " << ff.GetScoreProducerDescription() << " )"
-              << "= " << iTime << endl);
-    }
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions(pass);
+	  for(size_t i=0; i<producers.size(); ++i) {
+		FeatureFunction &ff = *producers[i];
+		if (! IsFeatureFunctionIgnored(ff)) {
+		  Timer iTime;
+		  iTime.start();
+		  ff.InitializeForInput(ttask);
+		  VERBOSE(3,"InitializeForInput( " << ff.GetScoreProducerDescription() << " )"
+				  << "= " << iTime << endl);
+		}
+	  }
   }
 }
 
@@ -1016,40 +1021,45 @@ void
 StaticData
 ::CleanUpAfterSentenceProcessing(ttasksptr const& ttask) const
 {
-  const std::vector<FeatureFunction*> &producers
-  = FeatureFunction::GetFeatureFunctions();
-  for(size_t i=0; i<producers.size(); ++i) {
-    FeatureFunction &ff = *producers[i];
-    if (! IsFeatureFunctionIgnored(ff)) {
-      ff.CleanUpAfterSentenceProcessing(ttask);
-    }
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &producers = FeatureFunction::GetFeatureFunctions(pass);
+	  for(size_t i=0; i<producers.size(); ++i) {
+		FeatureFunction &ff = *producers[i];
+		if (! IsFeatureFunctionIgnored(ff)) {
+		  ff.CleanUpAfterSentenceProcessing(ttask);
+		}
+	  }
   }
 }
 
 void StaticData::LoadFeatureFunctions()
 {
-  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
-  std::vector<FeatureFunction*>::const_iterator iter;
-  for (iter = ffs.begin(); iter != ffs.end(); ++iter) {
-    FeatureFunction *ff = *iter;
-    bool doLoad = true;
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+	  std::vector<FeatureFunction*>::const_iterator iter;
+	  for (iter = ffs.begin(); iter != ffs.end(); ++iter) {
+		FeatureFunction *ff = *iter;
+		bool doLoad = true;
 
-    if (ff->RequireSortingAfterSourceContext()) {
-      m_requireSortingAfterSourceContext = true;
-    }
-    if (ff->DoJoining()) {
-      m_doJoining = true;
-    }
+		if (ff->RequireSortingAfterSourceContext()) {
+		  m_requireSortingAfterSourceContext = true;
+		}
+		if (ff->DoJoining()) {
+		  m_doJoining = true;
+		}
 
-    // if (PhraseDictionary *ffCast = dynamic_cast<PhraseDictionary*>(ff)) {
-    if (dynamic_cast<PhraseDictionary*>(ff)) {
-      doLoad = false;
-    }
+		// if (PhraseDictionary *ffCast = dynamic_cast<PhraseDictionary*>(ff)) {
+		if (dynamic_cast<PhraseDictionary*>(ff)) {
+		  doLoad = false;
+		}
 
-    if (doLoad) {
-      VERBOSE(1, "Loading " << ff->GetScoreProducerDescription() << endl);
-      ff->Load();
-    }
+		if (doLoad) {
+		  VERBOSE(1, "Loading " << ff->GetScoreProducerDescription() << endl);
+		  ff->Load();
+		}
+	  }
   }
 
   const std::vector<PhraseDictionary*> &pts = PhraseDictionary::GetColl();
@@ -1067,18 +1077,21 @@ bool StaticData::CheckWeights() const
   set<string> weightNames = m_parameter->GetWeightNames();
   set<string> featureNames;
 
-  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
-  for (size_t i = 0; i < ffs.size(); ++i) {
-    const FeatureFunction &ff = *ffs[i];
-    const string &descr = ff.GetScoreProducerDescription();
-    featureNames.insert(descr);
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+	  for (size_t i = 0; i < ffs.size(); ++i) {
+		const FeatureFunction &ff = *ffs[i];
+		const string &descr = ff.GetScoreProducerDescription();
+		featureNames.insert(descr);
 
-    set<string>::iterator iter = weightNames.find(descr);
-    if (iter == weightNames.end()) {
-      cerr << "Can't find weights for feature function " << descr << endl;
-    } else {
-      weightNames.erase(iter);
-    }
+		set<string>::iterator iter = weightNames.find(descr);
+		if (iter == weightNames.end()) {
+		  cerr << "Can't find weights for feature function " << descr << endl;
+		} else {
+		  weightNames.erase(iter);
+		}
+	  }
   }
 
   //sparse features
@@ -1112,11 +1125,15 @@ bool StaticData::CheckWeights() const
 void StaticData::LoadSparseWeightsFromConfig()
 {
   set<string> featureNames;
-  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
-  for (size_t i = 0; i < ffs.size(); ++i) {
-    const FeatureFunction &ff = *ffs[i];
-    const string &descr = ff.GetScoreProducerDescription();
-    featureNames.insert(descr);
+
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+	  for (size_t i = 0; i < ffs.size(); ++i) {
+		const FeatureFunction &ff = *ffs[i];
+		const string &descr = ff.GetScoreProducerDescription();
+		featureNames.insert(descr);
+	  }
   }
 
   std::map<std::string, std::vector<float> > weights = m_parameter->GetAllWeights();
@@ -1148,9 +1165,12 @@ bool StaticData::LoadAlternateWeightSettings()
 
   // get mapping from feature names to feature functions
   map<string,FeatureFunction*> nameToFF;
-  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions();
-  for (size_t i = 0; i < ffs.size(); ++i) {
-    nameToFF[ ffs[i]->GetScoreProducerDescription() ] = ffs[i];
+  size_t numPasses = FeatureFunction::GetNumPasses();
+  for (size_t pass = 0; pass < numPasses; ++pass) {
+	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+	  for (size_t i = 0; i < ffs.size(); ++i) {
+		nameToFF[ ffs[i]->GetScoreProducerDescription() ] = ffs[i];
+	  }
   }
 
   // copy main weight setting as default
