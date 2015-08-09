@@ -511,6 +511,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/LatticeMBR.h</locationURI>
 		</link>
 		<link>
+			<name>LatticeRescorer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/LatticeRescorer.cpp</locationURI>
+		</link>
+		<link>
+			<name>LatticeRescorer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/LatticeRescorer.h</locationURI>
+		</link>
+		<link>
 			<name>Manager.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/Manager.cpp</locationURI>
@@ -719,16 +729,6 @@
 			<name>SearchNormal.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/SearchNormal.h</locationURI>
-		</link>
-		<link>
-			<name>SearchNormalBatch.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/moses/SearchNormalBatch.cpp</locationURI>
-		</link>
-		<link>
-			<name>SearchNormalBatch.h</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/moses/SearchNormalBatch.h</locationURI>
 		</link>
 		<link>
 			<name>Sentence.cpp</name>
@@ -1071,6 +1071,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/mbr.h</locationURI>
 		</link>
 		<link>
+			<name>parameters</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>rule.proto</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/rule.proto</locationURI>
@@ -1094,6 +1099,16 @@
 			<name>FF/ConstrainedDecoding.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ConstrainedDecoding.h</locationURI>
+		</link>
+		<link>
+			<name>FF/ConstrainedDecodingDeseg.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ConstrainedDecodingDeseg.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/ConstrainedDecodingDeseg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ConstrainedDecodingDeseg.h</locationURI>
 		</link>
 		<link>
 			<name>FF/ControlRecombination.cpp</name>
@@ -1261,6 +1276,26 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/InternalTree.h</locationURI>
 		</link>
 		<link>
+			<name>FF/JoinCompound.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinCompound.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinCompound.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinCompound.h</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinScore.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinScore.h</locationURI>
+		</link>
+		<link>
 			<name>FF/KeepOnlyReordering.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/KeepOnlyReordering.cpp</locationURI>
@@ -1294,6 +1329,16 @@
 			<name>FF/LongerPhraseFF.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LongerPhraseFF.h</locationURI>
+		</link>
+		<link>
+			<name>FF/MadaConsistentTok.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MadaConsistentTok.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/MadaConsistentTok.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MadaConsistentTok.h</locationURI>
 		</link>
 		<link>
 			<name>FF/ManualFF.cpp</name>
@@ -1451,6 +1496,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleBackoff.h</locationURI>
 		</link>
 		<link>
+			<name>FF/RuleDiscr.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleDiscr.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleDiscr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleDiscr.h</locationURI>
+		</link>
+		<link>
 			<name>FF/RuleLength.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleLength.cpp</locationURI>
@@ -1499,16 +1554,6 @@
 			<name>FF/SetSourcePhrase.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/SetSourcePhrase.h</locationURI>
-		</link>
-		<link>
-			<name>FF/SkeletonChangeInput.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/SkeletonChangeInput.cpp</locationURI>
-		</link>
-		<link>
-			<name>FF/SkeletonChangeInput.h</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/SkeletonChangeInput.h</locationURI>
 		</link>
 		<link>
 			<name>FF/SkeletonStatefulFF.cpp</name>
@@ -2389,6 +2434,36 @@
 			<name>bin/lm.log</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/bin/lm.log</locationURI>
+		</link>
+		<link>
+			<name>parameters/BookkeepingOptions.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/BookkeepingOptions.cpp</locationURI>
+		</link>
+		<link>
+			<name>parameters/BookkeepingOptions.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/BookkeepingOptions.h</locationURI>
+		</link>
+		<link>
+			<name>parameters/ContextParameters.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/ContextParameters.cpp</locationURI>
+		</link>
+		<link>
+			<name>parameters/ContextParameters.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/ContextParameters.h</locationURI>
+		</link>
+		<link>
+			<name>parameters/NBestOptions.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/NBestOptions.cpp</locationURI>
+		</link>
+		<link>
+			<name>parameters/NBestOptions.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/NBestOptions.h</locationURI>
 		</link>
 		<link>
 			<name>FF/HyperParam/HyperCountNonTerms.cpp</name>
