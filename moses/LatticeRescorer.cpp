@@ -158,6 +158,8 @@ void LatticeRescorer::AttachLosers(const Hypothesis *hypo)
 	  return;
   }
 
+  cerr << "num arcs=" << arcs->size() << endl;
+
   BOOST_FOREACH(Hypothesis *arc, *arcs) {
       Hypothesis *prevHypo = const_cast<Hypothesis*>(arc->GetPrevHypo());
       size_t preNumWords = prevHypo->GetWordsBitmap().GetNumWordsCovered();
