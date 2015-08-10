@@ -268,6 +268,10 @@ public:
   void SetFFState(int idx, FFState* state) {
     m_ffStates[idx] = state;
   }
+  size_t GetNumFFStates() const {
+	// should always be the same
+    return m_ffStates.size();
+  }
 
   void EvaluateWhenApplied(const StatelessFeatureFunction &slff);
   void EvaluateWhenApplied(const StatefulFeatureFunction &sfff, int state_idx);

@@ -47,8 +47,6 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
 
   } //for (iterStacks = stacks.rbegin(); iterStacks != stacks.rend(); ++iterStacks) {
   
-  stacks[0]->DetachAll();
-
   OutputStackSize();
 
   // rescore
@@ -84,6 +82,7 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
     nodes.insert(hypo);
     break;
   case Pruned:
+	cerr << "pruned " << hypo << endl;
     break;
   default:
     UTIL_THROW2("Impossible");
@@ -98,7 +97,7 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
       nodes.insert(hypo);
       break;
     case Pruned:
-      //DeleteHypo(hypo);
+      cerr << "pruned " << hypo << endl;
       break;
     case RecombinedWin: {
       const Hypothesis *loser = status.second;
@@ -115,7 +114,8 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
   // sort out graph.
   if (nodes.size() == 0) {
     // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
-    //DeleteHypo(hypo);
+	cerr << "nothing here " << hypo << endl;
+    DeleteHypo(hypo);
   }
   else {
     const Hypothesis *prevHypo = *nodes.begin();
@@ -132,10 +132,10 @@ void LatticeRescorer::Rescore(HypothesisStack &stack, HypoList &fwdHypos, Hypoth
   }
 }
 
-std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
+std::pair<AddStatus, const Hypothesis*> LatticeRescorer::
+	Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
 {
   const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
-  size_t sfInd = 0;
   BOOST_FOREACH(FeatureFunction *ff, ffs) {
       if (ff->IsStateless()) {
         StatelessFeatureFunction *slFF = static_cast<StatelessFeatureFunction*>(ff);
@@ -143,8 +143,7 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorer::Rescore1Hypo(Hypothesis
       }
       else {
         StatefulFeatureFunction *sfFF = static_cast<StatefulFeatureFunction*>(ff);
-        hypo->EvaluateWhenApplied(*sfFF, sfInd);
-        ++sfInd;
+        hypo->EvaluateWhenApplied(*sfFF, sfFF->GetStatefulId());
       }
   }
 

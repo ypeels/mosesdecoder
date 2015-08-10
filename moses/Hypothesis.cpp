@@ -125,8 +125,14 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 
 ,m_prevHypo(&prevHypo)
 ,m_id(m_manager.GetNextHypoId())
+,m_ffStates(prevHypo.m_ffStates.size())
 {
+	cerr << "copy hypo " << this << endl;
+	for (size_t i = 0; i < prevHypo.m_ffStates.size(); ++i) {
+		const FFState &origState = *prevHypo.m_ffStates[i];
+		//FFState *newState = new FFState(origState);
 
+	}
 }
 
 Hypothesis::
@@ -254,6 +260,12 @@ EvaluateWhenApplied(StatefulFeatureFunction const& sfff,
     Manager& manager = this->GetManager(); //Get the manager and the ttask
     ttasksptr const& ttask = manager.GetTtask();
 
+    cerr << "hypo=" << this << " " << GetWordsBitmap().ToString()
+		<< " num states=" << GetNumFFStates() << " state_idx=" << state_idx
+   		<< 	" prev hypo=" << m_prevHypo << " " << m_prevHypo->GetWordsBitmap().ToString()
+    	<< " prev states=" << m_prevHypo->GetNumFFStates() << " " << m_prevHypo->m_ffStates[state_idx]
+		<< endl;
+
     m_ffStates[state_idx] = sfff.EvaluateWhenAppliedWithContext
                             (ttask, *this, m_prevHypo ? m_prevHypo->m_ffStates[state_idx] : NULL,
                              &m_currScoreBreakdown);
@@ -284,26 +296,26 @@ EvaluateWhenApplied(const SquareMatrix &futureScore)
   // option: add these here
   // language model scores for n-grams completely contained within a target
   // phrase are also included here
+  const StaticData &staticData = StaticData::Instance();
 
-  // compute values of stateless feature functions that were not
-  // cached in the translation option
-  const vector<const StatelessFeatureFunction*>& sfs =
-    StatelessFeatureFunction::GetStatelessFeatureFunctions();
-  for (unsigned i = 0; i < sfs.size(); ++i) {
-    const StatelessFeatureFunction &ff = *sfs[i];
-    EvaluateWhenApplied(ff);
-  }
+  size_t sfInd = 0;
+  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(0);
+  BOOST_FOREACH(FeatureFunction *ff, ffs) {
+      if (staticData.IsFeatureFunctionIgnored(*ff)) {
+    	 continue;
+      }
 
-  const vector<const StatefulFeatureFunction*>& ffs =
-    StatefulFeatureFunction::GetStatefulFeatureFunctions();
-  for (unsigned i = 0; i < ffs.size(); ++i) {
-    const StatefulFeatureFunction &ff = *ffs[i];
-    const StaticData &staticData = StaticData::Instance();
-    if (! staticData.IsFeatureFunctionIgnored(ff)) {
-      m_ffStates[i] = ff.EvaluateWhenApplied(*this,
-                                             m_prevHypo ? m_prevHypo->m_ffStates[i] : NULL,
-                                             &m_currScoreBreakdown);
-    }
+      if (ff->IsStateless()) {
+        StatelessFeatureFunction &slFF = *static_cast<StatelessFeatureFunction*>(ff);
+        EvaluateWhenApplied(slFF);
+      }
+      else {
+        StatefulFeatureFunction &sfFF = *static_cast<StatefulFeatureFunction*>(ff);
+          m_ffStates[sfInd] = sfFF.EvaluateWhenApplied(*this,
+                                                 m_prevHypo ? m_prevHypo->m_ffStates[sfInd] : NULL,
+                                                 &m_currScoreBreakdown);
+          ++sfInd;
+      }
   }
 
   IFVERBOSE(2) {
