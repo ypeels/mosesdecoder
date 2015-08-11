@@ -23,6 +23,8 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 
     // rescore each hypo
     BOOST_FOREACH(Hypothesis *hypo, m_hypos) {
+    	cerr << "rescoring " << hypo << endl;
+
 	    size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
 	    HypothesisStack &stack = *stacks[numWordsCovered];
 
@@ -163,6 +165,7 @@ LatticeRescorerNode &LatticeRescorerGraph::Find(Hypothesis *bestHypo)
 void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
 {
 	cerr << "rescoring pass " << pass << endl;
+	cerr << "first hypo=" << m_firstNode->m_bestHypo << endl;
 
 	boost::unordered_set<LatticeRescorerNode::Edge> &fwdEdges = m_firstNode->m_fwdNodes;
 	BOOST_FOREACH(const LatticeRescorerNode::Edge &edge, fwdEdges) {

@@ -71,8 +71,13 @@ Hypothesis(Manager& manager, InputType const& source, const TranslationOption &i
   //_hash_computed = false;
   //s_HypothesesCreated = 1;
   const vector<const StatefulFeatureFunction*>& ffs = StatefulFeatureFunction::GetStatefulFeatureFunctions();
-  for (unsigned i = 0; i < ffs.size(); ++i)
+  cerr << this << " num states=" << ffs.size() << " ";
+  for (unsigned i = 0; i < ffs.size(); ++i) {
     m_ffStates[i] = ffs[i]->EmptyHypothesisState(source);
+    cerr << m_ffStates[i] << " ";
+  }
+  cerr << endl;
+
   m_manager.GetSentenceStats().AddCreated();
 }
 
@@ -131,7 +136,7 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 	for (size_t i = 0; i < prevHypo.m_ffStates.size(); ++i) {
 		const FFState &origState = *prevHypo.m_ffStates[i];
 		//FFState *newState = new FFState(origState);
-
+		m_ffStates[i] = &origState;
 	}
 }
 
@@ -261,9 +266,10 @@ EvaluateWhenApplied(StatefulFeatureFunction const& sfff,
     ttasksptr const& ttask = manager.GetTtask();
 
     cerr << "hypo=" << this << " " << GetWordsBitmap().ToString()
-		<< " num states=" << GetNumFFStates() << " state_idx=" << state_idx
+		<< " num states=" << GetNumFFStates()
    		<< 	" prev hypo=" << m_prevHypo << " " << m_prevHypo->GetWordsBitmap().ToString()
-    	<< " prev states=" << m_prevHypo->GetNumFFStates() << " " << m_prevHypo->m_ffStates[state_idx]
+    	<< " prev states=" << m_prevHypo->GetNumFFStates()
+		<< " state_idx=" << state_idx << " " << m_prevHypo->m_ffStates[state_idx]
 		<< endl;
 
     m_ffStates[state_idx] = sfff.EvaluateWhenAppliedWithContext
