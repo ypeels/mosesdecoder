@@ -27,6 +27,9 @@ public:
 	inline bool operator==(const LatticeRescorerNode &other) const
 	{ return m_bestHypo == other.m_bestHypo; }
 
+	void Add(Hypothesis *hypo)
+	{ m_hypos.insert(hypo); }
+
 	void Add(const Edge &edge)
 	{ m_fwdNodes.insert(edge); }
 

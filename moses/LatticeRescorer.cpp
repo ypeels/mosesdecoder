@@ -15,7 +15,6 @@ namespace Moses
 LatticeRescorerNode::LatticeRescorerNode(Hypothesis *bestHypo)
 :m_bestHypo(bestHypo)
 {
-	m_hypos.insert(m_bestHypo);
 }
 
 void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
@@ -126,6 +125,7 @@ LatticeRescorerNode &LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 {
   std::pair<Coll::iterator, bool> retPair = m_nodes.insert(LatticeRescorerNode(bestHypo));
   LatticeRescorerNode &ret = const_cast<LatticeRescorerNode&>(*retPair.first);
+  ret.Add(bestHypo);
 
   Hypothesis *prevHypo = const_cast<Hypothesis *>(bestHypo->GetPrevHypo());
   if (prevHypo) {
@@ -138,6 +138,8 @@ LatticeRescorerNode &LatticeRescorerGraph::Add(Hypothesis *bestHypo)
   if (arcs) {
 	  // losers list
 	  BOOST_FOREACH(Hypothesis *arc, *arcs) {
+		  ret.Add(arc);
+
 		  Hypothesis *prevHypo = const_cast<Hypothesis *>(arc->GetPrevHypo());
 		  LatticeRescorerNode &prevNode = Find(prevHypo);
 		  LatticeRescorerNode::Edge edge(&ret, arc);
