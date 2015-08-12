@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <boost/unordered_set.hpp>
+#include <boost/functional/hash.hpp>
 #include "TypeDef.h"
 
 namespace Moses
@@ -18,20 +19,17 @@ class LatticeRescorerNode
 public:
 	typedef std::pair<LatticeRescorerNode*, Hypothesis*> Edge;
 
-	Hypothesis *m_bestHypo;
+	const Hypothesis *m_bestHypo, *m_prevHypo;
 	boost::unordered_set<Hypothesis*> m_hypos;
 	boost::unordered_set<Edge> m_fwdNodes;
 
-	LatticeRescorerNode(Hypothesis *bestHypo);
+	LatticeRescorerNode(const Hypothesis *bestHypo, const Hypothesis *prevHypo);
 
 	inline bool operator==(const LatticeRescorerNode &other) const
 	{ return m_bestHypo == other.m_bestHypo; }
 
-	void Add(Hypothesis *hypo)
-	{ m_hypos.insert(hypo); }
-
-	void Add(const Edge &edge)
-	{ m_fwdNodes.insert(edge); }
+	void Add(Hypothesis *hypo);
+	void Add(const Edge &edge);
 
 	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
 	std::pair<AddStatus, const Hypothesis*> Rescore1Hypo
@@ -41,9 +39,33 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class LatticeRescorerNodeComparer
+{
+public:
+    std::size_t operator()(const LatticeRescorerNode *node) const
+    {
+		//std::cerr << "hashing " << node << std::endl;
 
-inline size_t hash_value(const LatticeRescorerNode &node)
-{ return (size_t) node.m_bestHypo; }
+		size_t seed = (size_t) node->m_bestHypo;
+	    boost::hash_combine(seed, node->m_prevHypo);
+
+		return seed;
+    }
+
+    bool operator()( const LatticeRescorerNode *lhs, const LatticeRescorerNode *rhs ) const
+	{
+		//std::cerr << "comparing== " << lhs << " " << rhs << std::endl;
+		return lhs->m_bestHypo == rhs->m_bestHypo;
+	}
+
+    /*
+    bool operator()( const LatticeRescorerNode *lhs, const LatticeRescorerNode *rhs ) const
+	{
+		//std::cerr << "comparing< " << lhs << " " << rhs << std::endl;
+		return lhs->m_bestHypo < rhs->m_bestHypo;
+	}*/
+
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,13 +74,16 @@ class LatticeRescorerGraph
   friend std::ostream& operator<<(std::ostream&, const LatticeRescorerGraph&);
 
 public:
-	typedef boost::unordered_set<LatticeRescorerNode> Coll;
+	typedef boost::unordered_set<LatticeRescorerNode*, LatticeRescorerNodeComparer, LatticeRescorerNodeComparer> Coll;
+	//typedef std::set<LatticeRescorerNode*, LatticeRescorerNodeComparer> Coll;
 	Coll m_nodes;
 	LatticeRescorerNode *m_firstNode;
 
-	LatticeRescorerNode &AddFirst(Hypothesis *bestHypo);
-	LatticeRescorerNode &Add(Hypothesis *bestHypo);
+	void AddFirst(Hypothesis *bestHypo);
+	void Add(Hypothesis *bestHypo);
 	LatticeRescorerNode &Find(Hypothesis *bestHypo);
+
+	LatticeRescorerNode &AddNodeNode(const Hypothesis *bestHypo, const Hypothesis *prevHypo);
 
 	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
 };
