@@ -566,6 +566,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/LatticeMBR.h</locationURI>
 		</link>
 		<link>
+			<name>LatticeRescorer.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/LatticeRescorer.cpp</locationURI>
+		</link>
+		<link>
+			<name>LatticeRescorer.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/LatticeRescorer.h</locationURI>
+		</link>
+		<link>
 			<name>LookupOptions.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/LookupOptions.h</locationURI>
@@ -1216,6 +1226,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ConstrainedDecoding.h</locationURI>
 		</link>
 		<link>
+			<name>FF/ConstrainedDecodingDeseg.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ConstrainedDecodingDeseg.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/ConstrainedDecodingDeseg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ConstrainedDecodingDeseg.h</locationURI>
+		</link>
+		<link>
 			<name>FF/ControlRecombination.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ControlRecombination.cpp</locationURI>
@@ -1254,6 +1274,26 @@
 			<name>FF/DecodeFeature.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DecodeFeature.h</locationURI>
+		</link>
+		<link>
+			<name>FF/DiscardLeftRightNonTerm.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DiscardLeftRightNonTerm.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/DiscardLeftRightNonTerm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DiscardLeftRightNonTerm.h</locationURI>
+		</link>
+		<link>
+			<name>FF/DiscardOnlyNonTermSpan.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DiscardOnlyNonTermSpan.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/DiscardOnlyNonTermSpan.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/DiscardOnlyNonTermSpan.h</locationURI>
 		</link>
 		<link>
 			<name>FF/DistortionScoreProducer.cpp</name>
@@ -1326,6 +1366,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/GlobalLexicalModelUnlimited.h</locationURI>
 		</link>
 		<link>
+			<name>FF/HyperParam</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>FF/HyperParameterAsWeight.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/HyperParameterAsWeight.cpp</locationURI>
@@ -1356,9 +1401,94 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/InternalTree.h</locationURI>
 		</link>
 		<link>
+			<name>FF/JoinCompound.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinCompound.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinCompound.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinCompound.h</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinScore.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinScore.h</locationURI>
+		</link>
+		<link>
+			<name>FF/KeepOnlyReordering.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/KeepOnlyReordering.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/KeepOnlyReordering.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/KeepOnlyReordering.h</locationURI>
+		</link>
+		<link>
+			<name>FF/LM01.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LM01.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/LM01.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LM01.h</locationURI>
+		</link>
+		<link>
 			<name>FF/LexicalReordering</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
+			<name>FF/LongerPhraseFF.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LongerPhraseFF.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/LongerPhraseFF.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LongerPhraseFF.h</locationURI>
+		</link>
+		<link>
+			<name>FF/MadaConsistentTok.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MadaConsistentTok.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/MadaConsistentTok.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MadaConsistentTok.h</locationURI>
+		</link>
+		<link>
+			<name>FF/ManualFF.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ManualFF.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/ManualFF.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ManualFF.h</locationURI>
+		</link>
+		<link>
+			<name>FF/MaxNonTerm.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxNonTerm.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/MaxNonTerm.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MaxNonTerm.h</locationURI>
 		</link>
 		<link>
 			<name>FF/MaxSpanFreeNonTermSource.cpp</name>
@@ -1389,6 +1519,36 @@
 			<name>FF/NieceTerminal.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NieceTerminal.h</locationURI>
+		</link>
+		<link>
+			<name>FF/NonTermContext.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NonTermContext.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/NonTermContext.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NonTermContext.h</locationURI>
+		</link>
+		<link>
+			<name>FF/NonTermContextTarget.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NonTermContextTarget.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/NonTermContextTarget.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NonTermContextTarget.h</locationURI>
+		</link>
+		<link>
+			<name>FF/NonTermMinSpan.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NonTermMinSpan.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/NonTermMinSpan.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NonTermMinSpan.h</locationURI>
 		</link>
 		<link>
 			<name>FF/OSM-Feature</name>
@@ -1456,6 +1616,46 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ReferenceComparison.h</locationURI>
 		</link>
 		<link>
+			<name>FF/RuleBackoff.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleBackoff.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleBackoff.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleBackoff.h</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleDiscr.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleDiscr.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleDiscr.cpp.bak</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleDiscr.cpp.bak</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleDiscr.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleDiscr.h</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleDiscr.h.bak</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleDiscr.h.bak</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleLength.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleLength.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/RuleLength.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleLength.h</locationURI>
+		</link>
+		<link>
 			<name>FF/RulePairUnlexicalizedSource.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RulePairUnlexicalizedSource.cpp</locationURI>
@@ -1474,6 +1674,16 @@
 			<name>FF/RuleScope.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/RuleScope.h</locationURI>
+		</link>
+		<link>
+			<name>FF/ScopeSpan.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ScopeSpan.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/ScopeSpan.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/ScopeSpan.h</locationURI>
 		</link>
 		<link>
 			<name>FF/SetSourcePhrase.cpp</name>
@@ -1504,6 +1714,11 @@
 			<name>FF/SkeletonStatelessFF.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/SkeletonStatelessFF.h</locationURI>
+		</link>
+		<link>
+			<name>FF/SkeletonTranslationOptionListFeature.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/SkeletonTranslationOptionListFeature.h</locationURI>
 		</link>
 		<link>
 			<name>FF/SoftMatchingFeature.cpp</name>
@@ -1659,6 +1874,11 @@
 			<name>FF/UnknownWordPenaltyProducer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/UnknownWordPenaltyProducer.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>FF/WordPenaltyProducer.cpp</name>
@@ -1941,6 +2161,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/NonTermContextProperty.h</locationURI>
 		</link>
 		<link>
+			<name>PP/NonTermContextTargetProperty.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/NonTermContextTargetProperty.cpp</locationURI>
+		</link>
+		<link>
+			<name>PP/NonTermContextTargetProperty.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/NonTermContextTargetProperty.h</locationURI>
+		</link>
+		<link>
 			<name>PP/OrientationPhraseProperty.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/OrientationPhraseProperty.cpp</locationURI>
@@ -1959,6 +2189,16 @@
 			<name>PP/PhraseProperty.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/PhraseProperty.h</locationURI>
+		</link>
+		<link>
+			<name>PP/RuleLengthPhraseProperty.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/RuleLengthPhraseProperty.cpp</locationURI>
+		</link>
+		<link>
+			<name>PP/RuleLengthPhraseProperty.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/PP/RuleLengthPhraseProperty.h</locationURI>
 		</link>
 		<link>
 			<name>PP/SourceLabelsPhraseProperty.cpp</name>
@@ -2496,6 +2736,26 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/parameters/ServerOptions.h</locationURI>
 		</link>
 		<link>
+			<name>FF/HyperParam/HyperCountNonTerms.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/HyperParam/HyperCountNonTerms.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/HyperParam/HyperCountNonTerms.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/HyperParam/HyperCountNonTerms.h</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore/Trie.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinScore/Trie.h</locationURI>
+		</link>
+		<link>
+			<name>FF/JoinScore/TrieSearch.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/JoinScore/TrieSearch.h</locationURI>
+		</link>
+		<link>
 			<name>FF/LexicalReordering/LexicalReordering.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LexicalReordering/LexicalReordering.cpp</locationURI>
@@ -2574,6 +2834,91 @@
 			<name>FF/OSM-Feature/osmHyp.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/OSM-Feature/osmHyp.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/ThreadLocalByFeatureStorage.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/ThreadLocalByFeatureStorage.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/TrainingLoss.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/TrainingLoss.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VW.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VW.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureBase.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureBase.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureBase.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureBase.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSource.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSource.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSourceBagOfWords.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSourceBagOfWords.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSourceBigrams.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSourceBigrams.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSourceExternalFeatures.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSourceExternalFeatures.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSourceIndicator.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSourceIndicator.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSourcePhraseInternal.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSourcePhraseInternal.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureSourceWindow.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureSourceWindow.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureTarget.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureTarget.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureTargetBigrams.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureTargetBigrams.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureTargetIndicator.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureTargetIndicator.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureTargetPhraseInternal.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureTargetPhraseInternal.h</locationURI>
+		</link>
+		<link>
+			<name>FF/VW/VWFeatureTargetPhraseScores.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/VW/VWFeatureTargetPhraseScores.h</locationURI>
 		</link>
 		<link>
 			<name>LM/bilingual-lm/BiLM_NPLM.cpp</name>
