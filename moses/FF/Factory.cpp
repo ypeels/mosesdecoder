@@ -172,7 +172,7 @@ FeatureFactory
 ::DefaultSetup(F *feature)
 {
   StaticData &static_data = StaticData::InstanceNonConst();
-  const string &featureName = feature->GetScoreProducerDescription();
+  const std::string &featureName = feature->GetScoreProducerDescription();
   std::vector<float> weights = static_data.GetParameter()->GetWeights(featureName);
 
 
@@ -185,8 +185,8 @@ FeatureFactory
                   << "WARNING: Auto-initializing all weights for this FF to 1.0");
         weights.assign(feature->GetNumScoreComponents(),1.0);
       } else {
-        TRACE_ERR("WARNING: No weights specified in config file for FF "
-                  << featureName << ". Using default values supplied by FF.");
+        VERBOSE(2,"WARNING: No weights specified in config file for FF "
+                << featureName << ". Using default values supplied by FF.");
       }
     }
     UTIL_THROW_IF2(weights.size() != feature->GetNumScoreComponents(),
@@ -392,18 +392,18 @@ void FeatureRegistry::Construct(const std::string &name, const std::string &line
 
 void FeatureRegistry::PrintFF() const
 {
-  vector<string> ffs;
+  std::vector<std::string> ffs;
   std::cerr << "Available feature functions:" << std::endl;
   Map::const_iterator iter;
   for (iter = registry_.begin(); iter != registry_.end(); ++iter) {
-    const string &ffName = iter->first;
+    const std::string &ffName = iter->first;
     ffs.push_back(ffName);
   }
 
-  vector<string>::const_iterator iterVec;
+  std::vector<std::string>::const_iterator iterVec;
   std::sort(ffs.begin(), ffs.end());
   for (iterVec = ffs.begin(); iterVec != ffs.end(); ++iterVec) {
-    const string &ffName = *iterVec;
+    const std::string &ffName = *iterVec;
     std::cerr << ffName << " ";
   }
 
