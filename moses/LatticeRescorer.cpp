@@ -111,7 +111,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
       // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
       //cerr << "nothing here " << hypo << endl;
       assert(false); // can't deal with pruned hypos @ the mo
-      DeleteFwdHypos();
+      //DeleteFwdHypos();
     }
     else {
       const Hypothesis *prevHypo = *m_newWinners.begin();
@@ -207,7 +207,7 @@ void LatticeRescorerGraph::AddFirst(Hypothesis *bestHypo)
 
 void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 {
-  cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
+  //cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
   LatticeRescorerNode &node = AddNode(bestHypo);
   LatticeRescorerNode::Hypos &currHypos = node.Add(bestHypo);
 
@@ -228,6 +228,7 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 		  LatticeRescorerNode &prevNode = AddNode(prevHypo);
 		  prevNode.AddEdge(arcHypos);
 	  }
+	  bestHypo->ClearArcList();
   }
 }
 
