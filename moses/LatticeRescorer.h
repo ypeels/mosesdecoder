@@ -16,6 +16,8 @@ class LatticeRescorerNode
 {
   friend std::ostream& operator<<(std::ostream&, const LatticeRescorerNode&);
 
+  void OutputStackSize(const std::vector < HypothesisStack* > &stacks) const;
+
 public:
 	typedef std::pair<LatticeRescorerNode*, Hypothesis*> Edge;
 
@@ -99,14 +101,7 @@ protected:
   std::vector < HypothesisStack* > *m_stacks;
   LatticeRescorerGraph m_graph;
 
-  typedef std::vector<Hypothesis*> HypoList;
-  typedef std::map<Hypothesis*, HypoList> FwdPtrs;
-  std::vector<FwdPtrs> m_fwdPtrsColl;
-  
-  void Multiply(const Hypothesis *hypo, const std::set<const Hypothesis*> &nodes);
-  void Multiply(const Hypothesis *hypo, const Hypothesis *prevHypo);
-
-  void OutputStackSize() const;
+  void OutputStackSize(const std::vector < HypothesisStack* > &stacks) const;
 
 
 };

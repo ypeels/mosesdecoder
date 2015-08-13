@@ -265,12 +265,14 @@ EvaluateWhenApplied(StatefulFeatureFunction const& sfff,
     Manager& manager = this->GetManager(); //Get the manager and the ttask
     ttasksptr const& ttask = manager.GetTtask();
 
+    /*
     cerr << "hypo=" << this << " " << GetWordsBitmap().ToString()
 		<< " num states=" << GetNumFFStates()
    		<< 	" prev hypo=" << m_prevHypo << " " << m_prevHypo->GetWordsBitmap().ToString()
     	<< " prev states=" << m_prevHypo->GetNumFFStates()
 		<< " state_idx=" << state_idx << " " << m_prevHypo->m_ffStates[state_idx]
 		<< endl;
+	*/
 
     m_ffStates[state_idx] = sfff.EvaluateWhenAppliedWithContext
                             (ttask, *this, m_prevHypo ? m_prevHypo->m_ffStates[state_idx] : NULL,

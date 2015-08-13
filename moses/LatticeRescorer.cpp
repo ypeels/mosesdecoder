@@ -40,13 +40,18 @@ void LatticeRescorerNode::Add(const Edge &edge)
 
 void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
 {
+	cerr << "BEFORE:";
+	OutputStackSize(stacks);
+
 	boost::unordered_set<const Hypothesis*> newWinners;
 
     // rescore each hypo
     BOOST_FOREACH(Hypothesis *hypo, m_hypos) {
+
     	cerr << "node=" << this << " "
     		 <<	"rescoring " << hypo << " " << hypo->GetWordsBitmap()
     		 << " prev=" << hypo->GetPrevHypo() << " " << hypo->GetPrevHypo()->GetWordsBitmap() << endl;
+
 
 	    size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
 	    HypothesisStack &stack = *stacks[numWordsCovered];
@@ -59,20 +64,25 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	    	newWinners.insert(hypo);
 	      break;
 	    case Pruned:
-	      cerr << "pruned " << hypo << endl;
+	      //cerr << "pruned " << hypo << endl;
 	      break;
 	    case RecombinedWin: {
 	      const Hypothesis *loser = status.second;
 	      size_t ret = newWinners.erase(loser);
-	      assert(ret == 1);
+	      //assert(ret == 1); // loser may be from another node
 	      newWinners.insert(hypo);
 	      break;
 	    }
 	    case RecombinedLose:
+	      const Hypothesis *winner = status.second;
+	      newWinners.insert(hypo); // winner may be from another node
 	      break;
 	    }
 
     }
+
+	cerr << "AFTER:";
+	OutputStackSize(stacks);
 
     // Done rescoring. Sort out graph.
     if (newWinners.size() == 0) {
@@ -94,6 +104,13 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
       // add the rest
       Multiply(newWinners);
     }
+
+    // next nodes
+	BOOST_FOREACH(const LatticeRescorerNode::Edge &edge, m_fwdNodes) {
+		LatticeRescorerNode &nextNode = *edge.first;
+		nextNode.Rescore(stacks, pass);
+	}
+
 }
 
 std::pair<AddStatus, const Hypothesis*> LatticeRescorerNode::
@@ -135,6 +152,16 @@ std::ostream& operator<<(std::ostream &out, const LatticeRescorerNode &obj)
 {
 	out << "[" << &obj << "," << obj.m_hypos.size() << "," << obj.m_fwdNodes.size() << "] " << flush;
 	return out;
+}
+
+void LatticeRescorerNode::OutputStackSize(const std::vector < HypothesisStack* > &stacks) const
+{
+  cerr << "stack size:";
+  BOOST_FOREACH(const HypothesisStack *stack, stacks) {
+      cerr << stack->size() << " ";
+  }
+
+  cerr << endl;
 }
 
 
@@ -205,7 +232,7 @@ LatticeRescorerNode &LatticeRescorerGraph::Find(Hypothesis *bestHypo)
 void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
 {
 	cerr << "rescoring pass " << pass << endl;
-	cerr << "first node " << m_firstNode << " " << *m_firstNode->m_bestHypo << m_firstNode->m_bestHypo->GetWordsBitmap() << endl;
+	cerr << "first node " << m_firstNode << " " << m_firstNode->m_bestHypo << " " << m_firstNode->m_bestHypo->GetWordsBitmap() << endl;
 
 	boost::unordered_set<LatticeRescorerNode::Edge> &fwdEdges = m_firstNode->m_fwdNodes;
 	BOOST_FOREACH(const LatticeRescorerNode::Edge &edge, fwdEdges) {
@@ -251,40 +278,14 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
 
   // rescore
   m_graph.Rescore(stacks, pass);
+  OutputStackSize(stacks);
 }
 
-void LatticeRescorer::Multiply(const Hypothesis *hypo, const std::set<const Hypothesis*> &nodes)
-{
-  //FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
-  //HypoList &list = fwdPtrs[hypo];
-
-  BOOST_FOREACH(const Hypothesis *fwdOrigHypo, nodes) {
-    Multiply(fwdOrigHypo, hypo);
-  }
-}
-
-void LatticeRescorer::Multiply(const Hypothesis *hypo, const Hypothesis *prevHypo)
-{
-    Hypothesis *newFwdHypo = new Hypothesis(*hypo, *prevHypo);
-
-    size_t numWordsCovered = newFwdHypo->GetWordsBitmap().GetNumWordsCovered();
-    FwdPtrs &fwdPtrs = m_fwdPtrsColl[numWordsCovered];
-    HypoList &list = fwdPtrs[newFwdHypo];
-    assert(list.size() == 0);
-
-}
-
-
-void LatticeRescorer::OutputStackSize() const
+void LatticeRescorer::OutputStackSize(const std::vector < HypothesisStack* > &stacks) const
 {
   cerr << "stack size:";
-  BOOST_FOREACH(const HypothesisStack *stack, *m_stacks) {
+  BOOST_FOREACH(const HypothesisStack *stack, stacks) {
       cerr << stack->size() << " ";
-  }
-
-  cerr << "fwd ptr size:";
-  BOOST_FOREACH(const FwdPtrs &fwdPtrs, m_fwdPtrsColl) {
-      cerr << fwdPtrs.size() << " ";
   }
 
   cerr << endl;
