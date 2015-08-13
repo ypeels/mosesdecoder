@@ -42,7 +42,7 @@ public:
 	Hypos &Add(Hypothesis *hypo);
 	void AddEdge(Hypos &edge);
 
-	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos &hypos);
+	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos *hypos);
 	std::pair<AddStatus, const Hypothesis*> Rescore1Hypo
 		(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
 	void DeleteFwdHypos();
