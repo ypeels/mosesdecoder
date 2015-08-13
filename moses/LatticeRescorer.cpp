@@ -19,11 +19,6 @@ LatticeRescorerNode::LatticeRescorerNode(const Hypothesis *bestHypo)
 
 LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 {
-	/*
-	cerr << "  node=" << this
-		<< "  adding " << hypo << " " << hypo->GetWordsBitmap()
-		<< " best=" << m_bestHypo << " " << m_bestHypo->GetWordsBitmap() << endl;
-	*/
 	const Hypothesis *prevHypo = hypo->GetPrevHypo();
 	HyposPerPrevHypo::iterator iter = m_hypos.find(prevHypo);
 
@@ -31,10 +26,17 @@ LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 	if (iter == m_hypos.end()) {
 		hypos = &m_hypos[prevHypo];
 		hypos->m_container = this;
+		hypos->m_prevHypo = prevHypo;
 	}
 	else {
 		hypos = &iter->second;
 	}
+
+	cerr << "  adding " << hypo << " " << hypo->GetWordsBitmap()
+		<< " best=" << m_bestHypo << " " << m_bestHypo->GetWordsBitmap()
+		<< " to " << this << " " << hypos
+		<< endl;
+
 	hypos->m_hypos.insert(hypo);
 
 	return *hypos;
@@ -42,28 +44,25 @@ LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 
 void LatticeRescorerNode::AddEdge(Hypos &edge)
 {
-	/*
-	cerr << "  linking " << this
-		<< " to " << edge.first
-		<< "  hypo=" << edge.second << " " << edge.second->GetWordsBitmap() << endl;
-	*/
+	cerr << "adding edge " << &edge << " to " << this
+			<< endl;
+
 	m_fwdNodes.insert(&edge);
 }
 
 void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos *hypos)
 {
+	cerr << "best " << m_bestHypo << " " << m_bestHypo->GetWordsBitmap() << endl;
 	cerr << "BEFORE:";
 	OutputStackSize(stacks);
-
-	boost::unordered_set<const Hypothesis*> newWinners;
 
     // rescore each hypo
     BOOST_FOREACH(Hypothesis *hypo, hypos->m_hypos) {
 
     	cerr << "node=" << this << " "
     		 <<	"rescoring " << hypo << " " << hypo->GetWordsBitmap()
-    		 << " prev=" << hypo->GetPrevHypo() << " " << hypo->GetPrevHypo()->GetWordsBitmap() << endl;
-
+    		 //<< " prev=" << hypo->GetPrevHypo() << " " << hypo->GetPrevHypo()->GetWordsBitmap()
+			 << endl;
 
 	    size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
 	    HypothesisStack &stack = *stacks[numWordsCovered];
@@ -73,21 +72,21 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 
 	    switch (status.first) {
 	    case New:
-	    	newWinners.insert(hypo);
+	    	m_newWinners.insert(hypo);
 	      break;
 	    case Pruned:
 	      //cerr << "pruned " << hypo << endl;
 	      break;
 	    case RecombinedWin: {
 	      const Hypothesis *loser = status.second;
-	      size_t ret = newWinners.erase(loser);
-	      //assert(ret == 1); // loser may be from another node
-	      newWinners.insert(hypo);
+	      size_t ret = m_newWinners.erase(loser);
+	      assert(ret == 1);
+	      m_newWinners.insert(hypo);
 	      break;
 	    }
 	    case RecombinedLose:
 	      const Hypothesis *winner = status.second;
-	      newWinners.insert(hypo); // winner may be from another node
+	      m_newWinners.insert(hypo); // winner may be from another node
 	      break;
 	    }
 
@@ -96,35 +95,41 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	cerr << "AFTER:";
 	OutputStackSize(stacks);
 
-	/*
+	m_hypos.erase(hypos->m_prevHypo);
+	if (!m_hypos.empty()) {
+		// not all hypos in this node are done yet
+		return;
+	}
+
     // Done rescoring. Sort out graph.
-    if (newWinners.size() == 0) {
+    if (m_newWinners.size() == 0) {
       // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
       //cerr << "nothing here " << hypo << endl;
       DeleteFwdHypos();
     }
     else {
-      const Hypothesis *prevHypo = *newWinners.begin();
+      const Hypothesis *prevHypo = *m_newWinners.begin();
       if (prevHypo != m_bestHypo) {
         // winning hypo has changed
-        BOOST_FOREACH(const Edge &edge, m_fwdNodes) {
-        	Hypothesis *nextHypo = edge.second;
-        	nextHypo->SetPrevHypo(prevHypo);
+        BOOST_FOREACH(const Hypos *hypos, m_fwdNodes) {
+            BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
+				nextHypo->SetPrevHypo(prevHypo);
+            }
         }
       }
-      newWinners.erase(newWinners.begin());
+      m_newWinners.erase(m_newWinners.begin());
 
       // add the rest
-      Multiply(newWinners);
+      //Multiply(m_newWinners);
     }
 
     // next nodes
-	BOOST_FOREACH(const LatticeRescorerNode::Edge &edge, m_fwdNodes) {
-		LatticeRescorerNode &nextNode = *edge.first;
-		nextNode.Rescore(stacks, pass);
+	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, m_fwdNodes) {
+		cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos
+				<< endl;
+		LatticeRescorerNode *node = hypos->m_container;
+		node->Rescore(stacks, pass, hypos);
 	}
-
-	*/
 
 }
 
@@ -149,15 +154,19 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorerNode::
 
 void LatticeRescorerNode::DeleteFwdHypos()
 {
-	/*
-    BOOST_FOREACH(const Edge &edge, m_fwdNodes) {
-    	LatticeRescorerNode *nextNode = edge.first;
-    	Hypothesis *nextHypo = edge.second;
-
-    	nextNode->m_hypos.erase(nextHypo);
-    	delete nextHypo;
+	cerr << "delete " << this << endl;
+    BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
+    	hypos->m_container->DeleteHypos(hypos);
     }
-    */
+}
+
+void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
+{
+    BOOST_FOREACH(Hypothesis *hypo, hypos->m_hypos) {
+    	delete hypo;
+    }
+    m_hypos.erase(hypos->m_prevHypo);
+    delete hypos;
 }
 
 void LatticeRescorerNode::Multiply(const boost::unordered_set<const Hypothesis*> &newWinners)
@@ -186,7 +195,7 @@ void LatticeRescorerNode::OutputStackSize(const std::vector < HypothesisStack* >
 
 void LatticeRescorerGraph::AddFirst(Hypothesis *bestHypo)
 {
-	LatticeRescorerNode &node = AddNodeNode(bestHypo);
+	LatticeRescorerNode &node = AddNode(bestHypo);
 	node.Add(bestHypo);
 
 	m_firstNode = &node;
@@ -194,15 +203,14 @@ void LatticeRescorerGraph::AddFirst(Hypothesis *bestHypo)
 
 void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 {
-  //cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
-  LatticeRescorerNode &node = AddNodeNode(bestHypo);
-  node.Add(bestHypo);
+  cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
+  LatticeRescorerNode &node = AddNode(bestHypo);
+  LatticeRescorerNode::Hypos &currHypos = node.Add(bestHypo);
 
   Hypothesis *prevHypo = const_cast<Hypothesis *>(bestHypo->GetPrevHypo());
   if (prevHypo) {
-	  LatticeRescorerNode &prevNode = AddNodeNode(prevHypo);
-	  LatticeRescorerNode::Hypos &prevHypos = prevNode.Add(prevHypo);
-	  prevNode.AddEdge(prevHypos);
+	  LatticeRescorerNode &prevNode = AddNode(prevHypo);
+	  prevNode.AddEdge(currHypos);
   }
 
   const ArcList *arcs = bestHypo->GetArcList();
@@ -211,45 +219,52 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 	  BOOST_FOREACH(Hypothesis *arc, *arcs) {
 		  Hypothesis *prevHypo = const_cast<Hypothesis *>(arc->GetPrevHypo());
 
-		  LatticeRescorerNode::Hypos &arcHypos = node.Add(prevHypo);
-		  arcHypos.m_hypos.insert(arc);
+		  LatticeRescorerNode::Hypos &arcHypos = node.Add(arc);
 
-		  LatticeRescorerNode &prevNode = AddNodeNode(prevHypo);
+		  LatticeRescorerNode &prevNode = AddNode(prevHypo);
 		  prevNode.AddEdge(arcHypos);
 	  }
   }
 }
 
-LatticeRescorerNode &LatticeRescorerGraph::AddNodeNode(const Hypothesis *bestHypo)
+LatticeRescorerNode &LatticeRescorerGraph::AddNode(const Hypothesis *bestHypo)
 {
-  LatticeRescorerNode *findNode = new LatticeRescorerNode(bestHypo);
-  std::pair<Coll::iterator, bool> retPair = m_nodes.insert(findNode);
+  LatticeRescorerNode *node;
 
-  if (!retPair.second) {
-	  // already there
-	  delete findNode;
+  Coll::iterator iter = m_nodes.find(bestHypo);
+  if (iter == m_nodes.end()) {
+	  // not found
+	  node = new LatticeRescorerNode(bestHypo);
+	  m_nodes[bestHypo] = node;
+  }
+  else {
+	  node = iter->second;
   }
 
-  LatticeRescorerNode &node = **retPair.first;
-  return node;
+  return *node;
 }
 
 void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
 {
 	cerr << "rescoring pass " << pass << endl;
-	cerr << "first node " << m_firstNode << " " << m_firstNode->m_bestHypo << " " << m_firstNode->m_bestHypo->GetWordsBitmap() << endl;
+	cerr << "first node " << m_firstNode << " " << m_firstNode->m_bestHypo << " " << m_firstNode->m_bestHypo->GetWordsBitmap()
+		<< " " << m_firstNode->m_hypos.size()
+		<< endl;
 
 	LatticeRescorerNode::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
 	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, fwdNodes) {
-		LatticeRescorerNode &node = *hypos->m_container;
-		node.Rescore(stacks, pass, hypos);
+		cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos
+				<< endl;
+		LatticeRescorerNode *node = hypos->m_container;
+		node->Rescore(stacks, pass, hypos);
 	}
 }
 
 std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 {
 	out << obj.m_nodes.size() << " nodes: ";
-	BOOST_FOREACH(LatticeRescorerNode *node, obj.m_nodes) {
+	BOOST_FOREACH(const LatticeRescorerGraph::Coll::value_type &objPair, obj.m_nodes) {
+		LatticeRescorerNode *node = objPair.second;
 		out << *node << " ";
 	}
 	return out;
@@ -266,7 +281,7 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
 
   // add all hypos
   for (size_t stackInd = 1; stackInd < stacks.size(); ++stackInd) {
-    cerr << "adding stack " << stackInd << endl;
+    cerr << "add stack " << stackInd << endl;
     HypothesisStack &stack = *stacks[stackInd];
 
     // 1 stack
