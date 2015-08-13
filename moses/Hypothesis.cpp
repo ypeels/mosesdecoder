@@ -145,6 +145,7 @@ Hypothesis::
 ~Hypothesis()
 {
   if (g_mosesDebug) {
+	  //cerr << "deleting hypo " << this << " " << flush << *this << endl;
 	  cerr << "deleting hypo " << this << endl;
   }
 

@@ -51,7 +51,7 @@ public:
 	void DeleteFwdHypos();
 	void DeleteHypos(Hypos *hypos);
 
-	void Multiply(const boost::unordered_set<const Hypothesis*> &newWinners);
+	void Multiply();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////

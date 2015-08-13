@@ -58,6 +58,9 @@ public:
   virtual void DetachAll() {
     m_hypos.clear();
   }
+
+  virtual std::pair<AddStatus, const Hypothesis*> AddNoPrune(Hypothesis *hypothesis) = 0;
+
 };
 
 }

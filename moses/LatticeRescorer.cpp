@@ -5,6 +5,7 @@
 #include "LatticeRescorer.h"
 #include "Hypothesis.h"
 #include "HypothesisStack.h"
+#include "HypothesisStackNormal.h"
 #include "moses/FF/StatelessFeatureFunction.h"
 #include "moses/FF/StatefulFeatureFunction.h"
 
@@ -61,14 +62,12 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	//cerr << "BEFORE:";
 	OutputStackSize(stacks);
 
-	boost::unordered_set<Hypothesis*> prunedHypos;
-
-    // rescore each hypo
+	// rescore each hypo
     BOOST_FOREACH(Hypothesis *hypo, hypos->m_hypos) {
 
     	cerr <<	"rescoring " << hypo
-    			//<< " " << hypo->GetWordsBitmap()
-    		 //<< " prev=" << hypo->GetPrevHypo() << " " << hypo->GetPrevHypo()->GetWordsBitmap()
+    		<< " " << hypo->GetWordsBitmap()
+    		<< " prev=" << hypo->GetPrevHypo() //<< " " << hypo->GetPrevHypo()->GetWordsBitmap()
 			 << endl;
 
 	    size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
@@ -83,7 +82,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	      break;
 	    case Pruned:
 	      cerr << "pruned " << hypo << endl;
-	      prunedHypos.insert(hypo);
+	      assert(false); // can't deal with pruning @ the mo
 	      break;
 	    case RecombinedWin: {
 	      const Hypothesis *loser = status.second;
@@ -93,8 +92,6 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	      break;
 	    }
 	    case RecombinedLose:
-	      const Hypothesis *winner = status.second;
-	      m_newWinners.insert(hypo); // winner may be from another node
 	      break;
 	    }
 
@@ -102,11 +99,6 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 
 	//cerr << "AFTER:";
 	//OutputStackSize(stacks);
-
-    // delayed deletion of pruned hypos
-    BOOST_FOREACH(Hypothesis *hypo, prunedHypos) {
-    	m_hypos.erase(hypo);
-    }
 
 	m_hypos.erase(hypos->m_prevHypo);
 	if (!m_hypos.empty()) {
@@ -118,7 +110,8 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
     if (m_newWinners.size() == 0) {
       // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
       //cerr << "nothing here " << hypo << endl;
-      //DeleteFwdHypos();
+      assert(false); // can't deal with pruned hypos @ the mo
+      DeleteFwdHypos();
     }
     else {
       const Hypothesis *prevHypo = *m_newWinners.begin();
@@ -133,7 +126,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
       m_newWinners.erase(m_newWinners.begin());
 
       // add the rest
-      //Multiply(m_newWinners);
+      Multiply();
     }
 
     // next nodes
@@ -159,7 +152,7 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorerNode::
       }
   }
 
-  std::pair<AddStatus, const Hypothesis*> status = stack.AddPrune(hypo);
+  std::pair<AddStatus, const Hypothesis*> status = stack.AddNoPrune(hypo);
   return status;
 }
 
@@ -180,7 +173,7 @@ void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
     delete hypos;
 }
 
-void LatticeRescorerNode::Multiply(const boost::unordered_set<const Hypothesis*> &newWinners)
+void LatticeRescorerNode::Multiply()
 {
 
 }
@@ -310,6 +303,14 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
   // rescore
   m_graph.Rescore(stacks, pass);
   OutputStackSize(stacks);
+
+  for (size_t stackInd = 0; stackInd < stacks.size(); ++stackInd) {
+    HypothesisStack *stack = stacks[stackInd];
+    HypothesisStackNormal *stackNormal
+    = static_cast<HypothesisStackNormal*>(stack);
+
+    stackNormal->CleanupArcList();
+  }
 }
 
 void LatticeRescorer::OutputStackSize(const std::vector < HypothesisStack* > &stacks) const
