@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 #include <boost/functional/hash.hpp>
 #include "TypeDef.h"
 
@@ -19,21 +20,29 @@ class LatticeRescorerNode
   void OutputStackSize(const std::vector < HypothesisStack* > &stacks) const;
 
 public:
-	typedef std::pair<LatticeRescorerNode*, Hypothesis*> Edge;
+    struct Hypos {
+    	boost::unordered_set<Hypothesis*> m_hypos;
+    	LatticeRescorerNode *m_container;
 
-	const Hypothesis *m_bestHypo, *m_prevHypo;
-	boost::unordered_set<Hypothesis*> m_hypos;
-	boost::unordered_set<Edge> m_fwdNodes;
+    };
 
-	LatticeRescorerNode(const Hypothesis *bestHypo, const Hypothesis *prevHypo);
+	const Hypothesis *m_bestHypo;
+
+	typedef boost::unordered_map<const Hypothesis*, Hypos> HyposPerPrevHypo;
+	HyposPerPrevHypo m_hypos;
+
+	typedef boost::unordered_set<Hypos*> FwdNodes;
+	FwdNodes m_fwdNodes;
+
+	LatticeRescorerNode(const Hypothesis *bestHypo);
 
 	inline bool operator==(const LatticeRescorerNode &other) const
 	{ return m_bestHypo == other.m_bestHypo; }
 
-	void Add(Hypothesis *hypo);
-	void Add(const Edge &edge);
+	Hypos &Add(Hypothesis *hypo);
+	void AddEdge(Hypos &edge);
 
-	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
+	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos &hypos);
 	std::pair<AddStatus, const Hypothesis*> Rescore1Hypo
 		(HypothesisStack &stack, Hypothesis *hypo, size_t pass);
 	void DeleteFwdHypos();
@@ -49,7 +58,7 @@ public:
 		//std::cerr << "hashing " << node << std::endl;
 
 		size_t seed = (size_t) node->m_bestHypo;
-	    boost::hash_combine(seed, node->m_prevHypo);
+	   // boost::hash_combine(seed, node->m_prevHypo);
 
 		return seed;
     }
@@ -83,9 +92,8 @@ public:
 
 	void AddFirst(Hypothesis *bestHypo);
 	void Add(Hypothesis *bestHypo);
-	LatticeRescorerNode &Find(Hypothesis *bestHypo);
 
-	LatticeRescorerNode &AddNodeNode(const Hypothesis *bestHypo, const Hypothesis *prevHypo);
+	LatticeRescorerNode &AddNodeNode(const Hypothesis *bestHypo);
 
 	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
 };
