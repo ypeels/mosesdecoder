@@ -12,6 +12,8 @@ using namespace std;
 
 namespace Moses
 {
+extern bool g_mosesDebug;
+
 LatticeRescorerNode::LatticeRescorerNode(const Hypothesis *bestHypo)
 :m_bestHypo(bestHypo)
 {
@@ -31,12 +33,12 @@ LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 	else {
 		hypos = &iter->second;
 	}
-
+/*
 	cerr << "  adding " << hypo << " " << hypo->GetWordsBitmap()
 		<< " best=" << m_bestHypo << " " << m_bestHypo->GetWordsBitmap()
 		<< " to " << this << " " << hypos
 		<< endl;
-
+*/
 	hypos->m_hypos.insert(hypo);
 
 	return *hypos;
@@ -44,23 +46,28 @@ LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 
 void LatticeRescorerNode::AddEdge(Hypos &edge)
 {
-	cerr << "adding edge " << &edge << " to " << this
-			<< endl;
+//	cerr << "adding edge " << &edge << " to " << this
+//			<< endl;
 
 	m_fwdNodes.insert(&edge);
 }
 
 void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos *hypos)
 {
-	cerr << "best " << m_bestHypo << " " << m_bestHypo->GetWordsBitmap() << endl;
-	cerr << "BEFORE:";
+	cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos << " "
+			<< m_bestHypo->GetWordsBitmap()
+			<< endl;
+	//cerr << "best " << m_bestHypo << " " << m_bestHypo->GetWordsBitmap() << endl;
+	//cerr << "BEFORE:";
 	OutputStackSize(stacks);
+
+	boost::unordered_set<Hypothesis*> prunedHypos;
 
     // rescore each hypo
     BOOST_FOREACH(Hypothesis *hypo, hypos->m_hypos) {
 
-    	cerr << "node=" << this << " "
-    		 <<	"rescoring " << hypo << " " << hypo->GetWordsBitmap()
+    	cerr <<	"rescoring " << hypo
+    			//<< " " << hypo->GetWordsBitmap()
     		 //<< " prev=" << hypo->GetPrevHypo() << " " << hypo->GetPrevHypo()->GetWordsBitmap()
 			 << endl;
 
@@ -75,7 +82,8 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	    	m_newWinners.insert(hypo);
 	      break;
 	    case Pruned:
-	      //cerr << "pruned " << hypo << endl;
+	      cerr << "pruned " << hypo << endl;
+	      prunedHypos.insert(hypo);
 	      break;
 	    case RecombinedWin: {
 	      const Hypothesis *loser = status.second;
@@ -92,8 +100,13 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 
     }
 
-	cerr << "AFTER:";
-	OutputStackSize(stacks);
+	//cerr << "AFTER:";
+	//OutputStackSize(stacks);
+
+    // delayed deletion of pruned hypos
+    BOOST_FOREACH(Hypothesis *hypo, prunedHypos) {
+    	m_hypos.erase(hypo);
+    }
 
 	m_hypos.erase(hypos->m_prevHypo);
 	if (!m_hypos.empty()) {
@@ -105,7 +118,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
     if (m_newWinners.size() == 0) {
       // the node has been deleted. Delete all fwd hypos, won't be reachable anymore
       //cerr << "nothing here " << hypo << endl;
-      DeleteFwdHypos();
+      //DeleteFwdHypos();
     }
     else {
       const Hypothesis *prevHypo = *m_newWinners.begin();
@@ -125,8 +138,6 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 
     // next nodes
 	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, m_fwdNodes) {
-		cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos
-				<< endl;
 		LatticeRescorerNode *node = hypos->m_container;
 		node->Rescore(stacks, pass, hypos);
 	}
@@ -253,8 +264,6 @@ void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stack
 
 	LatticeRescorerNode::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
 	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, fwdNodes) {
-		cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos
-				<< endl;
 		LatticeRescorerNode *node = hypos->m_container;
 		node->Rescore(stacks, pass, hypos);
 	}
@@ -275,6 +284,8 @@ std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 
 void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass)
 {
+  g_mosesDebug = true;
+
   // empty hypo
   Hypothesis *firstHypo = *stacks[0]->begin();
   m_graph.AddFirst(firstHypo);

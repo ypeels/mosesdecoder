@@ -43,6 +43,7 @@ using namespace std;
 
 namespace Moses
 {
+extern bool g_mosesDebug;
 
 #ifdef USE_HYPO_POOL
 ObjectPool<Hypothesis> Hypothesis::s_objectPool("Hypothesis", 300000);
@@ -143,6 +144,10 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 Hypothesis::
 ~Hypothesis()
 {
+  if (g_mosesDebug) {
+	  cerr << "deleting hypo " << this << endl;
+  }
+
   for (unsigned i = 0; i < m_ffStates.size(); ++i)
     delete m_ffStates[i];
 
@@ -264,14 +269,14 @@ EvaluateWhenApplied(StatefulFeatureFunction const& sfff,
   if (! staticData.IsFeatureFunctionIgnored( sfff )) {
     Manager& manager = this->GetManager(); //Get the manager and the ttask
     ttasksptr const& ttask = manager.GetTtask();
-
+/*
     cerr << "hypo=" << this << " " << GetWordsBitmap().ToString()
 		<< " num states=" << GetNumFFStates()
    		<< 	" prev hypo=" << m_prevHypo << " " << m_prevHypo->GetWordsBitmap().ToString()
     	<< " prev states=" << m_prevHypo->GetNumFFStates()
 		<< " state_idx=" << state_idx << " " << m_prevHypo->m_ffStates[state_idx]
 		<< endl;
-
+*/
     m_ffStates[state_idx] = sfff.EvaluateWhenAppliedWithContext
                             (ttask, *this, m_prevHypo ? m_prevHypo->m_ffStates[state_idx] : NULL,
                              &m_currScoreBreakdown);
