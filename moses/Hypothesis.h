@@ -259,9 +259,12 @@ public:
   float GetTotalScore() const {
     return m_totalScore;
   }
+  void CalcTotalScore();
+
   float GetScore() const {
     return m_totalScore-m_futureScore;
   }
+
   const FFState* GetFFState(int idx) const {
     return m_ffStates[idx];
   }

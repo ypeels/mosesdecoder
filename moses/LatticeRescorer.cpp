@@ -64,12 +64,12 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 
 	// rescore each hypo
     BOOST_FOREACH(Hypothesis *hypo, hypos->m_hypos) {
-
+    	/*
     	cerr <<	"rescoring " << hypo
     		<< " " << hypo->GetWordsBitmap()
     		<< " prev=" << hypo->GetPrevHypo() //<< " " << hypo->GetPrevHypo()->GetWordsBitmap()
 			 << endl;
-
+		*/
 	    size_t numWordsCovered = hypo->GetWordsBitmap().GetNumWordsCovered();
 	    HypothesisStack &stack = *stacks[numWordsCovered];
 
@@ -152,6 +152,8 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorerNode::
       }
   }
 
+  hypo->CalcTotalScore();
+
   std::pair<AddStatus, const Hypothesis*> status = stack.AddNoPrune(hypo);
   return status;
 }
@@ -175,7 +177,7 @@ void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
 
 void LatticeRescorerNode::Multiply()
 {
-
+	cerr << "m_newWinners=" << m_newWinners.size() << endl;
 }
 
 std::ostream& operator<<(std::ostream &out, const LatticeRescorerNode &obj)
