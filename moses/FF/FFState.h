@@ -12,7 +12,7 @@ class FFState
 public:
   virtual ~FFState();
   virtual int Compare(const FFState& other) const = 0;
-  //virtual FFState *Clone() const = 0;
+  virtual FFState *Clone() const = 0;
 };
 
 class DummyState : public FFState
@@ -22,6 +22,11 @@ public:
   int Compare(const FFState& other) const {
     return 0;
   }
+
+  FFState *Clone() const {
+	 return new DummyState();
+  }
+
 };
 
 }

@@ -24,6 +24,10 @@ public:
     int ret = Word::Compare(m_word, otherState.m_word);
     return ret;
   }
+  FFState *Clone() const {
+	  abort();
+	 return NULL;
+  }
 
 };
 

@@ -58,7 +58,11 @@ class JoinScore : public StatefulFeatureFunction
     }
 
     int Compare(const FFState& other) const;
-    
+    FFState *Clone() const {
+    	abort();
+  	 return NULL;
+    }
+
     const Phrase &GetMorphemes() const {
       return m_morphemes;
     }

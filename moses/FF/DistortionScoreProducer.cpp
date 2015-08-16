@@ -20,6 +20,11 @@ struct DistortionState_traditional : public FFState {
     if (range.GetEndPos() > o.range.GetEndPos()) return 1;
     return 0;
   }
+  FFState *Clone() const {
+	  abort();
+	 return NULL;
+  }
+
 };
 
 std::vector<const DistortionScoreProducer*> DistortionScoreProducer::s_staticColl;

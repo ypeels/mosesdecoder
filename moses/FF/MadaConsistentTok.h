@@ -17,6 +17,11 @@ public:
   }
 
   int Compare(const FFState& other) const;
+  FFState *Clone() const {
+	  abort();
+	 return NULL;
+  }
+
 };
 
 class MadaConsistentTok : public StatefulFeatureFunction

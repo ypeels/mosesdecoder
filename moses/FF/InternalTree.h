@@ -144,6 +144,12 @@ public:
   int Compare(const FFState& other) const {
     return 0;
   };
+
+  FFState *Clone() const {
+	  abort();
+	 return NULL;
+  }
+
 };
 
 }

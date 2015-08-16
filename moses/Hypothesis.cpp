@@ -137,8 +137,7 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 	cerr << "copy hypo " << this << endl;
 	for (size_t i = 0; i < prevHypo.m_ffStates.size(); ++i) {
 		const FFState &origState = *prevHypo.m_ffStates[i];
-		//FFState *newState = new FFState(origState);
-		m_ffStates[i] = &origState;
+		FFState *newState = origState.Clone();
 	}
 }
 
