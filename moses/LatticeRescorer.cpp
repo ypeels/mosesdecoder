@@ -178,6 +178,24 @@ void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
 void LatticeRescorerNode::Multiply()
 {
 	cerr << "m_newWinners=" << m_newWinners.size() << endl;
+	BOOST_FOREACH(const Hypothesis *winner, m_newWinners) {
+		BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
+			Multiply(*hypos, winner);
+		}
+	}
+}
+
+void LatticeRescorerNode::Multiply(Hypos &hypos, const Hypothesis *prevHypo)
+{
+	boost::unordered_set<Hypothesis*> newHypos;
+
+	BOOST_FOREACH(const Hypothesis *origNextHypo, hypos.m_hypos) {
+		Hypothesis *newHypo = new Hypothesis(*origNextHypo, *prevHypo);
+		newHypos.insert(newHypo);
+	}
+
+	// add all new hypo into existing hypos coll
+	std::copy(newHypos.begin(), newHypos.end(), std::inserter(hypos.m_hypos, hypos.m_hypos.end()));
 }
 
 std::ostream& operator<<(std::ostream &out, const LatticeRescorerNode &obj)

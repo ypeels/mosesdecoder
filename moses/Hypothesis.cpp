@@ -125,14 +125,15 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 ,m_wordDeleted(copyHypo.m_wordDeleted)
 ,m_totalScore(copyHypo.m_totalScore)
 ,m_futureScore(copyHypo.m_futureScore)
-,m_scoreBreakdown(new ScoreComponentCollection(*copyHypo.m_scoreBreakdown.get()))
 ,m_transOpt(copyHypo.m_transOpt)
 ,m_manager(copyHypo.m_manager)
-
 ,m_prevHypo(&prevHypo)
 ,m_id(m_manager.GetNextHypoId())
 ,m_ffStates(prevHypo.m_ffStates.size())
 {
+	ScoreComponentCollection *scores = new ScoreComponentCollection(copyHypo.GetScoreBreakdown());
+	m_scoreBreakdown.reset(scores);
+
 	cerr << "copy hypo " << this << endl;
 	for (size_t i = 0; i < prevHypo.m_ffStates.size(); ++i) {
 		const FFState &origState = *prevHypo.m_ffStates[i];
@@ -146,7 +147,7 @@ Hypothesis::
 {
   if (g_mosesDebug) {
 	  //cerr << "deleting hypo " << this << " " << flush << *this << endl;
-	  cerr << "deleting hypo " << this << endl;
+	  //cerr << "deleting hypo " << this << endl;
   }
 
   for (unsigned i = 0; i < m_ffStates.size(); ++i)
