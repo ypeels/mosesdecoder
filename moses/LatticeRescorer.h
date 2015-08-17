@@ -56,27 +56,38 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class LatticeRescorerGraph
+{
+  friend std::ostream& operator<<(std::ostream&, const LatticeRescorerGraph&);
+
+public:
+	typedef boost::unordered_map<const Hypothesis*, LatticeRescorerNode*> Coll;
+	//typedef std::set<LatticeRescorerNode*, LatticeRescorerNodeComparer> Coll;
+	Coll m_nodes;
+	LatticeRescorerNode *m_firstNode;
+
+	void AddFirst(Hypothesis *bestHypo);
+	void Add(Hypothesis *bestHypo);
+
+	LatticeRescorerNode &AddNode(const Hypothesis *bestHypo);
+
+	void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class LatticeRescorer
 {
-	  friend std::ostream& operator<<(std::ostream&, const LatticeRescorer&);
 public:
   
   void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
 
 protected:
   std::vector < HypothesisStack* > *m_stacks;
-
-  typedef boost::unordered_map<const Hypothesis*, LatticeRescorerNode*> Coll;
-  //typedef std::set<LatticeRescorerNode*, LatticeRescorerNodeComparer> Coll;
-  Coll m_nodes;
-  LatticeRescorerNode *m_firstNode;
+  LatticeRescorerGraph m_graph;
 
   void OutputStackSize(const std::vector < HypothesisStack* > &stacks) const;
 
-	void AddFirst(Hypothesis *bestHypo);
-	void Add(Hypothesis *bestHypo);
-
-	LatticeRescorerNode &AddNode(const Hypothesis *bestHypo);
 
 };
   
