@@ -3,6 +3,7 @@
 #include "JoinCompound.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/TargetPhrase.h"
+#include "moses/LatticeRescorer.h"
 
 using namespace std;
 
@@ -62,6 +63,11 @@ void JoinCompound::DoJoin(std::string &output)
   if (output.at(0) == '+' && output.size() > 1 && output.at(1) != ' ') {
     output.erase(0, 1);
   }
+}
+
+void JoinCompound::ChangeLattice(LatticeRescorerGraph &graph) const
+{
+	cerr << "HELLO:" << graph << endl;
 }
 
 }

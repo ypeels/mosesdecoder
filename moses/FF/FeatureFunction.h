@@ -31,6 +31,7 @@ class ChartCellCollection;
 class TranslationOptionCollection;
 class DistortionScoreProducer;
 class TranslationTask;
+class LatticeRescorerGraph;
 
 /** base class for all feature functions.
  */
@@ -124,6 +125,8 @@ public:
 
   virtual bool DoJoining() const {
     return m_doJoining;
+  }
+  virtual void ChangeLattice(LatticeRescorerGraph &graph) const {
   }
 
   virtual std::vector<float> DefaultWeights() const;

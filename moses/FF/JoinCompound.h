@@ -38,6 +38,7 @@ public:
   void SetParameter(const std::string& key, const std::string& value);
 
   virtual void DoJoin(std::string &output);
+  virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
 
 };
 

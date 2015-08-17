@@ -307,7 +307,7 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
 {
   g_mosesDebug = true;
 
-  // empty hypo
+  // create graph
   Hypothesis *firstHypo = *stacks[0]->begin();
   m_graph.AddFirst(firstHypo);
 
@@ -328,10 +328,17 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
 
   cerr << m_graph << endl;
 
+  // change graph before rescoring
+  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+  BOOST_FOREACH(FeatureFunction *ff, ffs) {
+	  ff->ChangeLattice(m_graph);
+  }
+
   // rescore
   m_graph.Rescore(stacks, pass);
   OutputStackSize(stacks);
 
+  // fix up arc lists
   for (size_t stackInd = 0; stackInd < stacks.size(); ++stackInd) {
     HypothesisStack *stack = stacks[stackInd];
     HypothesisStackNormal *stackNormal
