@@ -1,6 +1,7 @@
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <set>
+#include <algorithm>
 
 #include "LatticeRescorer.h"
 #include "Hypothesis.h"
@@ -86,6 +87,12 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	      break;
 	    case RecombinedWin: {
 	      const Hypothesis *loser = status.second;
+
+	      cerr << "winners & losers:" << loser << " ";
+	      std::ostream_iterator<const Hypothesis*> out_it (std::cerr,", ");
+	      std::copy( m_newWinners.begin(), m_newWinners.end(), out_it );
+	      cerr << endl;
+
 	      size_t ret = m_newWinners.erase(loser);
 	      assert(ret == 1);
 	      m_newWinners.insert(hypo);

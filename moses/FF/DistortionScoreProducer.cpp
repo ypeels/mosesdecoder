@@ -12,6 +12,12 @@ namespace Moses
 struct DistortionState_traditional : public FFState {
   WordsRange range;
   int first_gap;
+
+  DistortionState_traditional(const DistortionState_traditional &copy)
+  :range(copy.range)
+  ,first_gap(copy.first_gap)
+  {}
+
   DistortionState_traditional(const WordsRange& wr, int fg) : range(wr), first_gap(fg) {}
   int Compare(const FFState& other) const {
     const DistortionState_traditional& o =
@@ -21,8 +27,7 @@ struct DistortionState_traditional : public FFState {
     return 0;
   }
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+	 return new DistortionState_traditional(*this);
   }
 
 };

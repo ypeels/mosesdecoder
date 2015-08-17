@@ -55,6 +55,18 @@ namespace
 
 struct KenLMState : public FFState {
   lm::ngram::State state;
+
+  KenLMState()
+  {}
+
+  KenLMState(const KenLMState &copy)
+  :state(copy.state)
+  {}
+
+  FFState *Clone() const {
+	 return new KenLMState(*this);
+  }
+
   int Compare(const FFState &o) const {
     const KenLMState &other = static_cast<const KenLMState &>(o);
     if (state.length < other.state.length) return -1;
@@ -62,10 +74,6 @@ struct KenLMState : public FFState {
     return std::memcmp(state.words, other.state.words, sizeof(lm::WordIndex) * state.length);
   }
 
-  FFState *Clone() const {
-	  abort();
-	 return NULL;
-  }
 
 };
 

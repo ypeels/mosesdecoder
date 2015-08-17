@@ -129,15 +129,23 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 ,m_manager(copyHypo.m_manager)
 ,m_prevHypo(&prevHypo)
 ,m_id(m_manager.GetNextHypoId())
-,m_ffStates(prevHypo.m_ffStates.size())
+,m_ffStates(copyHypo.m_ffStates.size())
+,m_arcList(NULL)
 {
 	ScoreComponentCollection *scores = new ScoreComponentCollection(copyHypo.GetScoreBreakdown());
 	m_scoreBreakdown.reset(scores);
 
-	cerr << "copy hypo " << this << endl;
-	for (size_t i = 0; i < prevHypo.m_ffStates.size(); ++i) {
-		const FFState &origState = *prevHypo.m_ffStates[i];
-		FFState *newState = origState.Clone();
+	cerr << "copy hypo " << this << " " << *this << endl;
+	for (size_t i = 0; i < copyHypo.m_ffStates.size(); ++i) {
+		const FFState *origState = copyHypo.m_ffStates[i];
+		FFState *newState;
+		if (origState) {
+			newState = origState->Clone();
+		}
+		else {
+			newState = NULL;
+		}
+		m_ffStates[i] = newState;
 	}
 }
 
