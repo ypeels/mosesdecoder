@@ -118,19 +118,19 @@ Hypothesis(const Hypothesis &prevHypo, const TranslationOption &transOpt)
 // make a copy of the hypo. Split during 2nd pass
 Hypothesis::
 Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
-:m_sourceCompleted(copyHypo.m_sourceCompleted)
+:m_prevHypo(&prevHypo)
+,m_sourceCompleted(copyHypo.m_sourceCompleted)
 ,m_sourceInput(copyHypo.m_sourceInput)
 ,m_currSourceWordsRange(copyHypo.m_currSourceWordsRange)
 ,m_currTargetWordsRange(copyHypo.m_currTargetWordsRange)
 ,m_wordDeleted(copyHypo.m_wordDeleted)
 ,m_totalScore(copyHypo.m_totalScore)
 ,m_futureScore(copyHypo.m_futureScore)
-,m_transOpt(copyHypo.m_transOpt)
-,m_manager(copyHypo.m_manager)
-,m_prevHypo(&prevHypo)
-,m_id(m_manager.GetNextHypoId())
 ,m_ffStates(copyHypo.m_ffStates.size())
 ,m_arcList(NULL)
+,m_transOpt(copyHypo.m_transOpt)
+,m_manager(copyHypo.m_manager)
+,m_id(m_manager.GetNextHypoId())
 {
 	ScoreComponentCollection *scores = new ScoreComponentCollection(copyHypo.GetScoreBreakdown());
 	m_scoreBreakdown.reset(scores);
