@@ -72,14 +72,12 @@ Hypothesis(Manager& manager, InputType const& source, const TranslationOption &i
   //_hash_computed = false;
   //s_HypothesesCreated = 1;
   const vector<const StatefulFeatureFunction*>& ffs = StatefulFeatureFunction::GetStatefulFeatureFunctions();
-  /*
   cerr << this << " num states=" << ffs.size() << " ";
   for (unsigned i = 0; i < ffs.size(); ++i) {
     m_ffStates[i] = ffs[i]->EmptyHypothesisState(source);
     cerr << m_ffStates[i] << " ";
   }
   cerr << endl;
-  */
 
   m_manager.GetSentenceStats().AddCreated();
 }
@@ -137,7 +135,7 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 	ScoreComponentCollection *scores = new ScoreComponentCollection(copyHypo.GetScoreBreakdown());
 	m_scoreBreakdown.reset(scores);
 
-	//cerr << "copy hypo " << this << " " << *this << endl;
+	cerr << "copy hypo " << this << " " << *this << endl;
 	for (size_t i = 0; i < copyHypo.m_ffStates.size(); ++i) {
 		const FFState *origState = copyHypo.m_ffStates[i];
 		FFState *newState;
@@ -154,12 +152,10 @@ Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
 Hypothesis::
 ~Hypothesis()
 {
-  /*
   if (g_mosesDebug) {
-	  cerr << "deleting hypo " << this << " " << flush << *this << endl;
-	  cerr << "deleting hypo " << this << endl;
+	  //cerr << "deleting hypo " << this << " " << flush << *this << endl;
+	  //cerr << "deleting hypo " << this << endl;
   }
-  */
 
   for (unsigned i = 0; i < m_ffStates.size(); ++i)
     delete m_ffStates[i];

@@ -100,7 +100,7 @@ void SearchNormal::Decode()
   // multipass
   size_t numPasses = FeatureFunction::GetNumPasses();
   for (size_t pass = 1; pass < numPasses; ++pass) {
-    //m_latticeRescorer.Rescore(m_hypoStackColl, pass);
+    m_latticeRescorer.Rescore(m_hypoStackColl, pass);
   }
 }
 

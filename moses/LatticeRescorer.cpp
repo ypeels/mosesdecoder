@@ -21,7 +21,7 @@ LatticeRescorerNode::LatticeRescorerNode(const Hypothesis *bestHypo)
 {
 }
 
-Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
+LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 {
 	const Hypothesis *prevHypo = hypo->GetPrevHypo();
 	HyposPerPrevHypo::iterator iter = m_hypos.find(prevHypo);
@@ -56,9 +56,9 @@ void LatticeRescorerNode::AddEdge(Hypos &edge)
 
 void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos *hypos)
 {
-	//cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos << " "
-	//		<< m_bestHypo->GetWordsBitmap()
-	//		<< endl;
+	cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos << " "
+			<< m_bestHypo->GetWordsBitmap()
+			<< endl;
 	//cerr << "best " << m_bestHypo << " " << m_bestHypo->GetWordsBitmap() << endl;
 	//cerr << "BEFORE:";
 	OutputStackSize(stacks);
@@ -82,18 +82,16 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
 	    	m_newWinners.insert(hypo);
 	      break;
 	    case Pruned:
-	      //cerr << "pruned " << hypo << endl;
+	      cerr << "pruned " << hypo << endl;
 	      assert(false); // can't deal with pruning @ the mo
 	      break;
 	    case RecombinedWin: {
 	      const Hypothesis *loser = status.second;
 
-	      /*
 	      cerr << "winners & losers:" << loser << " ";
 	      std::ostream_iterator<const Hypothesis*> out_it (std::cerr,", ");
 	      std::copy( m_newWinners.begin(), m_newWinners.end(), out_it );
 	      cerr << endl;
-			*/
 
 	      size_t ret = m_newWinners.erase(loser);
 	      assert(ret == 1);
@@ -139,7 +137,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
     }
 
     // next nodes
-	BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
+	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, m_fwdNodes) {
 		LatticeRescorerNode *node = hypos->m_container;
 		node->Rescore(stacks, pass, hypos);
 	}
@@ -169,7 +167,7 @@ std::pair<AddStatus, const Hypothesis*> LatticeRescorerNode::
 
 void LatticeRescorerNode::DeleteFwdHypos()
 {
-	//cerr << "delete " << this << endl;
+	cerr << "delete " << this << endl;
     BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
     	hypos->m_container->DeleteHypos(hypos);
     }
@@ -186,7 +184,7 @@ void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
 
 void LatticeRescorerNode::Multiply()
 {
-	//cerr << "m_newWinners=" << m_newWinners.size() << endl;
+	cerr << "m_newWinners=" << m_newWinners.size() << endl;
 	BOOST_FOREACH(const Hypothesis *winner, m_newWinners) {
 		BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
 			Multiply(*hypos, winner);
@@ -238,7 +236,7 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 {
   //cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
   LatticeRescorerNode &node = AddNode(bestHypo);
-  Hypos &currHypos = node.Add(bestHypo);
+  LatticeRescorerNode::Hypos &currHypos = node.Add(bestHypo);
 
   Hypothesis *prevHypo = const_cast<Hypothesis *>(bestHypo->GetPrevHypo());
   if (prevHypo) {
@@ -252,7 +250,7 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 	  BOOST_FOREACH(Hypothesis *arc, *arcs) {
 		  Hypothesis *prevHypo = const_cast<Hypothesis *>(arc->GetPrevHypo());
 
-		  Hypos &arcHypos = node.Add(arc);
+		  LatticeRescorerNode::Hypos &arcHypos = node.Add(arc);
 
 		  LatticeRescorerNode &prevNode = AddNode(prevHypo);
 		  prevNode.AddEdge(arcHypos);
@@ -286,7 +284,7 @@ void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stack
 		<< endl;
 
 	LatticeRescorerNode::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
-	BOOST_FOREACH(Hypos *hypos, fwdNodes) {
+	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, fwdNodes) {
 		LatticeRescorerNode *node = hypos->m_container;
 		node->Rescore(stacks, pass, hypos);
 	}
@@ -328,7 +326,7 @@ void LatticeRescorer::Rescore(const std::vector < HypothesisStack* > &stacks, si
     stack.DetachAll();
   }
 
-  //cerr << m_graph << endl;
+  cerr << m_graph << endl;
 
   // change graph before rescoring
   const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
