@@ -10,6 +10,17 @@ namespace Moses
 {
 class HypothesisStack;
 class Hypothesis;
+class LatticeRescorerNode;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Hypos {
+public:
+	boost::unordered_set<Hypothesis*> m_hypos;
+	LatticeRescorerNode *m_container;
+	const Hypothesis *m_prevHypo; // key in container
+
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,12 +31,6 @@ class LatticeRescorerNode
   void OutputStackSize(const std::vector < HypothesisStack* > &stacks) const;
 
 public:
-    struct Hypos {
-    	boost::unordered_set<Hypothesis*> m_hypos;
-    	LatticeRescorerNode *m_container;
-    	const Hypothesis *m_prevHypo; // key in container
-
-    };
 
 	const Hypothesis *m_bestHypo;
 

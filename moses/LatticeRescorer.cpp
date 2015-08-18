@@ -21,7 +21,7 @@ LatticeRescorerNode::LatticeRescorerNode(const Hypothesis *bestHypo)
 {
 }
 
-LatticeRescorerNode::Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
+Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 {
 	const Hypothesis *prevHypo = hypo->GetPrevHypo();
 	HyposPerPrevHypo::iterator iter = m_hypos.find(prevHypo);
@@ -141,7 +141,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
     }
 
     // next nodes
-	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, m_fwdNodes) {
+	BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
 		LatticeRescorerNode *node = hypos->m_container;
 		node->Rescore(stacks, pass, hypos);
 	}
@@ -240,7 +240,7 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 {
   //cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
   LatticeRescorerNode &node = AddNode(bestHypo);
-  LatticeRescorerNode::Hypos &currHypos = node.Add(bestHypo);
+  Hypos &currHypos = node.Add(bestHypo);
 
   Hypothesis *prevHypo = const_cast<Hypothesis *>(bestHypo->GetPrevHypo());
   if (prevHypo) {
@@ -254,7 +254,7 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 	  BOOST_FOREACH(Hypothesis *arc, *arcs) {
 		  Hypothesis *prevHypo = const_cast<Hypothesis *>(arc->GetPrevHypo());
 
-		  LatticeRescorerNode::Hypos &arcHypos = node.Add(arc);
+		  Hypos &arcHypos = node.Add(arc);
 
 		  LatticeRescorerNode &prevNode = AddNode(prevHypo);
 		  prevNode.AddEdge(arcHypos);
@@ -289,7 +289,7 @@ void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stack
 	*/
 
 	LatticeRescorerNode::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
-	BOOST_FOREACH(LatticeRescorerNode::Hypos *hypos, fwdNodes) {
+	BOOST_FOREACH(Hypos *hypos, fwdNodes) {
 		LatticeRescorerNode *node = hypos->m_container;
 		node->Rescore(stacks, pass, hypos);
 	}
