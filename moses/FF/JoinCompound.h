@@ -5,6 +5,7 @@
 
 namespace Moses
 {
+class Hypos;
 
 class JoinCompound : public StatelessFeatureFunction
 {
@@ -39,6 +40,15 @@ public:
 
   virtual void DoJoin(std::string &output);
   virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
+
+  void ChangeLattice(Hypos *hypos) const;
+  void ChangeLattice(const Hypothesis *currHypo, Hypothesis *nextHypo, const Phrase &tp) const;
+
+  //None  =  0,
+  //Left  =  1,
+  //Right =  2
+  size_t HasJuncture(const Word &word) const;
+  void Desegment(Phrase &out, const Phrase &in) const;
 
 };
 
