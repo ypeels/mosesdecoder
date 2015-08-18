@@ -272,7 +272,7 @@ void HypothesisStackNormal::CleanupArcList()
 
 std::pair<AddStatus, const Hypothesis*> HypothesisStackNormal::AddNoPrune(Hypothesis *hypo)
 {
-  cerr << "inserting " << hypo << endl;
+  //cerr << "inserting " << hypo << endl;
   // over threshold, try to add to collection
   std::pair<iterator, bool> addRet = m_hypos.insert(hypo);
   if (addRet.second) {
