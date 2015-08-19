@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 #include "StatelessFeatureFunction.h"
 
 namespace Moses
@@ -42,13 +43,13 @@ public:
   virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
 
   void ChangeLattice(Hypos *hypos) const;
-  void ChangeLattice(const Hypothesis *currHypo, Hypothesis *nextHypo, const Phrase &tp) const;
+  void MergeHypos(std::stringstream &strme, const Hypothesis *currHypo, Hypothesis *nextHypo) const;
 
   //None  =  0,
   //Left  =  1,
   //Right =  2
   size_t HasJuncture(const Word &word) const;
-  void Desegment(Phrase &out, const Phrase &in) const;
+  size_t Desegment(std::stringstream &strme, const Phrase &in) const;
 
 };
 

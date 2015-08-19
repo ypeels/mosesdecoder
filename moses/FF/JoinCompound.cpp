@@ -84,50 +84,48 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
 	LatticeRescorerNode &node = *hypos->m_container;
 	const Hypothesis *bestHypo = node.m_bestHypo;
 	const Phrase &tp = bestHypo->GetCurrTargetPhrase();
-	const Word &lastWord = tp.Back();
 
-	size_t juncture = HasJuncture(lastWord);
-	cerr << "tp=" << tp << " juncture=" << juncture << endl;
+	stringstream strme;
+	size_t juncture = Desegment(strme, tp);
+	cerr << "tp=" << tp
+		<< " juncture=" << juncture << endl;
 
-	if (juncture & 2) {
-	    BOOST_FOREACH(Hypos *hypos, node.m_fwdNodes) {
-		    BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
-		    	ChangeLattice(bestHypo, nextHypo, tp);
-		    }
-	    }
+	if ((juncture & 2) == 0) {
+		// don't extend last word
+		BOOST_FOREACH(Hypos *hypos, node.m_fwdNodes) {
+			ChangeLattice(hypos);
+		}
 	}
+	else {
+		// last word is part of a compound which extends to the next hypo (potentially)
+		BOOST_FOREACH(Hypos *hypos, node.m_fwdNodes) {
+			BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
+				MergeHypos(strme, bestHypo, nextHypo);
 
+				// create new tp
+				TargetPhrase newTP;
+
+			}
+		}
+	}
 }
 
-void JoinCompound::ChangeLattice(const Hypothesis *currHypo, Hypothesis *nextHypo, const Phrase &tp) const
+void JoinCompound::MergeHypos(std::stringstream &strme, const Hypothesis *currHypo, Hypothesis *nextHypo) const
 {
-	TargetPhrase newTP;
-	Desegment(newTP, tp);
+	const Phrase &tp = nextHypo->GetCurrTargetPhrase();
+	Desegment(strme, tp);
 }
 
-size_t JoinCompound::HasJuncture(const Word &word) const
-{
-	size_t ret = 0;
-	string str = word.ToString();
-	if (str.front() == '+') {
-		ret += 1;
-	}
-	if (str.back() == '+') {
-		ret += 2;
-	}
-	return ret;
-}
-
-void JoinCompound::Desegment(Phrase &out, const Phrase &in) const
+size_t JoinCompound::Desegment(stringstream &strme, const Phrase &in) const
 {
 	const StaticData &sd = StaticData::Instance();
-	stringstream strme;
+
 	size_t juncture;
 	for (size_t pos = 0; pos < in.GetSize(); ++pos) {
 		const Word &inWord = in.GetWord(pos);
 		juncture = HasJuncture(inWord);
 		if (juncture == 0) {
-			out.AddWord(inWord);
+			//out.AddWord(inWord);
 		}
 		else {
 			// a morpheme
@@ -147,13 +145,30 @@ void JoinCompound::Desegment(Phrase &out, const Phrase &in) const
 
 				Word newWord(false);
 				newWord.CreateFromString(Output, fo, strme.str(), false);
-				out.AddWord(newWord);
+				//out.AddWord(newWord);
 				strme.clear();
+			}
+			else {
+				strme << str;
 			}
 
 		}
-
 	}
+
+	return juncture;
+}
+
+size_t JoinCompound::HasJuncture(const Word &word) const
+{
+	size_t ret = 0;
+	string str = Trim(word.ToString());
+	if (str.front() == '+') {
+		ret += 1;
+	}
+	if (str.back() == '+') {
+		ret += 2;
+	}
+	return ret;
 }
 
 } // namespace
