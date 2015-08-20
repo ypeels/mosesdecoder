@@ -320,7 +320,6 @@ EvaluateWhenApplied(const SquareMatrix &futureScore)
   // phrase are also included here
   const StaticData &staticData = StaticData::Instance();
 
-  size_t sfInd = 0;
   const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(0);
   BOOST_FOREACH(FeatureFunction *ff, ffs) {
       if (staticData.IsFeatureFunctionIgnored(*ff)) {
@@ -333,10 +332,10 @@ EvaluateWhenApplied(const SquareMatrix &futureScore)
       }
       else {
         StatefulFeatureFunction &sfFF = *static_cast<StatefulFeatureFunction*>(ff);
-          m_ffStates[sfInd] = sfFF.EvaluateWhenApplied(*this,
+        size_t sfInd = sfFF.GetStatefulId();
+        m_ffStates[sfInd] = sfFF.EvaluateWhenApplied(*this,
                                                  m_prevHypo ? m_prevHypo->m_ffStates[sfInd] : NULL,
                                                  &m_currScoreBreakdown);
-          ++sfInd;
       }
   }
 

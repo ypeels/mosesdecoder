@@ -50,6 +50,12 @@ class JoinScore : public StatefulFeatureFunction
     ,m_validCompound(true)
     {}
     
+    JoinScoreState(const JoinScoreState &copy)
+    :m_morphemes(copy.m_morphemes)
+    ,m_marker(copy.m_marker)
+    ,m_validCompound(copy.m_validCompound)
+    {}
+
     JoinScoreState(const Phrase &morphemes, size_t Marker, bool validCompound)
     :m_morphemes(morphemes)
     ,m_marker(Marker)
@@ -59,8 +65,7 @@ class JoinScore : public StatefulFeatureFunction
 
     int Compare(const FFState& other) const;
     FFState *Clone() const {
-    	abort();
-  	 return NULL;
+    	return new JoinScoreState(*this);
     }
 
     const Phrase &GetMorphemes() const {
