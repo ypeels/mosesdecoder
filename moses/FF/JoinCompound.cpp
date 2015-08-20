@@ -85,9 +85,10 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
 	const Hypothesis *bestHypo = node.m_bestHypo;
 	const Phrase &tp = bestHypo->GetCurrTargetPhrase();
 
-	stringstream strme;
-	size_t juncture = Desegment(strme, tp);
-	cerr << "tp=" << tp
+	string tpStr;
+	size_t juncture = Desegment(tpStr, tp);
+	cerr << "A tp=" << tp
+		<< " tpStr=" << tpStr
 		<< " juncture=" << juncture << endl;
 
 	if ((juncture & 2) == 0) {
@@ -100,7 +101,7 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
 		// last word is part of a compound which extends to the next hypo (potentially)
 		BOOST_FOREACH(Hypos *hypos, node.m_fwdNodes) {
 			BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
-				MergeHypos(strme, bestHypo, nextHypo);
+				MergeHypos(tpStr, bestHypo, nextHypo);
 
 				// create new tp
 				TargetPhrase newTP;
@@ -110,65 +111,64 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
 	}
 }
 
-void JoinCompound::MergeHypos(std::stringstream &strme, const Hypothesis *currHypo, Hypothesis *nextHypo) const
+void JoinCompound::MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypothesis *nextHypo) const
 {
+	string tpStr = tpStrOrig;
 	const Phrase &tp = nextHypo->GetCurrTargetPhrase();
-	Desegment(strme, tp);
+	size_t juncture = Desegment(tpStr, tp);
+
+	cerr << "B tp=" << tp
+		<< " tpStr=" << tpStr
+		<< " juncture=" << juncture << endl;
+
 }
 
-size_t JoinCompound::Desegment(stringstream &strme, const Phrase &in) const
+size_t JoinCompound::Desegment(std::string &tpStr, const Phrase &in) const
 {
-	const StaticData &sd = StaticData::Instance();
+//	const StaticData &sd = StaticData::Instance();
 
 	size_t juncture;
 	for (size_t pos = 0; pos < in.GetSize(); ++pos) {
 		const Word &inWord = in.GetWord(pos);
-		juncture = HasJuncture(inWord);
+		string str;
+		juncture = HasJuncture(inWord, str);
 		if (juncture == 0) {
-			//out.AddWord(inWord);
+			tpStr += " " + str + " ";
+		}
+		else if (juncture == 1) {
+			tpStr += str + " ";
+		}
+		else if (juncture == 2) {
+			tpStr += " " + str;
 		}
 		else {
-			// a morpheme
-			string str = inWord.ToString();
-			if (juncture & 1) {
-				str = str.substr(1, str.size() - 1);
-			}
-			if (juncture & 2) {
-				str = str.substr(0, str.size() - 1);
-			}
-
-			if ((juncture & 2) == 0) {
-				// end of compound word. Write out word
-				strme << str;
-				cerr << "strme=" << strme.str() << endl;
-				const std::vector<FactorType> &fo = sd.GetOutputFactorOrder();
-
-				Word newWord(false);
-				newWord.CreateFromString(Output, fo, strme.str(), false);
-				//out.AddWord(newWord);
-				strme.clear();
-			}
-			else {
-				strme << str;
-			}
-
+			assert(juncture == 3);
+			tpStr += str;
 		}
 	}
 
 	return juncture;
 }
 
-size_t JoinCompound::HasJuncture(const Word &word) const
+size_t JoinCompound::HasJuncture(const Word &word, std::string &stripped) const
 {
-	size_t ret = 0;
-	string str = Trim(word.ToString());
-	if (str.front() == '+') {
-		ret += 1;
+	size_t juncture = 0;
+	stripped = Trim(word.ToString());
+	if (stripped.front() == '+') {
+		juncture += 1;
 	}
-	if (str.back() == '+') {
-		ret += 2;
+	if (stripped.back() == '+') {
+		juncture += 2;
 	}
-	return ret;
+
+	if (juncture & 1) {
+		stripped = stripped.substr(1, stripped.size() - 1);
+	}
+	if (juncture & 2) {
+		stripped = stripped.substr(0, stripped.size() - 1);
+	}
+
+	return juncture;
 }
 
 } // namespace

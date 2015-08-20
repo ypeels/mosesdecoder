@@ -43,13 +43,13 @@ public:
   virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
 
   void ChangeLattice(Hypos *hypos) const;
-  void MergeHypos(std::stringstream &strme, const Hypothesis *currHypo, Hypothesis *nextHypo) const;
+  void MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypothesis *nextHypo) const;
 
   //None  =  0,
   //Left  =  1,
   //Right =  2
-  size_t HasJuncture(const Word &word) const;
-  size_t Desegment(std::stringstream &strme, const Phrase &in) const;
+  size_t HasJuncture(const Word &word, std::string &stripped) const;
+  size_t Desegment(std::string &tpStr, const Phrase &in) const;
 
 };
 
