@@ -93,33 +93,44 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
 
 	if ((juncture & 2) == 0) {
 		// don't extend last word
-		BOOST_FOREACH(Hypos *hypos, node.m_fwdNodes) {
-			ChangeLattice(hypos);
+		BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+			ChangeLattice(nextHypos);
 		}
 	}
 	else {
 		// last word is part of a compound which extends to the next hypo (potentially)
-		BOOST_FOREACH(Hypos *hypos, node.m_fwdNodes) {
-			BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
-				MergeHypos(tpStr, bestHypo, nextHypo);
-
-				// create new tp
-				TargetPhrase newTP;
-
-			}
+		BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+			MergeHypos(tpStr, bestHypo, nextHypos);
 		}
 	}
 }
 
-void JoinCompound::MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypothesis *nextHypo) const
+void JoinCompound::MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypos *hypos) const
 {
-	string tpStr = tpStrOrig;
-	const Phrase &tp = nextHypo->GetCurrTargetPhrase();
-	size_t juncture = Desegment(tpStr, tp);
+	size_t juncture = 0;
+	BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
+		string tpStr = tpStrOrig;
+		const Phrase &tp = nextHypo->GetCurrTargetPhrase();
+		juncture = Desegment(tpStr, tp);
 
-	cerr << "B tp=" << tp
-		<< " tpStr=" << tpStr
-		<< " juncture=" << juncture << endl;
+		cerr << "B tp=" << tp
+			<< " tpStr=" << tpStr
+			<< " juncture=" << juncture << endl;
+	}
+
+	if ((juncture & 2) == 0) {
+		// don't extend last word
+		boost::unordered_set<LatticeRescorerNode*> nodes;
+		LatticeRescorerNode &node = *hypos->m_container;
+		BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+
+		}
+
+		//ChangeLattice(nextHypos);
+}
+	else {
+
+	}
 
 }
 

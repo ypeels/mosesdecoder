@@ -13,7 +13,7 @@ class Hypothesis;
 class LatticeRescorerNode;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// all hypos in Hypos have same states AND same prevHypo
 class Hypos {
 public:
 	boost::unordered_set<Hypothesis*> m_hypos;
@@ -23,7 +23,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// all hypos in a node have same states
 class LatticeRescorerNode
 {
   friend std::ostream& operator<<(std::ostream&, const LatticeRescorerNode&);

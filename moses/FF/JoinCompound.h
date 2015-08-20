@@ -43,7 +43,7 @@ public:
   virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
 
   void ChangeLattice(Hypos *hypos) const;
-  void MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypothesis *nextHypo) const;
+  void MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypos *hypos) const;
 
   //None  =  0,
   //Left  =  1,
