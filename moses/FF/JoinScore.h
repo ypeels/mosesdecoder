@@ -39,33 +39,32 @@ class JoinScore : public StatefulFeatureFunction
     //std::string m_concat;
     Phrase m_morphemes;
     size_t m_marker;
-      //None  =  0,
-      //Left  =  1,
-      //Right =  2
+    //None  =  0,
+    //Left  =  1,
+    //Right =  2
     bool m_validCompound;
-    
+
   public:
     JoinScoreState()
-    :m_marker(0)
-    ,m_validCompound(true)
+      :m_marker(0)
+      ,m_validCompound(true)
     {}
-    
+
     JoinScoreState(const JoinScoreState &copy)
-    :m_morphemes(copy.m_morphemes)
-    ,m_marker(copy.m_marker)
-    ,m_validCompound(copy.m_validCompound)
+      :m_morphemes(copy.m_morphemes)
+      ,m_marker(copy.m_marker)
+      ,m_validCompound(copy.m_validCompound)
     {}
 
     JoinScoreState(const Phrase &morphemes, size_t Marker, bool validCompound)
-    :m_morphemes(morphemes)
-    ,m_marker(Marker)
-    ,m_validCompound(validCompound)
-    {
+      :m_morphemes(morphemes)
+      ,m_marker(Marker)
+      ,m_validCompound(validCompound) {
     }
 
     int Compare(const FFState& other) const;
     FFState *Clone() const {
-    	return new JoinScoreState(*this);
+      return new JoinScoreState(*this);
     }
 
     const Phrase &GetMorphemes() const {
@@ -76,8 +75,9 @@ class JoinScore : public StatefulFeatureFunction
       return m_marker;
     }
 
-    bool GetValidCompound() const
-    { return m_validCompound; }
+    bool GetValidCompound() const {
+      return m_validCompound;
+    }
   };
 ////////////////////////////////////////////////////////////////
 
@@ -117,30 +117,30 @@ public:
     ScoreComponentCollection* accumulator) const;
 
   void SetParameter(const std::string& key, const std::string& value);
-    
+
 protected:
-  bool m_scoreRealWords, m_scoreNumCompounds, 
-        m_scoreCompoundOOV,
-        m_scoreCompoundWord, m_scorePartialCompound
-        ;
+  bool m_scoreRealWords, m_scoreNumCompounds,
+       m_scoreCompoundOOV,
+       m_scoreCompoundWord, m_scorePartialCompound
+       ;
   size_t m_scoreInvalidJoins;
   // 1 = a+|+a+ a|a+ = penalise dangling prefix
   // 2 = a|+a +a|+a+ = penalise dangling suffix
   bool m_scoreInvalidJoinsPrefix, m_scoreInvalidJoinsSuffix;
-  
+
   int m_maxMorphemeState;
   float m_multiplier;
   std::string m_vocabPath;
 
   //Node m_vocabRoot;
   TrieSearch<bool> m_trieSearch;
-  
+
   int GetMarker(const Word &word) const;
-  void CalcScores(size_t &numWord, size_t&numCompoundWord, 
-                          size_t &numInvalidJoin, float &compoundWordScore, bool &validCompound,
-                          Phrase &morphemes, 
-                          const Word *morpheme,
-                          int prevMarker, int currMarker) const;
+  void CalcScores(size_t &numWord, size_t&numCompoundWord,
+                  size_t &numInvalidJoin, float &compoundWordScore, bool &validCompound,
+                  Phrase &morphemes,
+                  const Word *morpheme,
+                  int prevMarker, int currMarker) const;
   float CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool &validCompound) const;
 
   void AddMorphemeToState(Phrase &morphemes, const Word *morpheme) const;

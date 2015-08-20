@@ -56,8 +56,8 @@ public:
   int Compare(const FFState &o) const;
 
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   // Allow BackwardLanguageModel to access the private members of this class

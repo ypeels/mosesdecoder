@@ -25,8 +25,8 @@ public:
     return ret;
   }
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
 };

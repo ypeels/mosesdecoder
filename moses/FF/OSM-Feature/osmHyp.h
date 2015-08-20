@@ -18,8 +18,8 @@ public:
   osmState(const lm::ngram::State & val);
   int Compare(const FFState& other) const;
   FFState *Clone() const {
-	 abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   void saveState(int jVal, int eVal, std::map <int , std::string> & gapVal);

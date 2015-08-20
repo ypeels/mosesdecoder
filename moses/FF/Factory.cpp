@@ -299,7 +299,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(MadaConsistentTok);
   MOSES_FNAME(JoinCompound);
   MOSES_FNAME(JoinScore);
-  
+
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);
   MOSES_FNAME(SkeletonLM);

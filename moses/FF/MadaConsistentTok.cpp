@@ -21,16 +21,16 @@ MadaConsistentTok::MadaConsistentTok(const std::string &line)
   :StatefulFeatureFunction(3, line)
 {
   ReadParameters();
-  
-    // init classes
+
+  // init classes
   CLASSES["w+"] = 1;
   CLASSES["f+"] = 1;
-  
+
   CLASSES["l+"] = 2;
   CLASSES["b+"] = 2;
   CLASSES["k+"] = 2;
   CLASSES["s+"] = 2;
-  
+
   CLASSES["Al+"] = 3;
 
   CLASSES["+h"] = 5;

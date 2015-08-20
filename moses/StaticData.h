@@ -120,7 +120,7 @@ protected:
   bool m_outputHypoScore;
   bool m_requireSortingAfterSourceContext;
   bool m_doJoining;
-    // SearchAlgorithm m_searchAlgorithm;
+  // SearchAlgorithm m_searchAlgorithm;
   InputTypeEnum m_inputType;
 
   mutable size_t m_verboseLevel;

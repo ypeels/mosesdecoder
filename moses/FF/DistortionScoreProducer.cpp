@@ -14,8 +14,8 @@ struct DistortionState_traditional : public FFState {
   int first_gap;
 
   DistortionState_traditional(const DistortionState_traditional &copy)
-  :range(copy.range)
-  ,first_gap(copy.first_gap)
+    :range(copy.range)
+    ,first_gap(copy.first_gap)
   {}
 
   DistortionState_traditional(const WordsRange& wr, int fg) : range(wr), first_gap(fg) {}
@@ -27,7 +27,7 @@ struct DistortionState_traditional : public FFState {
     return 0;
   }
   FFState *Clone() const {
-	 return new DistortionState_traditional(*this);
+    return new DistortionState_traditional(*this);
   }
 
 };

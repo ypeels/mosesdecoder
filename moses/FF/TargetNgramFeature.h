@@ -26,8 +26,8 @@ public:
   virtual int Compare(const FFState& other) const;
 
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
 private:
@@ -178,8 +178,8 @@ public:
   }
 
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
 };

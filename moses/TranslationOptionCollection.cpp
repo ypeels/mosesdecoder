@@ -516,14 +516,14 @@ void TranslationOptionCollection::EvaluateTranslationOptionListWithSourceContext
 
   size_t numPasses = FeatureFunction::GetNumPasses();
   for (size_t pass = 0; pass < numPasses; ++pass) {
-	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
-	  const StaticData &staticData = StaticData::Instance();
-	  for (size_t i = 0; i < ffs.size(); ++i) {
-		const FeatureFunction &ff = *ffs[i];
-		if (! staticData.IsFeatureFunctionIgnored(ff)) {
-		  ff.EvaluateTranslationOptionListWithSourceContext(m_source, translationOptionList);
-		}
-	  }
+    const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+    const StaticData &staticData = StaticData::Instance();
+    for (size_t i = 0; i < ffs.size(); ++i) {
+      const FeatureFunction &ff = *ffs[i];
+      if (! staticData.IsFeatureFunctionIgnored(ff)) {
+        ff.EvaluateTranslationOptionListWithSourceContext(m_source, translationOptionList);
+      }
+    }
   }
 }
 

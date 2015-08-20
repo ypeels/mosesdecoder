@@ -67,7 +67,7 @@ public:
   }
 
   static size_t GetNumPasses() {
-      return s_staticColl.size();
+    return s_staticColl.size();
   }
 
   static FeatureFunction &FindFeatureFunction(const std::string& name, size_t pass);
@@ -211,8 +211,8 @@ public:
   virtual void ReadParameters();
   virtual void SetTuneableComponents(const std::string& value);
 
-  static void DoJoinAll(std::string &output, size_t pass = 0); 
-  virtual void DoJoin(std::string &output) 
+  static void DoJoinAll(std::string &output, size_t pass = 0);
+  virtual void DoJoin(std::string &output)
   {}
 
 };

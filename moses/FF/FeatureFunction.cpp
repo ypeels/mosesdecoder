@@ -39,7 +39,7 @@ void FeatureFunction::Destroy()
 {
   BOOST_FOREACH(std::vector<FeatureFunction*> &coll, s_staticColl ) {
     RemoveAllInColl(coll);
-  }  
+  }
 }
 
 void FeatureFunction::SetupAll(TranslationTask const& ttask)
@@ -48,7 +48,7 @@ void FeatureFunction::SetupAll(TranslationTask const& ttask)
     BOOST_FOREACH(FeatureFunction* ff, coll) {
       ff->Setup(ttask);
     }
-  }  
+  }
 }
 
 FeatureFunction::
@@ -115,14 +115,11 @@ void FeatureFunction::ParseLine(const std::string &line)
     if (args[0] == "num-features") {
       m_numScoreComponents = Scan<size_t>(args[1]);
       m_numTuneableComponents = m_numScoreComponents;
-    }
-    else if (args[0] == "name") {
+    } else if (args[0] == "name") {
       m_description = args[1];
-    }
-    else if (args[0] == "pass") {
+    } else if (args[0] == "pass") {
       m_pass = Scan<size_t>(args[1]);
-    }
-    else {
+    } else {
       m_args.push_back(args);
     }
   }
@@ -231,9 +228,9 @@ FeatureFunction
 
 void FeatureFunction::DoJoinAll(std::string &output, size_t pass)
 {
-   BOOST_FOREACH(FeatureFunction* ff, s_staticColl[pass]) {
+  BOOST_FOREACH(FeatureFunction* ff, s_staticColl[pass]) {
     ff->DoJoin(output);
-   }
+  }
 }
 
 } // namespace

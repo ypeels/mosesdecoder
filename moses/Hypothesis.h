@@ -272,7 +272,7 @@ public:
     m_ffStates[idx] = state;
   }
   size_t GetNumFFStates() const {
-	// should always be the same
+    // should always be the same
     return m_ffStates.size();
   }
 
@@ -329,7 +329,7 @@ struct CompareHypothesisTotalScore {
 	ObjectPool<Hypothesis> &pool = Hypothesis::GetObjectPool(); \
 	pool.freeObject(hypo); \
 } \
-
+ 
 #else
 #define FREEHYPO(hypo) delete hypo
 #endif

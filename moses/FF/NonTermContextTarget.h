@@ -21,8 +21,8 @@ public:
 
   int Compare(const FFState& other) const;
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   const std::vector<const Factor*> &GetWords() const {

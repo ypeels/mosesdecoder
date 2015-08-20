@@ -29,7 +29,7 @@ public:
   // for the 1st pass, this is the same as the vector index.
   // but for subsequent passes, you'll need to use this.
   size_t GetStatefulId() const {
-	  return m_statefulId;
+    return m_statefulId;
   }
 
   /**

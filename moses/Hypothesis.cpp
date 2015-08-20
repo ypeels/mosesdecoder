@@ -118,46 +118,45 @@ Hypothesis(const Hypothesis &prevHypo, const TranslationOption &transOpt)
 // make a copy of the hypo. Split during 2nd pass
 Hypothesis::
 Hypothesis(const Hypothesis &copyHypo, const Hypothesis &prevHypo)
-:m_prevHypo(&prevHypo)
-,m_sourceCompleted(copyHypo.m_sourceCompleted)
-,m_sourceInput(copyHypo.m_sourceInput)
-,m_currSourceWordsRange(copyHypo.m_currSourceWordsRange)
-,m_currTargetWordsRange(copyHypo.m_currTargetWordsRange)
-,m_wordDeleted(copyHypo.m_wordDeleted)
-,m_totalScore(copyHypo.m_totalScore)
-,m_futureScore(copyHypo.m_futureScore)
-,m_ffStates(copyHypo.m_ffStates.size())
-,m_arcList(NULL)
-,m_transOpt(copyHypo.m_transOpt)
-,m_manager(copyHypo.m_manager)
-,m_id(m_manager.GetNextHypoId())
+  :m_prevHypo(&prevHypo)
+  ,m_sourceCompleted(copyHypo.m_sourceCompleted)
+  ,m_sourceInput(copyHypo.m_sourceInput)
+  ,m_currSourceWordsRange(copyHypo.m_currSourceWordsRange)
+  ,m_currTargetWordsRange(copyHypo.m_currTargetWordsRange)
+  ,m_wordDeleted(copyHypo.m_wordDeleted)
+  ,m_totalScore(copyHypo.m_totalScore)
+  ,m_futureScore(copyHypo.m_futureScore)
+  ,m_ffStates(copyHypo.m_ffStates.size())
+  ,m_arcList(NULL)
+  ,m_transOpt(copyHypo.m_transOpt)
+  ,m_manager(copyHypo.m_manager)
+  ,m_id(m_manager.GetNextHypoId())
 {
-	ScoreComponentCollection *scores = new ScoreComponentCollection(copyHypo.GetScoreBreakdown());
-	m_scoreBreakdown.reset(scores);
+  ScoreComponentCollection *scores = new ScoreComponentCollection(copyHypo.GetScoreBreakdown());
+  m_scoreBreakdown.reset(scores);
 
-	//cerr << "copy hypo " << this << " " << *this << endl;
-	for (size_t i = 0; i < copyHypo.m_ffStates.size(); ++i) {
-		const FFState *origState = copyHypo.m_ffStates[i];
-		FFState *newState;
-		if (origState) {
-			newState = origState->Clone();
-		}
-		else {
-			newState = NULL;
-		}
-		m_ffStates[i] = newState;
-	}
+  //cerr << "copy hypo " << this << " " << *this << endl;
+  for (size_t i = 0; i < copyHypo.m_ffStates.size(); ++i) {
+    const FFState *origState = copyHypo.m_ffStates[i];
+    FFState *newState;
+    if (origState) {
+      newState = origState->Clone();
+    } else {
+      newState = NULL;
+    }
+    m_ffStates[i] = newState;
+  }
 }
 
 Hypothesis::
 ~Hypothesis()
 {
-	/*
+  /*
   if (g_mosesDebug) {
-	  cerr << "deleting hypo " << this << " " << flush << *this << endl;
-	  cerr << "deleting hypo " << this << endl;
+    cerr << "deleting hypo " << this << " " << flush << *this << endl;
+    cerr << "deleting hypo " << this << endl;
   }
-	*/
+  */
 
   for (unsigned i = 0; i < m_ffStates.size(); ++i)
     delete m_ffStates[i];
@@ -280,14 +279,14 @@ EvaluateWhenApplied(StatefulFeatureFunction const& sfff,
   if (! staticData.IsFeatureFunctionIgnored( sfff )) {
     Manager& manager = this->GetManager(); //Get the manager and the ttask
     ttasksptr const& ttask = manager.GetTtask();
-/*
-    cerr << "hypo=" << this << " " << GetWordsBitmap().ToString()
-		<< " num states=" << GetNumFFStates()
-   		<< 	" prev hypo=" << m_prevHypo << " " << m_prevHypo->GetWordsBitmap().ToString()
-    	<< " prev states=" << m_prevHypo->GetNumFFStates()
-		<< " state_idx=" << state_idx << " " << m_prevHypo->m_ffStates[state_idx]
-		<< endl;
-*/
+    /*
+        cerr << "hypo=" << this << " " << GetWordsBitmap().ToString()
+    		<< " num states=" << GetNumFFStates()
+       		<< 	" prev hypo=" << m_prevHypo << " " << m_prevHypo->GetWordsBitmap().ToString()
+        	<< " prev states=" << m_prevHypo->GetNumFFStates()
+    		<< " state_idx=" << state_idx << " " << m_prevHypo->m_ffStates[state_idx]
+    		<< endl;
+    */
     m_ffStates[state_idx] = sfff.EvaluateWhenAppliedWithContext
                             (ttask, *this, m_prevHypo ? m_prevHypo->m_ffStates[state_idx] : NULL,
                              &m_currScoreBreakdown);
@@ -322,21 +321,20 @@ EvaluateWhenApplied(const SquareMatrix &futureScore)
 
   const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(0);
   BOOST_FOREACH(FeatureFunction *ff, ffs) {
-      if (staticData.IsFeatureFunctionIgnored(*ff)) {
-    	 continue;
-      }
+    if (staticData.IsFeatureFunctionIgnored(*ff)) {
+      continue;
+    }
 
-      if (ff->IsStateless()) {
-        StatelessFeatureFunction &slFF = *static_cast<StatelessFeatureFunction*>(ff);
-        EvaluateWhenApplied(slFF);
-      }
-      else {
-        StatefulFeatureFunction &sfFF = *static_cast<StatefulFeatureFunction*>(ff);
-        size_t sfInd = sfFF.GetStatefulId();
-        m_ffStates[sfInd] = sfFF.EvaluateWhenApplied(*this,
-                                                 m_prevHypo ? m_prevHypo->m_ffStates[sfInd] : NULL,
-                                                 &m_currScoreBreakdown);
-      }
+    if (ff->IsStateless()) {
+      StatelessFeatureFunction &slFF = *static_cast<StatelessFeatureFunction*>(ff);
+      EvaluateWhenApplied(slFF);
+    } else {
+      StatefulFeatureFunction &sfFF = *static_cast<StatefulFeatureFunction*>(ff);
+      size_t sfInd = sfFF.GetStatefulId();
+      m_ffStates[sfInd] = sfFF.EvaluateWhenApplied(*this,
+                          m_prevHypo ? m_prevHypo->m_ffStates[sfInd] : NULL,
+                          &m_currScoreBreakdown);
+    }
   }
 
   IFVERBOSE(2) {

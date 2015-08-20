@@ -24,7 +24,7 @@ public:
   }
 
   FFState *Clone() const {
-	 return new DummyState();
+    return new DummyState();
   }
 
 };

@@ -60,11 +60,11 @@ struct KenLMState : public FFState {
   {}
 
   KenLMState(const KenLMState &copy)
-  :state(copy.state)
+    :state(copy.state)
   {}
 
   FFState *Clone() const {
-	 return new KenLMState(*this);
+    return new KenLMState(*this);
   }
 
   int Compare(const FFState &o) const {
@@ -322,8 +322,8 @@ public:
   }
 
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
 private:

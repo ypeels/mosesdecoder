@@ -21,8 +21,8 @@ int JoinScore::JoinScoreState::Compare(const FFState& other) const
 }
 ////////////////////////////////////////////////////////////////
 JoinScore::Node::Node()
-:isAWord(false)
-{  
+  :isAWord(false)
+{
 }
 
 JoinScore::Node *JoinScore::Node::Insert(const std::string &tok)
@@ -35,10 +35,9 @@ JoinScore::Node *JoinScore::Node::Insert(const std::string &tok, size_t pos)
   if (pos == tok.size()) {
     this->isAWord = true;
     return this;
-  }
-  else {
+  } else {
     char c = tok[pos];
-    
+
     Node *child = GetOrCreateNode(c);
     return child->Insert(tok, pos + 1);
   }
@@ -46,19 +45,18 @@ JoinScore::Node *JoinScore::Node::Insert(const std::string &tok, size_t pos)
 
 JoinScore::Node *JoinScore::Node::GetOrCreateNode(char c)
 {
-	Children::iterator iter;
-	iter = m_children.find(c);
-	if (iter == m_children.end()) {
-		 Node *node = new Node();
+  Children::iterator iter;
+  iter = m_children.find(c);
+  if (iter == m_children.end()) {
+    Node *node = new Node();
     m_children[c] = node;
     //cerr << c << " " << node << endl;
     return node;
-	}
-	else {
-		Node *child = iter->second;
-		assert(child);
-		return child;
-	}  
+  } else {
+    Node *child = iter->second;
+    assert(child);
+    return child;
+  }
 
 }
 
@@ -73,17 +71,15 @@ const JoinScore::Node *JoinScore::Node::Find(const std::string &tok, size_t pos)
   if (pos == tok.size()) {
     //cerr << " ret=" << this;
     return this;
-  }
-  else {
+  } else {
     char c = tok[pos];
-    
+
     Children::const_iterator iter;
     iter = m_children.find(c);
     if (iter == m_children.end()) {
       //cerr << " " << c << "=NULL";
       return NULL;
-    }
-    else {
+    } else {
       const Node *child = iter->second;
       //cerr << " " << c << "=" << child;
       assert(child);
@@ -96,7 +92,7 @@ const JoinScore::Node *JoinScore::Node::Find(const std::string &tok, size_t pos)
 JoinScore::JoinScore(const std::string &line)
   :StatefulFeatureFunction(4, line)
   ,m_scoreRealWords(true)
-  ,m_scoreNumCompounds(true) 
+  ,m_scoreNumCompounds(true)
   ,m_scoreCompoundWord(true)
   ,m_maxMorphemeState(-1)
   ,m_multiplier(1)
@@ -104,7 +100,7 @@ JoinScore::JoinScore(const std::string &line)
   ,m_scoreInvalidJoins(3)
 {
   ReadParameters();
-    
+
   SetInvalidJoins();
   UTIL_THROW_IF2(m_scoreCompoundWord && m_vocabPath.empty(), "Must provide path to vocab file");
   UTIL_THROW_IF2(!m_scorePartialCompound, "Must score partial compound");
@@ -131,9 +127,9 @@ void JoinScore::Load()
 }
 
 void JoinScore::EvaluateInIsolation(const Phrase &source
-    , const TargetPhrase &targetPhrase
-    , ScoreComponentCollection &scoreBreakdown
-    , ScoreComponentCollection &estimatedFutureScore) const
+                                    , const TargetPhrase &targetPhrase
+                                    , ScoreComponentCollection &scoreBreakdown
+                                    , ScoreComponentCollection &estimatedFutureScore) const
 {}
 
 void JoinScore::EvaluateWithSourceContext(const InputType &input
@@ -157,7 +153,7 @@ FFState* JoinScore::EvaluateWhenApplied(
   int prevMarker = classState->GetMarker();
   Phrase morphemes = classState->GetMorphemes();
   bool validCompound = classState->GetValidCompound();
-  
+
   size_t countWord = 0;
   size_t countCompound = 0;
   size_t countInvalidJoin = 0;
@@ -167,28 +163,28 @@ FFState* JoinScore::EvaluateWhenApplied(
   for (size_t pos = 0; pos < tp.GetSize(); ++pos) {
     const Word &word = tp.GetWord(pos);
     int currMarker = GetMarker(word);
-    
-    CalcScores(countWord, countCompound, 
-              countInvalidJoin, compoundWordScore, validCompound,
-              morphemes, &word, 
-              prevMarker, currMarker);
-    
+
+    CalcScores(countWord, countCompound,
+               countInvalidJoin, compoundWordScore, validCompound,
+               morphemes, &word,
+               prevMarker, currMarker);
+
     if (morphemes.GetSize() == 0) {
       // reset
       validCompound = true;
     }
-    
+
     prevMarker = currMarker;
   }
 
   // end of sentence
   if (cur_hypo.IsSourceCompleted()) {
     int currMarker = 0;
-    CalcScores(countWord, countCompound, 
-              countInvalidJoin, compoundWordScore, validCompound,
-              morphemes, NULL, 
-              prevMarker, currMarker);  
-    //cerr << morphemes.ToString() << "=" << prevNode << endl;            
+    CalcScores(countWord, countCompound,
+               countInvalidJoin, compoundWordScore, validCompound,
+               morphemes, NULL,
+               prevMarker, currMarker);
+    //cerr << morphemes.ToString() << "=" << prevNode << endl;
   }
 
   // set scores
@@ -201,7 +197,7 @@ FFState* JoinScore::EvaluateWhenApplied(
     scores[ind++] = CalcScore(countCompound);
   }
   if (m_scoreInvalidJoins) {
-    scores[ind++] = CalcScore(countInvalidJoin);    
+    scores[ind++] = CalcScore(countInvalidJoin);
   }
   if (m_scoreCompoundWord) {
     scores[ind++] = CalcScore(compoundWordScore);
@@ -217,163 +213,163 @@ FFState* JoinScore::EvaluateWhenApplied(
 float JoinScore::CalcScore(float count) const
 {
   float ret = m_tuneable ? count * m_multiplier
-                        : (count?-std::numeric_limits<float>::infinity():0);
+              : (count?-std::numeric_limits<float>::infinity():0);
   return ret;
 }
 
-void JoinScore::CalcScores(size_t &countWord, size_t&countCompound, 
-                          size_t &countInvalidJoin, float &compoundWordScore, bool &validCompound,
-                          Phrase &morphemes, 
-                          const Word *morpheme,
-                          int prevMarker, int currMarker) const
+void JoinScore::CalcScores(size_t &countWord, size_t&countCompound,
+                           size_t &countInvalidJoin, float &compoundWordScore, bool &validCompound,
+                           Phrase &morphemes,
+                           const Word *morpheme,
+                           int prevMarker, int currMarker) const
 {
   if (prevMarker < 0 || prevMarker > 4 || currMarker < 0 || currMarker > 4) {
-      UTIL_THROW2("Invalid Marker value: " << prevMarker << " " << currMarker);
+    UTIL_THROW2("Invalid Marker value: " << prevMarker << " " << currMarker);
   }
-  
+
   switch (prevMarker) {
+  case 0:
+  case 4:
+    switch (currMarker) {
     case 0:
     case 4:
-      switch (currMarker) {
-        case 0:
-        case 4:
-          ++countWord;
-          break;
-        case 1:
-          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
-          ++countWord;
-          ++countCompound;
-          
-          assert(morphemes.GetSize() == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 2:
-          ++countWord;
-          ++countCompound;
-          
-          assert(morphemes.GetSize() == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-        case 3:
-          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
-          ++countWord;
-          ++countCompound;
-
-          assert(morphemes.GetSize() == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-      }
+      ++countWord;
       break;
     case 1:
-      switch (currMarker) {
-        case 0:
-        case 4:
-          ++countWord;
-          break;
-        case 1:
-          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
-          ++countWord;
-          ++countCompound;
-          
-          assert(morphemes.GetSize() == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 2:
-          ++countWord;
-          ++countCompound;
-          
-          assert(morphemes.GetSize() == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-        case 3:
-          if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
-          ++countWord;
-          ++countCompound;
+      if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
+      ++countWord;
+      ++countCompound;
 
-          assert(morphemes.GetSize() == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-      }
+      assert(morphemes.GetSize() == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
       break;
     case 2:
-      switch (currMarker) {
-        case 0:
-        case 4:
-          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
-          ++countWord;
-          
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 1:
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 2:
-          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
-          ++countWord;
-          ++countCompound;
+      ++countWord;
+      ++countCompound;
 
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          AddMorphemeToState(morphemes, morpheme);
-          break;
-        case 3:
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-      }
+      assert(morphemes.GetSize() == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
       break;
     case 3:
-      switch (currMarker) {
-        case 0:
-        case 4:
-          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
-          ++countWord;
+      if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
+      ++countWord;
+      ++countCompound;
 
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 1:
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          AddMorphemeToState(morphemes, morpheme);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          break;
-        case 2:
-          if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
-          ++countWord;
-          ++countCompound;
-
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
-          morphemes.Clear();
-          AddMorphemeToState(morphemes, morpheme);
-          break;
-        case 3:
-          assert(morphemes.GetSize() || m_maxMorphemeState == 0);
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
-          AddMorphemeToState(morphemes, morpheme);
-
-          compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
-          break;
-      }
+      assert(morphemes.GetSize() == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
       break;
+    }
+    break;
+  case 1:
+    switch (currMarker) {
+    case 0:
+    case 4:
+      ++countWord;
+      break;
+    case 1:
+      if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
+      ++countWord;
+      ++countCompound;
+
+      assert(morphemes.GetSize() == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      break;
+    case 2:
+      ++countWord;
+      ++countCompound;
+
+      assert(morphemes.GetSize() == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
+      break;
+    case 3:
+      if (m_scoreInvalidJoinsSuffix) ++countInvalidJoin;
+      ++countWord;
+      ++countCompound;
+
+      assert(morphemes.GetSize() == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
+      break;
+    }
+    break;
+  case 2:
+    switch (currMarker) {
+    case 0:
+    case 4:
+      if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
+      ++countWord;
+
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      break;
+    case 1:
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      break;
+    case 2:
+      if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
+      ++countWord;
+      ++countCompound;
+
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      AddMorphemeToState(morphemes, morpheme);
+      break;
+    case 3:
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
+      break;
+    }
+    break;
+  case 3:
+    switch (currMarker) {
+    case 0:
+    case 4:
+      if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
+      ++countWord;
+
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      break;
+    case 1:
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      AddMorphemeToState(morphemes, morpheme);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      break;
+    case 2:
+      if (m_scoreInvalidJoinsPrefix) ++countInvalidJoin;
+      ++countWord;
+      ++countCompound;
+
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      compoundWordScore += CalcMorphemeScore(morphemes, true, validCompound);
+      morphemes.Clear();
+      AddMorphemeToState(morphemes, morpheme);
+      break;
+    case 3:
+      assert(morphemes.GetSize() || m_maxMorphemeState == 0);
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound);
+      AddMorphemeToState(morphemes, morpheme);
+
+      compoundWordScore += CalcMorphemeScore(morphemes, false, validCompound); // can't be used with non-partial
+      break;
+    }
+    break;
   }
 }
 
@@ -389,49 +385,39 @@ void JoinScore::SetParameter(const std::string& key, const std::string& value)
 {
   if (key == "score-real-words") {
     m_scoreRealWords = Scan<bool>(value);
-  }
-  else if (key == "score-num-compounds") {
-    m_scoreNumCompounds = Scan<bool>(value);  
-  }
-  else if (key == "score-invalid-joins") {
-    bool tmp = Scan<bool>(value);  
+  } else if (key == "score-num-compounds") {
+    m_scoreNumCompounds = Scan<bool>(value);
+  } else if (key == "score-invalid-joins") {
+    bool tmp = Scan<bool>(value);
     m_scoreInvalidJoins = tmp?3:0;
-  }
-  else if (key == "score-invalid-joins-detailed") {
-    m_scoreInvalidJoins = Scan<size_t>(value);      
-  }
-  else if (key == "score-compound-word") {
-    m_scoreCompoundWord = Scan<bool>(value);  
-  }
-  else if (key == "score-compound-oov") {
-    m_scoreCompoundOOV = Scan<bool>(value);  
-  }
-  else if (key == "max-morpheme-state") {
-    m_maxMorphemeState = Scan<int>(value);  
-  } 
-  else if (key == "multiplier") {
-    m_multiplier = Scan<float>(value);  
-  } 
-  else if (key == "vocab-path") {
+  } else if (key == "score-invalid-joins-detailed") {
+    m_scoreInvalidJoins = Scan<size_t>(value);
+  } else if (key == "score-compound-word") {
+    m_scoreCompoundWord = Scan<bool>(value);
+  } else if (key == "score-compound-oov") {
+    m_scoreCompoundOOV = Scan<bool>(value);
+  } else if (key == "max-morpheme-state") {
+    m_maxMorphemeState = Scan<int>(value);
+  } else if (key == "multiplier") {
+    m_multiplier = Scan<float>(value);
+  } else if (key == "vocab-path") {
     m_vocabPath = value;
-  }
-  else if (key == "score-partial-compound") {
-    m_scorePartialCompound = Scan<bool>(value);  
-  }
-  else {
+  } else if (key == "score-partial-compound") {
+    m_scorePartialCompound = Scan<bool>(value);
+  } else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
 }
 
 int JoinScore::GetMarker(const Word &morpheme) const
-{  
+{
   if (morpheme.IsOOV()) {
-      return 4;
+    return 4;
   }
-  
- int ret = 0;
 
- const Factor *factor = morpheme.GetFactor(0);
+  int ret = 0;
+
+  const Factor *factor = morpheme.GetFactor(0);
   StringPiece str = factor->GetString();
   if (str.size() > 1) {
     if (str.starts_with("+")) {
@@ -441,47 +427,45 @@ int JoinScore::GetMarker(const Word &morpheme) const
       ret += 2;
     }
   }
-  
+
   return ret;
 }
 
 float JoinScore::CalcMorphemeScore(const Phrase &morphemes, bool wholeWord, bool &validCompound) const
 {
-	if (m_vocabPath.empty()) {
+  if (m_vocabPath.empty()) {
     // not doing morpheme score
-		return 0;
-	}
-  
+    return 0;
+  }
+
   if (!validCompound) {
     // prev is invalid. Don't bother calculating extension.
     return 0;
   }
-	
+
   string wordStr = morphemes.ToString();
   wordStr = Trim(wordStr);
   boost::replace_all(wordStr, "+ +", "");
   boost::replace_all(wordStr, "+", "");
-  
+
   bool isAWord;
   validCompound = m_trieSearch.Find(isAWord, wordStr);
-  
+
   float ret;
   if (validCompound) {
     if (wholeWord) {
       ret = isAWord ? 0 : 1;
-    }
-    else {
+    } else {
       ret = 0;
     }
-  }
-  else {
+  } else {
     ret = 1;
   }
   /*
-  cerr << wordStr 
-      << " validCompound=" << validCompound 
-      << " isAWord=" << isAWord 
-      << " wholeWord=" << wholeWord 
+  cerr << wordStr
+      << " validCompound=" << validCompound
+      << " isAWord=" << isAWord
+      << " wholeWord=" << wholeWord
       << " ret=" << ret << endl;
   */
   return ret;
@@ -491,22 +475,18 @@ void JoinScore::AddMorphemeToState(Phrase &morphemes, const Word *morpheme) cons
 {
   if (m_maxMorphemeState < 0) {
     // unlimited number of morph. Don't delete any prev morph
-  }
-  else if (m_maxMorphemeState == 0) {
+  } else if (m_maxMorphemeState == 0) {
     // stateless. Don't add any morphemes to state
     return;
-  }
-  else if (morphemes.GetSize() == m_maxMorphemeState) {
+  } else if (morphemes.GetSize() == m_maxMorphemeState) {
     morphemes.RemoveWord(0);
-  }
-  else if (morphemes.GetSize() < m_maxMorphemeState) {
+  } else if (morphemes.GetSize() < m_maxMorphemeState) {
     // do nothing
-  }  
-  else {
-    UTIL_THROW2("Number of morphemes (" << morphemes.GetSize() 
-              << " exceed max (" << m_maxMorphemeState << ")");
+  } else {
+    UTIL_THROW2("Number of morphemes (" << morphemes.GetSize()
+                << " exceed max (" << m_maxMorphemeState << ")");
   }
-  
+
   assert(morpheme);
   morphemes.AddWord(*morpheme);
 }
@@ -515,11 +495,11 @@ void JoinScore::SetInvalidJoins()
 {
   m_scoreInvalidJoinsPrefix = m_scoreInvalidJoins & 1;
   m_scoreInvalidJoinsSuffix = m_scoreInvalidJoins & 2;
-  
-  cerr << "m_scoreInvalidJoins: " 
-      << m_scoreInvalidJoins << " "
-      << m_scoreInvalidJoinsPrefix << " "
-      << m_scoreInvalidJoinsSuffix << endl;
+
+  cerr << "m_scoreInvalidJoins: "
+       << m_scoreInvalidJoins << " "
+       << m_scoreInvalidJoinsPrefix << " "
+       << m_scoreInvalidJoinsSuffix << endl;
 }
 
 }

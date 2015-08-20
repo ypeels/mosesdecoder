@@ -536,16 +536,16 @@ void Manager::OutputWordGraph(std::ostream &outputWordGraphStream, const Hypothe
 
   size_t numPasses = FeatureFunction::GetNumPasses();
   for (size_t pass = 0; pass < numPasses; ++pass) {
-	  const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
-	  std::vector<FeatureFunction*>::const_iterator iter;
-	  for (iter = ffs.begin(); iter != ffs.end(); ++iter) {
-		const FeatureFunction *ff = *iter;
+    const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
+    std::vector<FeatureFunction*>::const_iterator iter;
+    for (iter = ffs.begin(); iter != ffs.end(); ++iter) {
+      const FeatureFunction *ff = *iter;
 
-		const DistortionScoreProducer *model = dynamic_cast<const DistortionScoreProducer*>(ff);
-		if (model) {
-		  outputWordGraphStream << hypo->GetScoreBreakdown().GetScoreForProducer(model);
-		}
-	  }
+      const DistortionScoreProducer *model = dynamic_cast<const DistortionScoreProducer*>(ff);
+      if (model) {
+        outputWordGraphStream << hypo->GetScoreBreakdown().GetScoreForProducer(model);
+      }
+    }
   }
 
   // lexicalised re-ordering
@@ -1514,7 +1514,7 @@ void Manager::OutputBest(OutputCollector *collector)  const
         if (staticData.GetReportSegmentation() == 2) {
           GetOutputLanguageModelOrder(out, bestHypo);
         }
-        
+
         if (staticData.DoJoining()) {
           ostringstream outPreJoin;
 
@@ -1526,17 +1526,16 @@ void Manager::OutputBest(OutputCollector *collector)  const
 
           string output = outPreJoin.str();
           FeatureFunction::DoJoinAll(output);
-          
+
           out << output;
-        }
-        else {        
+        } else {
           bestHypo->OutputBestSurface(
             out,
             staticData.GetOutputFactorOrder(),
             staticData.GetReportSegmentation(),
             staticData.GetReportAllFactors());
         }
-        
+
         if (staticData.PrintAlignmentInfo()) {
           out << "||| ";
           bestHypo->OutputAlignment(out);
@@ -1665,22 +1664,22 @@ void Manager::OutputNBest(std::ostream& out
 
     // print the surface factor of the translation
     out << translationId << " ||| ";
-    
+
     ostringstream outPreJoin;
     ostream &outUse = staticData.DoJoining() ? outPreJoin : out;
-    
+
     for (int currEdge = (int)edges.size() - 1 ; currEdge >= 0 ; currEdge--) {
       const Hypothesis &edge = *edges[currEdge];
       OutputSurface(outUse, edge, outputFactorOrder, reportSegmentation, reportAllFactors);
     }
-    
+
     if (staticData.DoJoining()) {
       string output = outPreJoin.str();
       FeatureFunction::DoJoinAll(output);
-      
+
       out << output;
     }
-    
+
     out << " |||";
 
     // print scores with feature names

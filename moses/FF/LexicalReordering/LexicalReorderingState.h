@@ -227,8 +227,8 @@ public:
   Compare(const FFState& o) const;
 
   FFState *Clone() const {
-	 abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   virtual
@@ -259,8 +259,8 @@ public:
   Compare(const FFState& o) const;
 
   FFState *Clone() const {
-	 abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   virtual
@@ -290,8 +290,8 @@ public:
   virtual int Compare(const FFState& o) const;
 
   FFState *Clone() const {
-	 abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   virtual LRState* Expand(const TranslationOption& hypo, const InputType& input,
@@ -321,8 +321,8 @@ public:
 
   virtual int Compare(const FFState& o) const;
   FFState *Clone() const {
-	 abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   virtual LRState* Expand(const TranslationOption& hypo,

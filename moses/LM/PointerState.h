@@ -18,8 +18,8 @@ struct PointerState : public FFState {
   }
 
   FFState *Clone() const {
-	  abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
 };

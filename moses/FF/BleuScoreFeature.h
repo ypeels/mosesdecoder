@@ -27,8 +27,8 @@ public:
   BleuScoreState();
   virtual int Compare(const FFState& other) const;
   FFState *Clone() const {
-	 abort();
-	 return NULL;
+    abort();
+    return NULL;
   }
 
   void print(std::ostream& out) const;
