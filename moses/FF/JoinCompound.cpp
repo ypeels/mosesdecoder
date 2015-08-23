@@ -106,28 +106,27 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
 
 void JoinCompound::MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypos *hypos) const
 {
-  size_t juncture = 0;
   BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
     string tpStr = tpStrOrig;
     const Phrase &tp = nextHypo->GetCurrTargetPhrase();
-    juncture = Desegment(tpStr, tp);
+    size_t juncture = Desegment(tpStr, tp);
 
     cerr << "B tp=" << tp
          << " tpStr=" << tpStr
          << " juncture=" << juncture << endl;
-  }
 
-  if ((juncture & 2) == 0) {
-    // don't extend last word
-    boost::unordered_set<LatticeRescorerNode*> nodes;
-    LatticeRescorerNode &node = *hypos->m_container;
-    BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+    if (juncture & 2) {
+      // don't extend last word
+      //const Hypothesis *winningHypo = nextHypo->GetWinningHypo();
 
+      LatticeRescorerNode &node = *hypos->m_container;
+      BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+    	  MergeHypos(tpStr, nextHypo, nextHypos);
+      }
     }
-
-    //ChangeLattice(nextHypos);
-  } else {
-
+    else {
+        //ChangeLattice(nextHypos);
+    }
   }
 
 }
