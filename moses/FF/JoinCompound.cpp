@@ -79,6 +79,9 @@ void JoinCompound::ChangeLattice(LatticeRescorerGraph &graph) const
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+//Lattice desegmentation
+
 void JoinCompound::ChangeLattice(Hypos *hypos) const
 {
   LatticeRescorerNode &node = *hypos->m_container;
@@ -96,38 +99,65 @@ void JoinCompound::ChangeLattice(Hypos *hypos) const
     BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
       ChangeLattice(nextHypos);
     }
-  } else {
+  }
+  else {
     // last word is part of a compound which extends to the next hypo (potentially)
-    BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
-      MergeHypos(tpStr, bestHypo, nextHypos);
-    }
+	vector<const Hypothesis*> hyposReplaced;
+	hyposReplaced.push_back(bestHypo);
+    MergeHypos(tpStr, hyposReplaced, node);
   }
 }
 
-void JoinCompound::MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypos *hypos) const
+void JoinCompound::MergeHypos(const std::string &tpStrOrig, const vector<const Hypothesis*> &hyposReplacedOrig, LatticeRescorerNode &node) const
 {
-  BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
-    string tpStr = tpStrOrig;
-    const Phrase &tp = nextHypo->GetCurrTargetPhrase();
-    size_t juncture = Desegment(tpStr, tp);
+  BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+	  bool done = false;
+	  BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
+		string tpStr = tpStrOrig;
+		std::vector<const Hypothesis*> hyposReplaced(hyposReplacedOrig);
+		hyposReplaced.push_back(nextHypo);
 
-    cerr << "B tp=" << tp
-         << " tpStr=" << tpStr
-         << " juncture=" << juncture << endl;
+		const Phrase &tp = nextHypo->GetCurrTargetPhrase();
+		size_t juncture = Desegment(tpStr, tp);
 
-    if (juncture & 2) {
-      // don't extend last word
-      //const Hypothesis *winningHypo = nextHypo->GetWinningHypo();
+		cerr << "B tp=" << tp
+			 << " tpStr=" << tpStr
+			 << " juncture=" << juncture << endl;
 
-      LatticeRescorerNode &node = *hypos->m_container;
-      BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
-    	  MergeHypos(tpStr, nextHypo, nextHypos);
-      }
-    }
-    else {
-        //ChangeLattice(nextHypos);
-    }
+		if (juncture & 2) {
+		  // don't extend last word
+   		  done = true;
+
+		  LatticeRescorerNode &nextNode = *nextHypos->m_container;
+		  MergeHypos(tpStr, hyposReplaced, nextNode);
+		}
+		else {
+			// whole compound word formed. Time to create hypo.
+			CreateHypo(tpStr, hyposReplaced);
+		}
+	  }
+
+	  if (!done) {
+		  ChangeLattice(nextHypos);
+	  }
   }
+
+}
+
+void JoinCompound::CreateHypo(const std::string str, const std::vector<const Hypothesis*> &hyposReplaced) const
+{
+  const StaticData &sd = StaticData::Instance();
+  const std::vector<FactorType> &outFactors = sd.GetOutputFactorOrder();
+
+  TargetPhrase *tp = new TargetPhrase();
+  tp->CreateFromString(Output, outFactors, str, NULL);
+  cerr << "tp=" << *tp << endl;
+
+  const Hypothesis *firstHypo = hyposReplaced.front();
+  const Hypothesis *prevHypo = firstHypo->GetPrevHypo();
+  const Hypothesis *lastHypo = hyposReplaced.back();
+
+  Hypothesis *newHypo = new Hypothesis(*lastHypo, *prevHypo);
 
 }
 

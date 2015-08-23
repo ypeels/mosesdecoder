@@ -7,6 +7,7 @@
 namespace Moses
 {
 class Hypos;
+class LatticeRescorerNode;
 
 class JoinCompound : public StatelessFeatureFunction
 {
@@ -43,7 +44,7 @@ public:
   virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
 
   void ChangeLattice(Hypos *hypos) const;
-  void MergeHypos(const std::string &tpStrOrig, const Hypothesis *currHypo, Hypos *hypos) const;
+  void MergeHypos(const std::string &tpStrOrig, const std::vector<const Hypothesis*> &hyposReplacedOrig, LatticeRescorerNode &node) const;
 
   //None  =  0,
   //Left  =  1,
@@ -51,6 +52,7 @@ public:
   size_t HasJuncture(const Word &word, std::string &stripped) const;
   size_t Desegment(std::string &tpStr, const Phrase &in) const;
 
+  void CreateHypo(const std::string str, const std::vector<const Hypothesis*> &hyposReplaced) const;
 };
 
 }
