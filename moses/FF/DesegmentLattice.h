@@ -17,10 +17,10 @@ class Hypos;
 class LatticeRescorerNode;
 class TranslationOption;
 
-class JoinCompound : public StatelessFeatureFunction
+class DesegmentLattice : public StatelessFeatureFunction
 {
 public:
-  JoinCompound(const std::string &line);
+  DesegmentLattice(const std::string &line);
 
   bool IsUseable(const FactorMask &mask) const {
     return true;
@@ -45,9 +45,45 @@ public:
   void EvaluateWhenApplied(const ChartHypothesis &hypo,
                            ScoreComponentCollection* accumulator) const;
 
+  virtual void CleanUpAfterSentenceProcessing(const InputType& source);
+
   void SetParameter(const std::string& key, const std::string& value);
 
-  virtual void DoJoin(std::string &output);
+  virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
+
+protected:
+  typedef std::vector<TranslationOption*> CacheColl;
+
+  struct HypoReplace
+  {
+	  Hypothesis *in;
+	  std::vector<const Hypothesis*> out;
+  };
+  typedef std::vector<HypoReplace> HypoReplaceColl;
+
+  #ifdef WITH_THREADS
+  //reader-writer lock
+  mutable boost::thread_specific_ptr<CacheColl> m_cache;
+  mutable boost::thread_specific_ptr<HypoReplaceColl> m_hypoReplace;
+#else
+  mutable boost::scoped_ptr<CacheColl> m_cache;
+  mutable boost::scoped_ptr<HypoReplaceColl> m_hypoReplace;
+#endif
+
+  CacheColl &GetCache() const;
+  HypoReplaceColl &GetHypoReplaceCache() const;
+
+  void ChangeLattice(Hypos *hypos) const;
+  void MergeHypos(const std::string &tpStrOrig, const std::vector<const Hypothesis*> &hyposReplacedOrig, LatticeRescorerNode &node) const;
+
+  //None  =  0,
+  //Left  =  1,
+  //Right =  2
+  size_t HasJuncture(const Word &word, std::string &stripped) const;
+  size_t Desegment(std::string &tpStr, const Phrase &in) const;
+
+  void CreateHypo(const std::string str, const std::vector<const Hypothesis*> &hyposReplaced) const;
+
 };
 
 }
