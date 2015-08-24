@@ -2,12 +2,20 @@
 
 #include <string>
 #include <sstream>
+#ifdef WITH_THREADS
+#include <boost/thread/tss.hpp>
+#else
+#include <boost/scoped_ptr.hpp>
+#include <ctime>
+#endif
+
 #include "StatelessFeatureFunction.h"
 
 namespace Moses
 {
 class Hypos;
 class LatticeRescorerNode;
+class TranslationOption;
 
 class JoinCompound : public StatelessFeatureFunction
 {
@@ -37,6 +45,7 @@ public:
   void EvaluateWhenApplied(const ChartHypothesis &hypo,
                            ScoreComponentCollection* accumulator) const;
 
+  virtual void CleanUpAfterSentenceProcessing(const InputType& source);
 
   void SetParameter(const std::string& key, const std::string& value);
 
@@ -44,6 +53,19 @@ public:
   virtual void ChangeLattice(LatticeRescorerGraph &graph) const;
 
   void ChangeLattice(Hypos *hypos) const;
+
+protected:
+  typedef std::vector<TranslationOption*> CacheColl;
+
+  #ifdef WITH_THREADS
+  //reader-writer lock
+  mutable boost::thread_specific_ptr<CacheColl> m_cache;
+#else
+  mutable boost::scoped_ptr<CacheColl> m_cache;
+#endif
+
+  CacheColl &GetCache() const;
+
   void MergeHypos(const std::string &tpStrOrig, const std::vector<const Hypothesis*> &hyposReplacedOrig, LatticeRescorerNode &node) const;
 
   //None  =  0,
@@ -53,6 +75,7 @@ public:
   size_t Desegment(std::string &tpStr, const Phrase &in) const;
 
   void CreateHypo(const std::string str, const std::vector<const Hypothesis*> &hyposReplaced) const;
+
 };
 
 }

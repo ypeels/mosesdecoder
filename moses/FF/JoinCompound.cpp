@@ -8,6 +8,8 @@
 #include "moses/Hypothesis.h"
 #include "moses/StaticData.h"
 #include "moses/TargetPhrase.h"
+#include "moses/WordsBitmap.h"
+#include "moses/TranslationOption.h"
 
 using namespace std;
 
@@ -149,15 +151,25 @@ void JoinCompound::CreateHypo(const std::string str, const std::vector<const Hyp
   const StaticData &sd = StaticData::Instance();
   const std::vector<FactorType> &outFactors = sd.GetOutputFactorOrder();
 
-  TargetPhrase *tp = new TargetPhrase();
-  tp->CreateFromString(Output, outFactors, str, NULL);
-  cerr << "tp=" << *tp << endl;
-
   const Hypothesis *firstHypo = hyposReplaced.front();
   const Hypothesis *prevHypo = firstHypo->GetPrevHypo();
   const Hypothesis *lastHypo = hyposReplaced.back();
 
+  TargetPhrase tp;
+  tp.CreateFromString(Output, outFactors, str, NULL);
+
+  // using range of 1st hypo - false
+  const WordsRange &range = firstHypo->GetCurrSourceWordsRange();
+  TranslationOption *transOpt = new TranslationOption(range, tp);
+
+  CacheColl &transOptCache = GetCache();
+  transOptCache.push_back(transOpt);
+
   Hypothesis *newHypo = new Hypothesis(*lastHypo, *prevHypo);
+  newHypo->SetTranslationOption(*transOpt);
+
+  cerr << "tp=" << tp << endl;
+  cerr << "newHypo=" << *newHypo << endl;
 
 }
 
@@ -204,6 +216,24 @@ size_t JoinCompound::HasJuncture(const Word &word, std::string &stripped) const
   }
 
   return juncture;
+}
+
+JoinCompound::CacheColl &JoinCompound::GetCache() const
+{
+  CacheColl *cache;
+  cache = m_cache.get();
+  if (cache == NULL) {
+    cache = new CacheColl;
+    m_cache.reset(cache);
+  }
+  assert(cache);
+  return *cache;
+}
+
+void JoinCompound::CleanUpAfterSentenceProcessing(const InputType& source)
+{
+	CacheColl &coll = GetCache();
+	RemoveAllInColl(coll);
 }
 
 } // namespace

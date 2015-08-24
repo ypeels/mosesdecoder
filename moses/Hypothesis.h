@@ -90,7 +90,7 @@ protected:
   std::vector<const FFState*> m_ffStates;
   const Hypothesis 	*m_winningHypo;
   ArcList 					*m_arcList; /*! all arcs that end at the same trellis point as this hypothesis */
-  const TranslationOption &m_transOpt;
+  const TranslationOption *m_transOpt;
   Manager& m_manager;
 
   int m_id; /*! numeric ID of this hypothesis, used for logging */
@@ -287,7 +287,11 @@ public:
   }
 
   const TranslationOption &GetTranslationOption() const {
-    return m_transOpt;
+    return *m_transOpt;
+  }
+
+  void SetTranslationOption(const TranslationOption &transOpt) {
+    m_transOpt = &transOpt;
   }
 
   void OutputAlignment(std::ostream &out) const;

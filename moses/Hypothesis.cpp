@@ -63,7 +63,7 @@ Hypothesis(Manager& manager, InputType const& source, const TranslationOption &i
   , m_futureScore(0.0f)
   , m_ffStates(StatefulFeatureFunction::GetStatefulFeatureFunctions().size())
   , m_arcList(NULL)
-  , m_transOpt(initialTransOpt)
+  , m_transOpt(&initialTransOpt)
   , m_manager(manager)
   , m_id(m_manager.GetNextHypoId())
 {
@@ -99,7 +99,7 @@ Hypothesis(const Hypothesis &prevHypo, const TranslationOption &transOpt)
   , m_futureScore(0.0f)
   , m_ffStates(prevHypo.m_ffStates.size())
   , m_arcList(NULL)
-  , m_transOpt(transOpt)
+  , m_transOpt(&transOpt)
   , m_manager(prevHypo.GetManager())
   , m_id(m_manager.GetNextHypoId())
 {
@@ -389,7 +389,7 @@ PrintHypothesis() const
   TRACE_ERR( ")"<<endl);
   TRACE_ERR( "\tbase score "<< (m_prevHypo->m_totalScore - m_prevHypo->m_futureScore) <<endl);
   TRACE_ERR( "\tcovering "<<m_currSourceWordsRange.GetStartPos()<<"-"<<m_currSourceWordsRange.GetEndPos()
-             <<": " << m_transOpt.GetInputPath().GetPhrase() << endl);
+             <<": " << m_transOpt->GetInputPath().GetPhrase() << endl);
 
   TRACE_ERR( "\ttranslated as: "<<(Phrase&) GetCurrTargetPhrase()<<endl); // <<" => translation cost "<<m_score[ScoreType::PhraseTrans];
 
@@ -449,7 +449,7 @@ TargetPhrase const&
 Hypothesis::
 GetCurrTargetPhrase() const
 {
-  return m_transOpt.GetTargetPhrase();
+  return m_transOpt->GetTargetPhrase();
 }
 
 void
@@ -485,7 +485,7 @@ std::string
 Hypothesis::
 GetSourcePhraseStringRep(const vector<FactorType> factorsToPrint) const
 {
-  return m_transOpt.GetInputPath().GetPhrase().GetStringRep(factorsToPrint);
+  return m_transOpt->GetInputPath().GetPhrase().GetStringRep(factorsToPrint);
 }
 
 std::string
