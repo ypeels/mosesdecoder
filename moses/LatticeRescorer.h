@@ -35,7 +35,7 @@ public:
 
   const Hypothesis *m_bestHypo;
 
-  typedef boost::unordered_map<const Hypothesis*, Hypos> HyposPerPrevHypo;
+  typedef boost::unordered_map<const Hypothesis*, Hypos*> HyposPerPrevHypo;
   HyposPerPrevHypo m_hypos;
 
   typedef boost::unordered_set<Hypos*> FwdNodes;
@@ -44,6 +44,7 @@ public:
   boost::unordered_set<const Hypothesis*> m_newWinners;
 
   LatticeRescorerNode(const Hypothesis *bestHypo);
+  virtual ~LatticeRescorerNode();
 
   inline bool operator==(const LatticeRescorerNode &other) const {
     return m_bestHypo == other.m_bestHypo;

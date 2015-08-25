@@ -21,6 +21,14 @@ LatticeRescorerNode::LatticeRescorerNode(const Hypothesis *bestHypo)
 {
 }
 
+LatticeRescorerNode::~LatticeRescorerNode()
+{
+	BOOST_FOREACH( const HyposPerPrevHypo::value_type &obj, m_hypos ) {
+		Hypos *hypos = obj.second;
+		delete hypos;
+	}
+}
+
 Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 {
   const Hypothesis *prevHypo = hypo->GetPrevHypo();
@@ -28,11 +36,12 @@ Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
 
   Hypos *hypos;
   if (iter == m_hypos.end()) {
-    hypos = &m_hypos[prevHypo];
-    hypos->m_container = this;
-    hypos->m_prevHypo = prevHypo;
+	  hypos = new Hypos;
+	  hypos->m_container = this;
+	  hypos->m_prevHypo = prevHypo;
+	  m_hypos[prevHypo] = hypos;
   } else {
-    hypos = &iter->second;
+	  hypos = iter->second;
   }
   /*
   	cerr << "  adding " << hypo << " " << hypo->GetWordsBitmap()
@@ -293,11 +302,41 @@ void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stack
 
 std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 {
+	/*
   out << obj.m_nodes.size() << " nodes: ";
   BOOST_FOREACH(const LatticeRescorerGraph::Coll::value_type &objPair, obj.m_nodes) {
     LatticeRescorerNode *node = objPair.second;
     out << *node << " ";
   }
+  */
+
+  out << obj.m_nodes.size() << " nodes: ";
+  BOOST_FOREACH(const LatticeRescorerGraph::Coll::value_type &pairGraph, obj.m_nodes) {
+	LatticeRescorerNode *node = pairGraph.second;
+	out << "node=" << node << " ";
+
+	// list out hypos
+	BOOST_FOREACH(const LatticeRescorerNode::HyposPerPrevHypo::value_type &pairNode, node->m_hypos) {
+		Hypos *hypos = pairNode.second;
+
+		out << hypos << "[";
+		BOOST_FOREACH(const Hypothesis *hypo, hypos->m_hypos) {
+			out << hypo << " "
+				<< hypo->GetPrevHypo() << " "
+				<< hypo->GetWordsBitmap() << " "
+				<< (const Phrase&) hypo->GetCurrTargetPhrase() << " ";
+		}
+		out << "] ";
+	}
+
+	// list of fwd nodes
+	out << "fwd nodes: ";
+	BOOST_FOREACH(const Hypos *hypos, node->m_fwdNodes) {
+		out << hypos << " ";
+	}
+	out << endl;
+  }
+
   return out;
 }
 

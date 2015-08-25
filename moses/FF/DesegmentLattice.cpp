@@ -64,13 +64,68 @@ void DesegmentLattice::SetParameter(const std::string& key, const std::string& v
 
 void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 {
-  cerr << "Start ChangeLattice" << graph << endl;
+  cerr << "Before:" << endl << graph << endl;
 
   LatticeRescorerNode::FwdNodes &fwdHypos = graph.m_firstNode->m_fwdNodes;
   BOOST_FOREACH(Hypos *hypos, fwdHypos) {
     ChangeLattice(hypos);
   }
+
+  // replace and delete old segmented hypos. Insert new desegmented hypos
+  const HypoReplaceColl &coll = GetHypoReplaceCache();
+
+  BOOST_FOREACH(const HypoReplace &hypoReplace, coll) {
+	  assert(hypoReplace.out.size() == hypoReplace.nodes.size());
+
+	  const Hypothesis *firstHypo = hypoReplace.out.front();
+	  const Hypothesis *prevHypo= firstHypo->GetPrevHypo();
+
+	  // delete old hypos
+	  Hypos *hypos;
+	  Hypothesis *hypo;
+	  for (size_t i = 0; i < hypoReplace.out.size(); ++i) {
+		  hypos = hypoReplace.nodes[i];
+		  hypo = hypoReplace.out[i];
+
+		  hypos->m_hypos.erase(hypo);
+	  }
+
+	  // is last hypo the winning hypo? Reset prev-hypo for next hypos
+	  LatticeRescorerNode *node = hypos->m_container;
+	  if (node->m_bestHypo == hypo) {
+		  ResetPrevHypo(*node, node->m_bestHypo, hypo);
+	  }
+
+	  // add new hypo
+	  Hypothesis *newHypo = hypoReplace.in;
+	  newHypo->SetPrevHypo(prevHypo);
+	  cerr << "newHypo=" << newHypo->GetCurrTargetPhrase() << endl;
+
+	  const Hypos *lastHypos = hypoReplace.nodes.back();
+	  node = lastHypos->m_container;
+	  Hypos &newHypos = node->Add(newHypo);
+  }
+
+  cerr << "After:" << endl << graph << endl;
 }
+
+void DesegmentLattice::ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const
+{
+	BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+		BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
+			nextHypo->SetPrevHypo(newPrevHypo);
+		}
+
+		// reconnect to right place in node
+		nextHypos->m_prevHypo = newPrevHypo;
+
+		LatticeRescorerNode *nextNode = nextHypos->m_container;
+		nextNode->m_hypos.erase(oldPrevHypo);
+		nextNode->m_hypos[newPrevHypo] = nextHypos;
+	}
+
+}
+
 
 void DesegmentLattice::ChangeLattice(Hypos *hypos) const
 {
@@ -80,10 +135,11 @@ void DesegmentLattice::ChangeLattice(Hypos *hypos) const
 
   string tpStr;
   size_t juncture = Desegment(tpStr, tp);
+  /*
   cerr << "A tp=" << tp
        << " tpStr=" << tpStr
        << " juncture=" << juncture << endl;
-
+  */
   if ((juncture & 2) == 0) {
     // don't extend last word
     BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
@@ -92,27 +148,33 @@ void DesegmentLattice::ChangeLattice(Hypos *hypos) const
   }
   else {
     // last word is part of a compound which extends to the next hypo (potentially)
-	vector<const Hypothesis*> hyposReplaced;
-	hyposReplaced.push_back(bestHypo);
-    MergeHypos(tpStr, hyposReplaced, node);
+	HypoReplace hypoReplace;
+	hypoReplace.out.push_back(const_cast<Hypothesis*>(bestHypo));
+	hypoReplace.nodes.push_back(hypos);
+
+    MergeHypos(tpStr, hypoReplace, node);
   }
 }
 
-void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const vector<const Hypothesis*> &hyposReplacedOrig, LatticeRescorerNode &node) const
+void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, LatticeRescorerNode &node) const
 {
   BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
 	  bool done = false;
 	  BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
 		string tpStr = tpStrOrig;
-		std::vector<const Hypothesis*> hyposReplaced(hyposReplacedOrig);
-		hyposReplaced.push_back(nextHypo);
+
+		HypoReplace hyposReplaced(hyposReplacedOrig);
+		hyposReplaced.out.push_back(nextHypo);
+		hyposReplaced.nodes.push_back(nextHypos);
 
 		const Phrase &tp = nextHypo->GetCurrTargetPhrase();
 		size_t juncture = Desegment(tpStr, tp);
 
+		/*
 		cerr << "B tp=" << tp
 			 << " tpStr=" << tpStr
 			 << " juncture=" << juncture << endl;
+		*/
 
 		if (juncture & 2) {
 		  // don't extend last word
@@ -134,14 +196,14 @@ void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const vector<con
 
 }
 
-void DesegmentLattice::CreateHypo(const std::string str, const std::vector<const Hypothesis*> &hyposReplaced) const
+void DesegmentLattice::CreateHypo(const std::string str, HypoReplace hyposReplaced) const
 {
   const StaticData &sd = StaticData::Instance();
   const std::vector<FactorType> &outFactors = sd.GetOutputFactorOrder();
 
-  const Hypothesis *firstHypo = hyposReplaced.front();
+  const Hypothesis *firstHypo = hyposReplaced.out.front();
   const Hypothesis *prevHypo = firstHypo->GetPrevHypo();
-  const Hypothesis *lastHypo = hyposReplaced.back();
+  const Hypothesis *lastHypo = hyposReplaced.out.back();
 
   TargetPhrase tp;
   tp.CreateFromString(Output, outFactors, str, NULL);
@@ -156,14 +218,11 @@ void DesegmentLattice::CreateHypo(const std::string str, const std::vector<const
   Hypothesis *newHypo = new Hypothesis(*lastHypo, *prevHypo);
   newHypo->SetTranslationOption(*transOpt);
 
+  hyposReplaced.in = newHypo;
+  GetHypoReplaceCache().push_back(hyposReplaced);
 
-  HypoReplace entry;
-  entry.in = newHypo;
-  entry.out = hyposReplaced;
-  GetHypoReplaceCache().push_back(entry);
-
-  cerr << "tp=" << tp << endl;
-  cerr << "newHypo=" << *newHypo << endl;
+  //cerr << "tp=" << tp << endl;
+  //cerr << "newHypo=" << *newHypo << endl;
 
 }
 

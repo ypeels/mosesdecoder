@@ -57,7 +57,8 @@ protected:
   struct HypoReplace
   {
 	  Hypothesis *in;
-	  std::vector<const Hypothesis*> out;
+	  std::vector<Hypothesis*> out;
+	  std::vector<Hypos*> nodes;
   };
   typedef std::vector<HypoReplace> HypoReplaceColl;
 
@@ -74,7 +75,8 @@ protected:
   HypoReplaceColl &GetHypoReplaceCache() const;
 
   void ChangeLattice(Hypos *hypos) const;
-  void MergeHypos(const std::string &tpStrOrig, const std::vector<const Hypothesis*> &hyposReplacedOrig, LatticeRescorerNode &node) const;
+  void MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, LatticeRescorerNode &node) const;
+  void CreateHypo(const std::string str, HypoReplace hyposReplaced) const;
 
   //None  =  0,
   //Left  =  1,
@@ -82,7 +84,7 @@ protected:
   size_t HasJuncture(const Word &word, std::string &stripped) const;
   size_t Desegment(std::string &tpStr, const Phrase &in) const;
 
-  void CreateHypo(const std::string str, const std::vector<const Hypothesis*> &hyposReplaced) const;
+  void ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const;
 
 };
 
