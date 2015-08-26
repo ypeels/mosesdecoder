@@ -70,6 +70,7 @@ class LatticeRescorerGraph
   friend std::ostream& operator<<(std::ostream&, const LatticeRescorerGraph&);
 
 public:
+  // 1st = bestHypo, 2nd = all hypos with same state as bestHypo, ie. bestHypo + losers
   typedef boost::unordered_map<const Hypothesis*, LatticeRescorerNode*> Coll;
   //typedef std::set<LatticeRescorerNode*, LatticeRescorerNodeComparer> Coll;
   Coll m_nodes;

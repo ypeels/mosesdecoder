@@ -1,4 +1,5 @@
 #include <vector>
+#include <map>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include "DesegmentLattice.h"
@@ -74,6 +75,8 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
   // replace and delete old segmented hypos. Insert new desegmented hypos
   const HypoReplaceColl &coll = GetHypoReplaceCache();
 
+  boost::unordered_map<Hypos*, Hypos*> replaceFwdNodes;
+
   BOOST_FOREACH(const HypoReplace &hypoReplace, coll) {
 	  assert(hypoReplace.out.size() == hypoReplace.nodes.size());
 
@@ -101,13 +104,46 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 	  newHypo->SetPrevHypo(prevHypo);
 	  cerr << "newHypo=" << newHypo->GetCurrTargetPhrase() << endl;
 
-	  const Hypos *lastHypos = hypoReplace.nodes.back();
+	  Hypos *lastHypos = hypoReplace.nodes.back();
 	  node = lastHypos->m_container;
 	  Hypos &newHypos = node->Add(newHypo);
+
+	  // reset fwd nodes of prev hypo
+	  Hypos *firstHypos = hypoReplace.nodes.front();
+	  replaceFwdNodes[firstHypos] = &newHypos;
   }
+
+  // actually do reset fwd nodes of prev hypo
+  ResetFwdNodes(graph, replaceFwdNodes);
 
   cerr << "After:" << endl << graph << endl;
 }
+
+void DesegmentLattice::ResetFwdNodes(LatticeRescorerGraph &graph
+								, const boost::unordered_map<Hypos*, Hypos*> &replaceFwdNodes) const
+{
+  // recursively do next nodes 1st
+  BOOST_FOREACH(LatticeRescorerGraph::Coll::value_type &objPair, graph.m_nodes) {
+	  LatticeRescorerNode &node = *objPair.second;
+	  LatticeRescorerNode::FwdNodes &fwdNodes = node.m_fwdNodes;
+
+	  boost::unordered_map<Hypos*, Hypos*>::const_iterator iter;
+	  for (iter = replaceFwdNodes.begin(); iter != replaceFwdNodes.end(); ++iter) {
+		  Hypos *oldHypos = iter->first;
+		  Hypos *newHypos = iter->second;
+
+		  LatticeRescorerNode::FwdNodes::const_iterator iterFwdNodes = fwdNodes.find(oldHypos);
+		  if (iterFwdNodes != fwdNodes.end()) {
+			  fwdNodes.erase(iterFwdNodes);
+			  fwdNodes.insert(newHypos);
+		  }
+	  }
+
+  }
+
+
+}
+
 
 void DesegmentLattice::ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const
 {

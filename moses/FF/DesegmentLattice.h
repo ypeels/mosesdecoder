@@ -8,7 +8,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <ctime>
 #endif
-
+#include <boost/unordered_map.hpp>
 #include "StatelessFeatureFunction.h"
 
 namespace Moses
@@ -85,6 +85,8 @@ protected:
   size_t Desegment(std::string &tpStr, const Phrase &in) const;
 
   void ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const;
+  void ResetFwdNodes(LatticeRescorerGraph &graph
+		  	  	  , const boost::unordered_map<Hypos*, Hypos*> &replaceFwdNodes) const;
 
 };
 
