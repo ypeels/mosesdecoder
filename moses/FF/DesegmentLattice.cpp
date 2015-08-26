@@ -254,10 +254,10 @@ size_t DesegmentLattice::HasJuncture(const Word &word, std::string &stripped) co
 {
   size_t juncture = 0;
   stripped = Trim(word.ToString());
-  if (stripped.front() == '+') {
+  if (stripped[0] == '+') {
     juncture += 1;
   }
-  if (stripped.back() == '+') {
+  if (stripped[stripped.size()-1] == '+') {
     juncture += 2;
   }
 
