@@ -67,15 +67,15 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 {
   cerr << "Before:" << endl << graph << endl;
 
-  LatticeRescorerNode::FwdNodes &fwdHypos = graph.m_firstNode->m_fwdNodes;
-  BOOST_FOREACH(Hypos *hypos, fwdHypos) {
+  SameState::FwdNodes &fwdHypos = graph.m_firstNode->m_fwdNodes;
+  BOOST_FOREACH(SameStateAndPrev *hypos, fwdHypos) {
     ChangeLattice(hypos);
   }
 
   // replace and delete old segmented hypos. Insert new desegmented hypos
   const HypoReplaceColl &coll = GetHypoReplaceCache();
 
-  boost::unordered_map<Hypos*, Hypos*> replaceFwdNodes;
+  boost::unordered_map<SameStateAndPrev*, SameStateAndPrev*> replaceFwdNodes;
 
   BOOST_FOREACH(const HypoReplace &hypoReplace, coll) {
 	  assert(hypoReplace.out.size() == hypoReplace.nodes.size());
@@ -84,7 +84,7 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 	  const Hypothesis *prevHypo= firstHypo->GetPrevHypo();
 
 	  // delete old hypos
-	  Hypos *hypos;
+	  SameStateAndPrev *hypos;
 	  Hypothesis *hypo;
 	  for (size_t i = 0; i < hypoReplace.out.size(); ++i) {
 		  hypos = hypoReplace.nodes[i];
@@ -94,7 +94,7 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 	  }
 
 	  // is last hypo the winning hypo? Reset prev-hypo for next hypos
-	  LatticeRescorerNode *node = hypos->m_container;
+	  SameState *node = hypos->m_container;
 	  if (node->m_bestHypo == hypo) {
 		  ResetPrevHypo(*node, node->m_bestHypo, hypo);
 	  }
@@ -104,12 +104,12 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 	  newHypo->SetPrevHypo(prevHypo);
 	  cerr << "newHypo=" << newHypo->GetCurrTargetPhrase() << endl;
 
-	  Hypos *lastHypos = hypoReplace.nodes.back();
+	  SameStateAndPrev *lastHypos = hypoReplace.nodes.back();
 	  node = lastHypos->m_container;
-	  Hypos &newHypos = node->Add(newHypo);
+	  SameStateAndPrev &newHypos = node->Add(newHypo);
 
 	  // reset fwd nodes of prev hypo
-	  Hypos *firstHypos = hypoReplace.nodes.front();
+	  SameStateAndPrev *firstHypos = hypoReplace.nodes.front();
 	  replaceFwdNodes[firstHypos] = &newHypos;
   }
 
@@ -120,22 +120,23 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 }
 
 void DesegmentLattice::ResetFwdNodes(LatticeRescorerGraph &graph
-								, const boost::unordered_map<Hypos*, Hypos*> &replaceFwdNodes) const
+								, const boost::unordered_map<SameStateAndPrev*, SameStateAndPrev*> &replaceFwdNodes) const
 {
   // recursively do next nodes 1st
   BOOST_FOREACH(LatticeRescorerGraph::Coll::value_type &objPair, graph.m_nodes) {
-	  LatticeRescorerNode &node = *objPair.second;
-	  LatticeRescorerNode::FwdNodes &fwdNodes = node.m_fwdNodes;
+	  SameState &node = *objPair.second;
+	  SameState::FwdNodes &fwdNodes = node.m_fwdNodes;
 
-	  boost::unordered_map<Hypos*, Hypos*>::const_iterator iter;
+	  boost::unordered_map<SameStateAndPrev*, SameStateAndPrev*>::const_iterator iter;
 	  for (iter = replaceFwdNodes.begin(); iter != replaceFwdNodes.end(); ++iter) {
-		  Hypos *oldHypos = iter->first;
-		  Hypos *newHypos = iter->second;
+		  SameStateAndPrev *oldHypos = iter->first;
+		  SameStateAndPrev *newHypos = iter->second;
 
-		  LatticeRescorerNode::FwdNodes::const_iterator iterFwdNodes = fwdNodes.find(oldHypos);
+		  SameState::FwdNodes::const_iterator iterFwdNodes = fwdNodes.find(oldHypos);
 		  if (iterFwdNodes != fwdNodes.end()) {
 			  fwdNodes.erase(iterFwdNodes);
 			  fwdNodes.insert(newHypos);
+			  cerr << "reset " <<  oldHypos << "->" << newHypos << endl;
 		  }
 	  }
 
@@ -145,9 +146,9 @@ void DesegmentLattice::ResetFwdNodes(LatticeRescorerGraph &graph
 }
 
 
-void DesegmentLattice::ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const
+void DesegmentLattice::ResetPrevHypo(SameState &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const
 {
-	BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+	BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdNodes) {
 		BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
 			nextHypo->SetPrevHypo(newPrevHypo);
 		}
@@ -155,7 +156,7 @@ void DesegmentLattice::ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis
 		// reconnect to right place in node
 		nextHypos->m_prevHypo = newPrevHypo;
 
-		LatticeRescorerNode *nextNode = nextHypos->m_container;
+		SameState *nextNode = nextHypos->m_container;
 		nextNode->m_hypos.erase(oldPrevHypo);
 		nextNode->m_hypos[newPrevHypo] = nextHypos;
 	}
@@ -163,9 +164,9 @@ void DesegmentLattice::ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis
 }
 
 
-void DesegmentLattice::ChangeLattice(Hypos *hypos) const
+void DesegmentLattice::ChangeLattice(SameStateAndPrev *hypos) const
 {
-  LatticeRescorerNode &node = *hypos->m_container;
+  SameState &node = *hypos->m_container;
   const Hypothesis *bestHypo = node.m_bestHypo;
   const Phrase &tp = bestHypo->GetCurrTargetPhrase();
 
@@ -178,7 +179,7 @@ void DesegmentLattice::ChangeLattice(Hypos *hypos) const
   */
   if ((juncture & 2) == 0) {
     // don't extend last word
-    BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+    BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdNodes) {
       ChangeLattice(nextHypos);
     }
   }
@@ -192,9 +193,9 @@ void DesegmentLattice::ChangeLattice(Hypos *hypos) const
   }
 }
 
-void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, LatticeRescorerNode &node) const
+void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, SameState &node) const
 {
-  BOOST_FOREACH(Hypos *nextHypos, node.m_fwdNodes) {
+  BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdNodes) {
 	  bool done = false;
 	  BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
 		string tpStr = tpStrOrig;
@@ -216,7 +217,7 @@ void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const HypoReplac
 		  // don't extend last word
    		  done = true;
 
-		  LatticeRescorerNode &nextNode = *nextHypos->m_container;
+		  SameState &nextNode = *nextHypos->m_container;
 		  MergeHypos(tpStr, hyposReplaced, nextNode);
 		}
 		else {

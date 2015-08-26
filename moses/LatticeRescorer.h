@@ -10,24 +10,24 @@ namespace Moses
 {
 class HypothesisStack;
 class Hypothesis;
-class LatticeRescorerNode;
+class SameState;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// all hypos in Hypos have same states AND same prevHypo
-class Hypos
+// all hypos in SameStateAndPrev have same states AND same prevHypo
+class SameStateAndPrev
 {
 public:
   boost::unordered_set<Hypothesis*> m_hypos;
-  LatticeRescorerNode *m_container;
+  SameState *m_container;
   const Hypothesis *m_prevHypo; // key in container
 
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // all hypos in a node have same states
-class LatticeRescorerNode
+class SameState
 {
-  friend std::ostream& operator<<(std::ostream&, const LatticeRescorerNode&);
+  friend std::ostream& operator<<(std::ostream&, const SameState&);
 
   void OutputStackSize(const std::vector < HypothesisStack* > &stacks) const;
 
@@ -35,32 +35,32 @@ public:
 
   const Hypothesis *m_bestHypo;
 
-  typedef boost::unordered_map<const Hypothesis*, Hypos*> HyposPerPrevHypo;
+  typedef boost::unordered_map<const Hypothesis*, SameStateAndPrev*> HyposPerPrevHypo;
   HyposPerPrevHypo m_hypos;
 
-  typedef boost::unordered_set<Hypos*> FwdNodes;
+  typedef boost::unordered_set<SameStateAndPrev*> FwdNodes;
   FwdNodes m_fwdNodes;
 
   boost::unordered_set<const Hypothesis*> m_newWinners;
 
-  LatticeRescorerNode(const Hypothesis *bestHypo);
-  virtual ~LatticeRescorerNode();
+  SameState(const Hypothesis *bestHypo);
+  virtual ~SameState();
 
-  inline bool operator==(const LatticeRescorerNode &other) const {
+  inline bool operator==(const SameState &other) const {
     return m_bestHypo == other.m_bestHypo;
   }
 
-  Hypos &Add(Hypothesis *hypo);
-  void AddEdge(Hypos &edge);
+  SameStateAndPrev &Add(Hypothesis *hypo);
+  void AddEdge(SameStateAndPrev &edge);
 
-  void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos *hypos);
+  void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, SameStateAndPrev *hypos);
   std::pair<AddStatus, const Hypothesis*> Rescore1Hypo
   (HypothesisStack &stack, Hypothesis *hypo, size_t pass);
   void DeleteFwdHypos();
-  void DeleteHypos(Hypos *hypos);
+  void DeleteHypos(SameStateAndPrev *hypos);
 
   void Multiply();
-  void Multiply(Hypos &hypos, const Hypothesis *prevHypo);
+  void Multiply(SameStateAndPrev &hypos, const Hypothesis *prevHypo);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,15 +71,15 @@ class LatticeRescorerGraph
 
 public:
   // 1st = bestHypo, 2nd = all hypos with same state as bestHypo, ie. bestHypo + losers
-  typedef boost::unordered_map<const Hypothesis*, LatticeRescorerNode*> Coll;
-  //typedef std::set<LatticeRescorerNode*, LatticeRescorerNodeComparer> Coll;
+  typedef boost::unordered_map<const Hypothesis*, SameState*> Coll;
+  //typedef std::set<SameState*, LatticeRescorerNodeComparer> Coll;
   Coll m_nodes;
-  LatticeRescorerNode *m_firstNode;
+  SameState *m_firstNode;
 
   void AddFirst(Hypothesis *bestHypo);
   void Add(Hypothesis *bestHypo);
 
-  LatticeRescorerNode &AddNode(const Hypothesis *bestHypo);
+  SameState &AddNode(const Hypothesis *bestHypo);
 
   void Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass);
 };

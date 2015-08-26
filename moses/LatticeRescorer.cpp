@@ -16,27 +16,27 @@ namespace Moses
 {
 extern bool g_mosesDebug;
 
-LatticeRescorerNode::LatticeRescorerNode(const Hypothesis *bestHypo)
+SameState::SameState(const Hypothesis *bestHypo)
   :m_bestHypo(bestHypo)
 {
 }
 
-LatticeRescorerNode::~LatticeRescorerNode()
+SameState::~SameState()
 {
 	BOOST_FOREACH( const HyposPerPrevHypo::value_type &obj, m_hypos ) {
-		Hypos *hypos = obj.second;
+		SameStateAndPrev *hypos = obj.second;
 		delete hypos;
 	}
 }
 
-Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
+SameStateAndPrev &SameState::Add(Hypothesis *hypo)
 {
   const Hypothesis *prevHypo = hypo->GetPrevHypo();
   HyposPerPrevHypo::iterator iter = m_hypos.find(prevHypo);
 
-  Hypos *hypos;
+  SameStateAndPrev *hypos;
   if (iter == m_hypos.end()) {
-	  hypos = new Hypos;
+	  hypos = new SameStateAndPrev;
 	  hypos->m_container = this;
 	  hypos->m_prevHypo = prevHypo;
 	  m_hypos[prevHypo] = hypos;
@@ -54,7 +54,7 @@ Hypos &LatticeRescorerNode::Add(Hypothesis *hypo)
   return *hypos;
 }
 
-void LatticeRescorerNode::AddEdge(Hypos &edge)
+void SameState::AddEdge(SameStateAndPrev &edge)
 {
 //	cerr << "adding edge " << &edge << " to " << this
 //			<< endl;
@@ -62,7 +62,7 @@ void LatticeRescorerNode::AddEdge(Hypos &edge)
   m_fwdNodes.insert(&edge);
 }
 
-void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, Hypos *hypos)
+void SameState::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, SameStateAndPrev *hypos)
 {
   /*
   cerr << "rescoring all hypos in " << hypos->m_container << " " << hypos << " "
@@ -135,7 +135,7 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
     const Hypothesis *prevHypo = *m_newWinners.begin();
     if (prevHypo != m_bestHypo) {
       // winning hypo has changed
-      BOOST_FOREACH(const Hypos *hypos, m_fwdNodes) {
+      BOOST_FOREACH(const SameStateAndPrev *hypos, m_fwdNodes) {
         BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
           nextHypo->SetPrevHypo(prevHypo);
         }
@@ -148,14 +148,14 @@ void LatticeRescorerNode::Rescore(const std::vector < HypothesisStack* > &stacks
   }
 
   // next nodes
-  BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
-    LatticeRescorerNode *node = hypos->m_container;
+  BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdNodes) {
+    SameState *node = hypos->m_container;
     node->Rescore(stacks, pass, hypos);
   }
 
 }
 
-std::pair<AddStatus, const Hypothesis*> LatticeRescorerNode::
+std::pair<AddStatus, const Hypothesis*> SameState::
 Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
 {
   const std::vector<FeatureFunction*> &ffs = FeatureFunction::GetFeatureFunctions(pass);
@@ -175,15 +175,15 @@ Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
   return status;
 }
 
-void LatticeRescorerNode::DeleteFwdHypos()
+void SameState::DeleteFwdHypos()
 {
   //cerr << "delete " << this << endl;
-  BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
+  BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdNodes) {
     hypos->m_container->DeleteHypos(hypos);
   }
 }
 
-void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
+void SameState::DeleteHypos(SameStateAndPrev *hypos)
 {
   BOOST_FOREACH(Hypothesis *hypo, hypos->m_hypos) {
     delete hypo;
@@ -192,17 +192,17 @@ void LatticeRescorerNode::DeleteHypos(Hypos *hypos)
   delete hypos;
 }
 
-void LatticeRescorerNode::Multiply()
+void SameState::Multiply()
 {
   //cerr << "m_newWinners=" << m_newWinners.size() << endl;
   BOOST_FOREACH(const Hypothesis *winner, m_newWinners) {
-    BOOST_FOREACH(Hypos *hypos, m_fwdNodes) {
+    BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdNodes) {
       Multiply(*hypos, winner);
     }
   }
 }
 
-void LatticeRescorerNode::Multiply(Hypos &hypos, const Hypothesis *prevHypo)
+void SameState::Multiply(SameStateAndPrev &hypos, const Hypothesis *prevHypo)
 {
   boost::unordered_set<Hypothesis*> newHypos;
 
@@ -215,13 +215,13 @@ void LatticeRescorerNode::Multiply(Hypos &hypos, const Hypothesis *prevHypo)
   std::copy(newHypos.begin(), newHypos.end(), std::inserter(hypos.m_hypos, hypos.m_hypos.end()));
 }
 
-std::ostream& operator<<(std::ostream &out, const LatticeRescorerNode &obj)
+std::ostream& operator<<(std::ostream &out, const SameState &obj)
 {
   out << "[" << &obj << "," << obj.m_hypos.size() << "," << obj.m_fwdNodes.size() << "] " << flush;
   return out;
 }
 
-void LatticeRescorerNode::OutputStackSize(const std::vector < HypothesisStack* > &stacks) const
+void SameState::OutputStackSize(const std::vector < HypothesisStack* > &stacks) const
 {
   cerr << "stack size:";
   BOOST_FOREACH(const HypothesisStack *stack, stacks) {
@@ -236,7 +236,7 @@ void LatticeRescorerNode::OutputStackSize(const std::vector < HypothesisStack* >
 
 void LatticeRescorerGraph::AddFirst(Hypothesis *bestHypo)
 {
-  LatticeRescorerNode &node = AddNode(bestHypo);
+  SameState &node = AddNode(bestHypo);
   node.Add(bestHypo);
 
   m_firstNode = &node;
@@ -245,12 +245,12 @@ void LatticeRescorerGraph::AddFirst(Hypothesis *bestHypo)
 void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
 {
   //cerr << "best     " << bestHypo << " " << bestHypo->GetWordsBitmap() << endl;
-  LatticeRescorerNode &node = AddNode(bestHypo);
-  Hypos &currHypos = node.Add(bestHypo);
+  SameState &node = AddNode(bestHypo);
+  SameStateAndPrev &currHypos = node.Add(bestHypo);
 
   Hypothesis *prevHypo = const_cast<Hypothesis *>(bestHypo->GetPrevHypo());
   if (prevHypo) {
-    LatticeRescorerNode &prevNode = AddNode(prevHypo);
+    SameState &prevNode = AddNode(prevHypo);
     prevNode.AddEdge(currHypos);
   }
 
@@ -260,23 +260,23 @@ void LatticeRescorerGraph::Add(Hypothesis *bestHypo)
     BOOST_FOREACH(Hypothesis *arc, *arcs) {
       Hypothesis *prevHypo = const_cast<Hypothesis *>(arc->GetPrevHypo());
 
-      Hypos &arcHypos = node.Add(arc);
+      SameStateAndPrev &arcHypos = node.Add(arc);
 
-      LatticeRescorerNode &prevNode = AddNode(prevHypo);
+      SameState &prevNode = AddNode(prevHypo);
       prevNode.AddEdge(arcHypos);
     }
     bestHypo->ClearArcList();
   }
 }
 
-LatticeRescorerNode &LatticeRescorerGraph::AddNode(const Hypothesis *bestHypo)
+SameState &LatticeRescorerGraph::AddNode(const Hypothesis *bestHypo)
 {
-  LatticeRescorerNode *node;
+  SameState *node;
 
   Coll::iterator iter = m_nodes.find(bestHypo);
   if (iter == m_nodes.end()) {
     // not found
-    node = new LatticeRescorerNode(bestHypo);
+    node = new SameState(bestHypo);
     m_nodes[bestHypo] = node;
   } else {
     node = iter->second;
@@ -293,9 +293,9 @@ void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stack
   	<< endl;
   */
 
-  LatticeRescorerNode::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
-  BOOST_FOREACH(Hypos *hypos, fwdNodes) {
-    LatticeRescorerNode *node = hypos->m_container;
+  SameState::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
+  BOOST_FOREACH(SameStateAndPrev *hypos, fwdNodes) {
+    SameState *node = hypos->m_container;
     node->Rescore(stacks, pass, hypos);
   }
 }
@@ -305,19 +305,19 @@ std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 	/*
   out << obj.m_nodes.size() << " nodes: ";
   BOOST_FOREACH(const LatticeRescorerGraph::Coll::value_type &objPair, obj.m_nodes) {
-    LatticeRescorerNode *node = objPair.second;
+    SameState *node = objPair.second;
     out << *node << " ";
   }
   */
 
   out << obj.m_nodes.size() << " nodes: ";
   BOOST_FOREACH(const LatticeRescorerGraph::Coll::value_type &pairGraph, obj.m_nodes) {
-	LatticeRescorerNode *node = pairGraph.second;
+	SameState *node = pairGraph.second;
 	out << "node=" << node << " ";
 
 	// list out hypos
-	BOOST_FOREACH(const LatticeRescorerNode::HyposPerPrevHypo::value_type &pairNode, node->m_hypos) {
-		Hypos *hypos = pairNode.second;
+	BOOST_FOREACH(const SameState::HyposPerPrevHypo::value_type &pairNode, node->m_hypos) {
+		SameStateAndPrev *hypos = pairNode.second;
 
 		out << hypos << "[";
 		BOOST_FOREACH(const Hypothesis *hypo, hypos->m_hypos) {
@@ -331,7 +331,7 @@ std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 
 	// list of fwd nodes
 	out << "fwd nodes: ";
-	BOOST_FOREACH(const Hypos *hypos, node->m_fwdNodes) {
+	BOOST_FOREACH(const SameStateAndPrev *hypos, node->m_fwdNodes) {
 		out << hypos << " ";
 	}
 	out << endl;

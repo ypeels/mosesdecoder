@@ -13,8 +13,8 @@
 
 namespace Moses
 {
-class Hypos;
-class LatticeRescorerNode;
+class SameStateAndPrev;
+class SameState;
 class TranslationOption;
 
 class DesegmentLattice : public StatelessFeatureFunction
@@ -58,7 +58,7 @@ protected:
   {
 	  Hypothesis *in;
 	  std::vector<Hypothesis*> out;
-	  std::vector<Hypos*> nodes;
+	  std::vector<SameStateAndPrev*> nodes;
   };
   typedef std::vector<HypoReplace> HypoReplaceColl;
 
@@ -74,8 +74,8 @@ protected:
   CacheColl &GetCache() const;
   HypoReplaceColl &GetHypoReplaceCache() const;
 
-  void ChangeLattice(Hypos *hypos) const;
-  void MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, LatticeRescorerNode &node) const;
+  void ChangeLattice(SameStateAndPrev *hypos) const;
+  void MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, SameState &node) const;
   void CreateHypo(const std::string str, HypoReplace hyposReplaced) const;
 
   //None  =  0,
@@ -84,9 +84,9 @@ protected:
   size_t HasJuncture(const Word &word, std::string &stripped) const;
   size_t Desegment(std::string &tpStr, const Phrase &in) const;
 
-  void ResetPrevHypo(LatticeRescorerNode &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const;
+  void ResetPrevHypo(SameState &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const;
   void ResetFwdNodes(LatticeRescorerGraph &graph
-		  	  	  , const boost::unordered_map<Hypos*, Hypos*> &replaceFwdNodes) const;
+		  	  	  , const boost::unordered_map<SameStateAndPrev*, SameStateAndPrev*> &replaceFwdNodes) const;
 
 };
 
