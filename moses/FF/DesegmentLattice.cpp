@@ -16,6 +16,8 @@ using namespace std;
 
 namespace Moses
 {
+extern bool g_mosesDebug;
+
 DesegmentLattice::DesegmentLattice(const std::string &line)
   :StatelessFeatureFunction(0, line)
 {
@@ -66,6 +68,7 @@ void DesegmentLattice::SetParameter(const std::string& key, const std::string& v
 void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 {
   cerr << "Before:" << endl << graph << endl;
+  g_mosesDebug = true;
 
   SameState::FwdHypos &fwdHypos = graph.m_firstNode->m_fwdHypos;
   BOOST_FOREACH(SameStateAndPrev *hypos, fwdHypos) {

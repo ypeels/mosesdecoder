@@ -330,7 +330,7 @@ std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 	}
 
 	// list of fwd nodes
-	out << "fwd nodes: ";
+	out << "fwd hypos: ";
 	BOOST_FOREACH(const SameStateAndPrev *hypos, node->m_fwdHypos) {
 		out << hypos << " ";
 	}
