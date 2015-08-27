@@ -67,7 +67,7 @@ void DesegmentLattice::ChangeLattice(LatticeRescorerGraph &graph) const
 {
   cerr << "Before:" << endl << graph << endl;
 
-  SameState::FwdNodes &fwdHypos = graph.m_firstNode->m_fwdNodes;
+  SameState::FwdHypos &fwdHypos = graph.m_firstNode->m_fwdHypos;
   BOOST_FOREACH(SameStateAndPrev *hypos, fwdHypos) {
     ChangeLattice(hypos);
   }
@@ -125,14 +125,14 @@ void DesegmentLattice::ResetFwdNodes(LatticeRescorerGraph &graph
   // recursively do next nodes 1st
   BOOST_FOREACH(LatticeRescorerGraph::Coll::value_type &objPair, graph.m_nodes) {
 	  SameState &node = *objPair.second;
-	  SameState::FwdNodes &fwdNodes = node.m_fwdNodes;
+	  SameState::FwdHypos &fwdNodes = node.m_fwdHypos;
 
 	  boost::unordered_map<SameStateAndPrev*, SameStateAndPrev*>::const_iterator iter;
 	  for (iter = replaceFwdNodes.begin(); iter != replaceFwdNodes.end(); ++iter) {
 		  SameStateAndPrev *oldHypos = iter->first;
 		  SameStateAndPrev *newHypos = iter->second;
 
-		  SameState::FwdNodes::const_iterator iterFwdNodes = fwdNodes.find(oldHypos);
+		  SameState::FwdHypos::const_iterator iterFwdNodes = fwdNodes.find(oldHypos);
 		  if (iterFwdNodes != fwdNodes.end()) {
 			  fwdNodes.erase(iterFwdNodes);
 			  fwdNodes.insert(newHypos);
@@ -148,7 +148,7 @@ void DesegmentLattice::ResetFwdNodes(LatticeRescorerGraph &graph
 
 void DesegmentLattice::ResetPrevHypo(SameState &node, const Hypothesis *oldPrevHypo, const Hypothesis *newPrevHypo) const
 {
-	BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdNodes) {
+	BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdHypos) {
 		BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
 			nextHypo->SetPrevHypo(newPrevHypo);
 		}
@@ -179,7 +179,7 @@ void DesegmentLattice::ChangeLattice(SameStateAndPrev *hypos) const
   */
   if ((juncture & 2) == 0) {
     // don't extend last word
-    BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdNodes) {
+    BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdHypos) {
       ChangeLattice(nextHypos);
     }
   }
@@ -195,7 +195,7 @@ void DesegmentLattice::ChangeLattice(SameStateAndPrev *hypos) const
 
 void DesegmentLattice::MergeHypos(const std::string &tpStrOrig, const HypoReplace &hyposReplacedOrig, SameState &node) const
 {
-  BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdNodes) {
+  BOOST_FOREACH(SameStateAndPrev *nextHypos, node.m_fwdHypos) {
 	  bool done = false;
 	  BOOST_FOREACH(Hypothesis *nextHypo, nextHypos->m_hypos) {
 		string tpStr = tpStrOrig;

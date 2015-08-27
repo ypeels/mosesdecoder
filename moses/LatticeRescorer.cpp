@@ -59,7 +59,7 @@ void SameState::AddEdge(SameStateAndPrev &edge)
 //	cerr << "adding edge " << &edge << " to " << this
 //			<< endl;
 
-  m_fwdNodes.insert(&edge);
+  m_fwdHypos.insert(&edge);
 }
 
 void SameState::Rescore(const std::vector < HypothesisStack* > &stacks, size_t pass, SameStateAndPrev *hypos)
@@ -135,7 +135,7 @@ void SameState::Rescore(const std::vector < HypothesisStack* > &stacks, size_t p
     const Hypothesis *prevHypo = *m_newWinners.begin();
     if (prevHypo != m_bestHypo) {
       // winning hypo has changed
-      BOOST_FOREACH(const SameStateAndPrev *hypos, m_fwdNodes) {
+      BOOST_FOREACH(const SameStateAndPrev *hypos, m_fwdHypos) {
         BOOST_FOREACH(Hypothesis *nextHypo, hypos->m_hypos) {
           nextHypo->SetPrevHypo(prevHypo);
         }
@@ -148,7 +148,7 @@ void SameState::Rescore(const std::vector < HypothesisStack* > &stacks, size_t p
   }
 
   // next nodes
-  BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdNodes) {
+  BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdHypos) {
     SameState *node = hypos->m_container;
     node->Rescore(stacks, pass, hypos);
   }
@@ -178,7 +178,7 @@ Rescore1Hypo(HypothesisStack &stack, Hypothesis *hypo, size_t pass)
 void SameState::DeleteFwdHypos()
 {
   //cerr << "delete " << this << endl;
-  BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdNodes) {
+  BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdHypos) {
     hypos->m_container->DeleteHypos(hypos);
   }
 }
@@ -196,7 +196,7 @@ void SameState::Multiply()
 {
   //cerr << "m_newWinners=" << m_newWinners.size() << endl;
   BOOST_FOREACH(const Hypothesis *winner, m_newWinners) {
-    BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdNodes) {
+    BOOST_FOREACH(SameStateAndPrev *hypos, m_fwdHypos) {
       Multiply(*hypos, winner);
     }
   }
@@ -217,7 +217,7 @@ void SameState::Multiply(SameStateAndPrev &hypos, const Hypothesis *prevHypo)
 
 std::ostream& operator<<(std::ostream &out, const SameState &obj)
 {
-  out << "[" << &obj << "," << obj.m_hypos.size() << "," << obj.m_fwdNodes.size() << "] " << flush;
+  out << "[" << &obj << "," << obj.m_hypos.size() << "," << obj.m_fwdHypos.size() << "] " << flush;
   return out;
 }
 
@@ -293,7 +293,7 @@ void LatticeRescorerGraph::Rescore(const std::vector < HypothesisStack* > &stack
   	<< endl;
   */
 
-  SameState::FwdNodes &fwdNodes = m_firstNode->m_fwdNodes;
+  SameState::FwdHypos &fwdNodes = m_firstNode->m_fwdHypos;
   BOOST_FOREACH(SameStateAndPrev *hypos, fwdNodes) {
     SameState *node = hypos->m_container;
     node->Rescore(stacks, pass, hypos);
@@ -331,7 +331,7 @@ std::ostream& operator<<(std::ostream &out, const LatticeRescorerGraph &obj)
 
 	// list of fwd nodes
 	out << "fwd nodes: ";
-	BOOST_FOREACH(const SameStateAndPrev *hypos, node->m_fwdNodes) {
+	BOOST_FOREACH(const SameStateAndPrev *hypos, node->m_fwdHypos) {
 		out << hypos << " ";
 	}
 	out << endl;

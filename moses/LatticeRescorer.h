@@ -33,13 +33,13 @@ class SameState
 
 public:
 
-  const Hypothesis *m_bestHypo;
+  const Hypothesis *m_bestHypo; // key in graph
 
   typedef boost::unordered_map<const Hypothesis*, SameStateAndPrev*> HyposPerPrevHypo;
   HyposPerPrevHypo m_hypos;
 
-  typedef boost::unordered_set<SameStateAndPrev*> FwdNodes;
-  FwdNodes m_fwdNodes;
+  typedef boost::unordered_set<SameStateAndPrev*> FwdHypos;
+  FwdHypos m_fwdHypos;
 
   boost::unordered_set<const Hypothesis*> m_newWinners;
 
