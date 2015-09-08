@@ -1511,6 +1511,16 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/Model1Feature.h</locationURI>
 		</link>
 		<link>
+			<name>FF/MorphoLM.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MorphoLM.cpp</locationURI>
+		</link>
+		<link>
+			<name>FF/MorphoLM.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MorphoLM.h</locationURI>
+		</link>
+		<link>
 			<name>FF/NieceTerminal.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NieceTerminal.cpp</locationURI>

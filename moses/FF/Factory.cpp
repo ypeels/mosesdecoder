@@ -68,6 +68,7 @@
 #include "RuleDiscr.h"
 #include "MadaConsistentTok.h"
 #include "DesegmentLattice.h"
+#include "MorphoLM.h"
 
 #include "moses/FF/SkeletonStatelessFF.h"
 #include "moses/FF/SkeletonStatefulFF.h"
@@ -301,6 +302,7 @@ FeatureRegistry::FeatureRegistry()
   MOSES_FNAME(JoinCompound);
   MOSES_FNAME(JoinScore);
   MOSES_FNAME(DesegmentLattice);
+  MOSES_FNAME(MorphoLM);
 
   MOSES_FNAME(SkeletonStatelessFF);
   MOSES_FNAME(SkeletonStatefulFF);

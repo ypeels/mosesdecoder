@@ -1,5 +1,5 @@
 #include <vector>
-#include "SkeletonStatefulFF.h"
+#include "MorphoLM.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
 
@@ -7,29 +7,37 @@ using namespace std;
 
 namespace Moses
 {
-int SkeletonState::Compare(const FFState& other) const
+int MorphoLMState::Compare(const FFState& other) const
 {
-  const SkeletonState &otherState = static_cast<const SkeletonState&>(other);
+  const MorphoLMState &otherState = static_cast<const MorphoLMState&>(other);
 
+  /*
   if (m_targetLen == otherState.m_targetLen)
     return 0;
   return (m_targetLen < otherState.m_targetLen) ? -1 : +1;
+  */
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////
-SkeletonStatefulFF::SkeletonStatefulFF(const std::string &line)
-  :StatefulFeatureFunction(3, line)
+MorphoLM::MorphoLM(const std::string &line)
+  :StatefulFeatureFunction(1, line)
 {
   ReadParameters();
 }
 
-void SkeletonStatefulFF::EvaluateInIsolation(const Phrase &source
+void MorphoLM::Load()
+{
+  // load(path);
+}
+
+void MorphoLM::EvaluateInIsolation(const Phrase &source
     , const TargetPhrase &targetPhrase
     , ScoreComponentCollection &scoreBreakdown
     , ScoreComponentCollection &estimatedFutureScore) const
 {}
 
-void SkeletonStatefulFF::EvaluateWithSourceContext(const InputType &input
+void MorphoLM::EvaluateWithSourceContext(const InputType &input
     , const InputPath &inputPath
     , const TargetPhrase &targetPhrase
     , const StackVec *stackVec
@@ -37,42 +45,40 @@ void SkeletonStatefulFF::EvaluateWithSourceContext(const InputType &input
     , ScoreComponentCollection *estimatedFutureScore) const
 {}
 
-void SkeletonStatefulFF::EvaluateTranslationOptionListWithSourceContext(const InputType &input
+void MorphoLM::EvaluateTranslationOptionListWithSourceContext(const InputType &input
     , const TranslationOptionList &translationOptionList) const
 {}
 
-FFState* SkeletonStatefulFF::EvaluateWhenApplied(
+FFState* MorphoLM::EvaluateWhenApplied(
   const Hypothesis& cur_hypo,
   const FFState* prev_state,
   ScoreComponentCollection* accumulator) const
 {
   // dense scores
-  vector<float> newScores(m_numScoreComponents);
-  newScores[0] = 1.5;
-  newScores[1] = 0.3;
-  newScores[2] = 0.4;
-  accumulator->PlusEquals(this, newScores);
-
-  // sparse scores
-  accumulator->PlusEquals(this, "sparse-name", 2.4);
+  float score = 5555.33;
+  accumulator->PlusEquals(this, score);
 
   // int targetLen = cur_hypo.GetCurrTargetPhrase().GetSize(); // ??? [UG]
-  return new SkeletonState(0);
+  return new MorphoLMState(0);
 }
 
-FFState* SkeletonStatefulFF::EvaluateWhenApplied(
+FFState* MorphoLM::EvaluateWhenApplied(
   const ChartHypothesis& /* cur_hypo */,
   int /* featureID - used to index the state in the previous hypotheses */,
   ScoreComponentCollection* accumulator) const
 {
-  return new SkeletonState(0);
+  return new MorphoLMState(0);
 }
 
-void SkeletonStatefulFF::SetParameter(const std::string& key, const std::string& value)
+void MorphoLM::SetParameter(const std::string& key, const std::string& value)
 {
-  if (key == "arg") {
-    // set value here
-  } else {
+  if (key == "path") {
+    m_path = value;
+  }
+  else if (key == "order") {
+    m_order = Scan<size_t>(value);
+  }
+  else {
     StatefulFeatureFunction::SetParameter(key, value);
   }
 }

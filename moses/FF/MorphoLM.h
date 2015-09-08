@@ -7,12 +7,12 @@
 namespace Moses
 {
 
-class SkeletonState : public FFState
+class MorphoLMState : public FFState
 {
-  int m_targetLen;
+  Phrase m_lastWords;
 public:
-  SkeletonState(int targetLen)
-    :m_targetLen(targetLen) {
+  MorphoLMState(int targetLen)
+    :m_lastWords(targetLen) {
   }
 
   int Compare(const FFState& other) const;
@@ -23,17 +23,22 @@ public:
 
 };
 
-class SkeletonStatefulFF : public StatefulFeatureFunction
+class MorphoLM : public StatefulFeatureFunction
 {
+protected:
+	std::string m_path;
+	size_t m_order;
 public:
-  SkeletonStatefulFF(const std::string &line);
+  MorphoLM(const std::string &line);
 
   bool IsUseable(const FactorMask &mask) const {
     return true;
   }
   virtual const FFState* EmptyHypothesisState(const InputType &input) const {
-    return new SkeletonState(0);
+    return new MorphoLMState(0);
   }
+
+  virtual void Load();
 
   void EvaluateInIsolation(const Phrase &source
                            , const TargetPhrase &targetPhrase
