@@ -7,7 +7,7 @@
 
 namespace Moses
 {
-template<typename V, typename VEC>
+template<typename V>
 class Trie
 {
 public:
@@ -34,7 +34,7 @@ public:
   // NODE ///////////////////////////////
   class Node
   {
-    typedef std::map<VEC::value_type, Node> Children;
+    typedef std::map<char, Node> Children;
     Children m_children;
 
     void Save(const std::string &line,
@@ -77,8 +77,8 @@ protected:
 //#include "Trie.inc"
 namespace Moses
 {
-template <typename V, typename VEC>
-void Trie<V, VEC>::Node::Save(const Parameters &params)
+template <typename V>
+void Trie<V>::Node::Save(const Parameters &params)
 {
   InputFileStream inStrme(params.m_inPath);
 
@@ -116,8 +116,8 @@ void Trie<V, VEC>::Node::Save(const Parameters &params)
   inStrme.Close();
 }
 
-template <typename V, typename VEC>
-void Trie<V, VEC>::Node::Save(const std::string &line,
+template <typename V>
+void Trie<V>::Node::Save(const std::string &line,
                          std::ostream &outStrme, size_t pos,
                          const Parameters &params)
 {
@@ -125,7 +125,7 @@ void Trie<V, VEC>::Node::Save(const std::string &line,
   if (pos >= line.size()) {
     m_value = params.m_fullV;
   } else {
-    VEC::value_type &c = line[pos];
+    const char &c = line[pos];
     Node &child = m_children[c];
 
     if (m_prevChild != &child) {
@@ -145,8 +145,8 @@ void Trie<V, VEC>::Node::Save(const std::string &line,
   } // if (pos >= line.size()) {
 } // void Trie<V>::Node::Save(...)
 
-template <typename V, typename VEC>
-void Trie<V, VEC>::Node::WriteToDisk(std::ostream &outStrme)
+template <typename V>
+void Trie<V>::Node::WriteToDisk(std::ostream &outStrme)
 {
   // recursively write children 1st
   BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
@@ -168,11 +168,11 @@ void Trie<V, VEC>::Node::WriteToDisk(std::ostream &outStrme)
   //std::cerr << m_filePos << "=" << m_value << "=" << numChildren << ": " << std::flush;
 
   BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
-    const VEC::value_type &key = mapPair.first;
+    const char &key = mapPair.first;
     Node &node = mapPair.second;
     UTIL_THROW_IF2(!node.m_saved, "Child not saved");
 
-    outStrme.write(&key, sizeof(VEC::value_type));
+    outStrme.write(&key, sizeof(char));
     outStrme.write((char*) &node.m_filePos, sizeof(node.m_filePos));
 
     //std::cerr << key << "=" << node.m_filePos << " " << std::flush;
