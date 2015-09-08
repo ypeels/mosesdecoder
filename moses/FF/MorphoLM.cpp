@@ -4,7 +4,6 @@
 #include "moses/Hypothesis.h"
 #include "moses/FactorCollection.h"
 #include "util/exception.hh"
-#include "moses/FF/JoinScore/TrieSearch.h"
 
 using namespace std;
 
@@ -59,7 +58,8 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
 
 void MorphoLM::Load()
 {
-  // load(path);
+  m_trieSearch.Create(m_path);
+
 }
 
 void MorphoLM::EvaluateInIsolation(const Phrase &source

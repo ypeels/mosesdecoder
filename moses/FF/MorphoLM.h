@@ -7,6 +7,10 @@
 
 namespace Moses
 {
+struct LMScores
+{
+	float prob, backoff;
+};
 
 class MorphoLMState : public FFState
 {
@@ -34,6 +38,8 @@ protected:
 	size_t m_order;
     FactorType	m_factorType;
     std::string m_marker;
+
+    TrieSearch<LMScores> m_trieSearch;
 
     const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
 
