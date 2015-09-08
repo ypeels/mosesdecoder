@@ -11,8 +11,11 @@ class MorphoLMState : public FFState
 {
   Phrase m_lastWords;
 public:
-  MorphoLMState(int targetLen)
-    :m_lastWords(targetLen) {
+  MorphoLMState()
+  {}
+
+  MorphoLMState(const Phrase &context)
+    :m_lastWords(context) {
   }
 
   int Compare(const FFState& other) const;
@@ -35,7 +38,7 @@ public:
     return true;
   }
   virtual const FFState* EmptyHypothesisState(const InputType &input) const {
-    return new MorphoLMState(0);
+    return new MorphoLMState();
   }
 
   virtual void Load();

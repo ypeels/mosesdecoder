@@ -55,11 +55,25 @@ FFState* MorphoLM::EvaluateWhenApplied(
   ScoreComponentCollection* accumulator) const
 {
   // dense scores
-  float score = 5555.33;
+  float score = 0;
+  size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
+  const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
+
+  // need to initialize phrase somehow
+  Phrase context;
+
+  for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
+	  const Word &word = cur_hypo.GetWord(pos);
+	  context.AddWord(word);
+	  // score
+
+  }
+
+  // finished scoring. set score
   accumulator->PlusEquals(this, score);
 
-  // int targetLen = cur_hypo.GetCurrTargetPhrase().GetSize(); // ??? [UG]
-  return new MorphoLMState(0);
+
+  return new MorphoLMState(context);
 }
 
 FFState* MorphoLM::EvaluateWhenApplied(
@@ -67,7 +81,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   int /* featureID - used to index the state in the previous hypotheses */,
   ScoreComponentCollection* accumulator) const
 {
-  return new MorphoLMState(0);
+  return new MorphoLMState();
 }
 
 void MorphoLM::SetParameter(const std::string& key, const std::string& value)
