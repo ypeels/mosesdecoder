@@ -2,6 +2,7 @@
 #include "MorphoLM.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
+#include "moses/FactorCollection.h"
 
 using namespace std;
 
@@ -10,20 +11,31 @@ namespace Moses
 int MorphoLMState::Compare(const FFState& other) const
 {
   const MorphoLMState &otherState = static_cast<const MorphoLMState&>(other);
+  int ret = m_lastWords.Compare(otherState.m_lastWords);
 
-  /*
-  if (m_targetLen == otherState.m_targetLen)
-    return 0;
-  return (m_targetLen < otherState.m_targetLen) ? -1 : +1;
-  */
-  return 0;
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////
 MorphoLM::MorphoLM(const std::string &line)
-  :StatefulFeatureFunction(1, line)
+:StatefulFeatureFunction(1, line)
+,m_factorType(0)
 {
   ReadParameters();
+
+  FactorCollection &fc = FactorCollection::Instance();
+  const Factor *startFactor = fc.AddFactor("<s>", false);
+  m_sentenceStartWord.SetFactor(m_factorType, startFactor);
+
+  const Factor *endFactor = fc.AddFactor("</s>", false);
+  m_sentenceEndWord.SetFactor(m_factorType, endFactor);
+}
+
+const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
+  Phrase phrase;
+  phrase.AddWord(m_sentenceStartWord);
+
+  return new MorphoLMState(phrase);
 }
 
 void MorphoLM::Load()
@@ -59,8 +71,12 @@ FFState* MorphoLM::EvaluateWhenApplied(
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
-  // need to initialize phrase somehow
   Phrase context;
+
+  if (prev_state) {
+	  const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
+	  context.Append(prevMorphState->GetPhrase());
+  }
 
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
@@ -81,7 +97,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
   int /* featureID - used to index the state in the previous hypotheses */,
   ScoreComponentCollection* accumulator) const
 {
-  return new MorphoLMState();
+  abort();
+  return NULL;
 }
 
 void MorphoLM::SetParameter(const std::string& key, const std::string& value)
@@ -91,6 +108,9 @@ void MorphoLM::SetParameter(const std::string& key, const std::string& value)
   }
   else if (key == "order") {
     m_order = Scan<size_t>(value);
+  }
+  else if (key == "factor") {
+	m_factorType = Scan<FactorType>(value);
   }
   else {
     StatefulFeatureFunction::SetParameter(key, value);
