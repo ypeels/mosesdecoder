@@ -4,6 +4,7 @@
 #include "moses/Hypothesis.h"
 #include "moses/FactorCollection.h"
 #include "util/exception.hh"
+
 #include "moses/FF/JoinScore/TrieSearch.h"
 #include "moses/FF/MorphoTrie/MorphTrie.h"
 #include "moses/FF/MorphoTrie/utils.cpp"
@@ -102,29 +103,30 @@ FFState* MorphoLM::EvaluateWhenApplied(
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
-          if (word.front() == '+' && prevIsMorph == true) {
+	  string str = factor->GetString().as_string();
+          if (str.front() == '+' && prevIsMorph == true) {
             //TODO combine morphemes
-            prevFactor = context.pop(); //Get the last one
-            prevFactor.pop_back; //Get rid of the trailing +
-            factor = ; // Get rid of the starting +
-            factor = prevFactor + factor;
+            //prevFactor = context.pop(); //Get the last one
+            //prevFactor.pop_back; //Get rid of the trailing +
+            //factor = ; // Get rid of the starting +
+            //factor = prevFactor + factor;
             //TODO score
           }
-          else if (word.front() == '+' && prevIsMorph == false) {
+          else if (str.front() == '+' && prevIsMorph == false) {
             //TODO Give bad score
           }
-          else if (word.front() != '+' && prevIsMorph == true) {
+          else if (str.front() != '+' && prevIsMorph == true) {
             //TODO GIve bad score
           }
           else {
             //Yay! Easy ... just words
           }
-          if (word.at(word.length() -1) == '+') {
-            prevIsBool = true;
+          if (str.at(str.length() -1) == '+') {
+        	  prevIsMorph = true;
             //TODO estimate score of the rest
           }
           else {
-            prevIsBool = false;
+        	  prevIsMorph = false;
           }
 	  context.push_back(factor);
 	  // score TODO
