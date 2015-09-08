@@ -58,11 +58,11 @@ vector< Node<KeyClass, ValueClass>* > Node<KeyClass, ValueClass>::getSubnodes()
 template<class KeyClass, class ValueClass>
 Node<KeyClass, ValueClass>* Node<KeyClass, ValueClass>::findSub(const KeyClass& cKey)
 {
-    for(auto subnode: subnodes)
+    for(size_t i = 0; i < subnodes.size(); ++i)
     {
-        if (subnode->key == cKey)
+        if (subnodes[i]->key == cKey)
         {
-            return subnode;
+            return subnodes[i];
         }
     }
     return NULL;

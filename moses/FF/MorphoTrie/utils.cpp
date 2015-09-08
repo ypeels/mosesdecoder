@@ -1,4 +1,4 @@
-#include <MorphTrie.h>
+#include "MorphTrie.h"
 #include <fstream>
 #include <ostream>
 #include <string>
@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void LoadLm(string lmPath, MorphTrie<string, float>& root) {
+void LoadLm(string lmPath, MorphTrie<string, float>* root) {
 	ifstream infile(lmPath);
 	string line;
 	char c = '\t';
@@ -48,14 +48,9 @@ void LoadLm(string lmPath, MorphTrie<string, float>& root) {
         if (substrings.size() == 3)
             backoff = stof(substrings[2]);
 
-	   
-	   root.insert(key, weight, backoff);
+
+	   reverse(key.begin(), key.end());
+	   root->insert(key, weight, backoff);
 	}
 
-}
-
-int main() {
-    MorphTrie<string, float>* root = new MorphTrie<string, float>;
-    LoadLm("lm_small", *root);
-    return 0;
 }

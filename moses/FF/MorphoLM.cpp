@@ -5,6 +5,8 @@
 #include "moses/FactorCollection.h"
 #include "util/exception.hh"
 #include "moses/FF/JoinScore/TrieSearch.h"
+#include "moses/FF/MorphoTrie/MorphTrie.h"
+#include "moses/FF/MorphoTrie/utils.cpp"
 
 using namespace std;
 
@@ -59,7 +61,8 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
 
 void MorphoLM::Load()
 {
-  // load(path);
+  MorphTrie<string, float>* root = new MorphTrie<string, float>;
+  LoadLm(m_path, root);
 }
 
 void MorphoLM::EvaluateInIsolation(const Phrase &source

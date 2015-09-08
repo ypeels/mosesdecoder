@@ -26,9 +26,10 @@ Node<KeyClass, ValueClass>* MorphTrie<KeyClass, ValueClass>::insert(const vector
 																	const ValueClass& backoff)
 {
     Node<KeyClass, ValueClass>* cRoot = root;
-    for (const KeyClass& cKey: word)
+    for (size_t i = 0; i < word.size(); ++i)
     {
-        auto cNode = root->findSub(cKey);
+        KeyClass cKey = word[i];
+        Node<KeyClass, ValueClass>* cNode = root->findSub(cKey);
         if (cNode == NULL)
         {
             cNode = new Node<KeyClass, ValueClass>(cKey);
@@ -45,9 +46,10 @@ template<class KeyClass, class ValueClass>
 Node<KeyClass, ValueClass>* MorphTrie<KeyClass, ValueClass>::getProb(const vector<KeyClass>& word)
 {
     Node<KeyClass, ValueClass>* cRoot = root;
-    for (const KeyClass& cKey: word.c_str())
+    for (size_t i = 0; i < word.size(); ++i)
     {
-        auto cNode = root->findSub(cKey);
+        KeyClass cKey = word[i];
+        Node<KeyClass, ValueClass>* cNode = root->findSub(cKey);
         if (cNode == NULL)
         {
             return 0.0;
@@ -60,9 +62,9 @@ Node<KeyClass, ValueClass>* MorphTrie<KeyClass, ValueClass>::getProb(const vecto
 template<class KeyClass, class ValueClass>
 void MorphTrie<KeyClass, ValueClass>::deleteNode(Node<KeyClass, ValueClass>* node)
 {
-    for (auto subnode: node->getSubnodes())
+    for (size_t i = 0; i < node->getSubnodes().size(); ++i)
     {
-        deleteNode(subnode);
+        deleteNode(node->getSubnodes()[i]);
     }
     delete node;
 }
