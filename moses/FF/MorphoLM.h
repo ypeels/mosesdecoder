@@ -3,6 +3,7 @@
 #include <string>
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
+#include "moses/FF/JoinScore/TrieSearch.h"
 
 namespace Moses
 {

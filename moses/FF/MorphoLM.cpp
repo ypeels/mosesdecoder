@@ -4,6 +4,7 @@
 #include "moses/Hypothesis.h"
 #include "moses/FactorCollection.h"
 #include "util/exception.hh"
+#include "moses/FF/JoinScore/TrieSearch.h"
 
 using namespace std;
 
@@ -89,12 +90,10 @@ FFState* MorphoLM::EvaluateWhenApplied(
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
-  std::vector<const Factor*> context;
+  assert(prev_state);
 
-  if (prev_state) {
-	  const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
-	  context = prevMorphState->GetPhrase();
-  }
+  const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
+  std::vector<const Factor*> context(prevMorphState->GetPhrase());
 
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
