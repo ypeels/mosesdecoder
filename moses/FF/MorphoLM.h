@@ -9,9 +9,10 @@ namespace Moses
 
 class MorphoLMState : public FFState
 {
-  Phrase m_lastWords;
+  std::vector<const Factor*> m_lastWords;
+  std::string m_unfinishedWord;
 public:
-  MorphoLMState(const Phrase &context)
+  MorphoLMState(const std::vector<const Factor*> &context)
     :m_lastWords(context) {
   }
 
@@ -21,7 +22,7 @@ public:
     return NULL;
   }
 
-  const Phrase &GetPhrase() const
+  const std::vector<const Factor*> &GetPhrase() const
   { return m_lastWords; }
 };
 
@@ -31,8 +32,9 @@ protected:
 	std::string m_path;
 	size_t m_order;
     FactorType	m_factorType;
+    std::string m_marker;
 
-    Word m_sentenceStartWord, m_sentenceEndWord; //! Contains factors which represents the beging and end words for this LM.
+    const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
 
 public:
   MorphoLM(const std::string &line);

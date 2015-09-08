@@ -3,6 +3,7 @@
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
 #include "moses/FactorCollection.h"
+#include "util/exception.hh"
 
 using namespace std;
 
@@ -11,31 +12,48 @@ namespace Moses
 int MorphoLMState::Compare(const FFState& other) const
 {
   const MorphoLMState &otherState = static_cast<const MorphoLMState&>(other);
-  int ret = m_lastWords.Compare(otherState.m_lastWords);
 
-  return ret;
+  if (m_lastWords < otherState.m_lastWords) {
+	  return -1;
+  }
+  else if (m_lastWords > otherState.m_lastWords) {
+	  return +1;
+  }
+
+  // context words equal. Compare last unfinished word
+  if (m_unfinishedWord < otherState.m_unfinishedWord) {
+	  return -1;
+  }
+  else if (m_unfinishedWord > otherState.m_unfinishedWord) {
+	  return +1;
+  }
+
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////
 MorphoLM::MorphoLM(const std::string &line)
 :StatefulFeatureFunction(1, line)
+,m_order(0)
 ,m_factorType(0)
+,m_marker("+")
 {
   ReadParameters();
 
-  FactorCollection &fc = FactorCollection::Instance();
-  const Factor *startFactor = fc.AddFactor("<s>", false);
-  m_sentenceStartWord.SetFactor(m_factorType, startFactor);
+  if (m_order == 0) {
+	UTIL_THROW2("Must set order");
+  }
 
-  const Factor *endFactor = fc.AddFactor("</s>", false);
-  m_sentenceEndWord.SetFactor(m_factorType, endFactor);
+  FactorCollection &fc = FactorCollection::Instance();
+  m_sentenceStart = fc.AddFactor("<s>", false);
+  m_sentenceEnd = fc.AddFactor("</s>", false);
 }
 
 const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
-  Phrase phrase;
-  phrase.AddWord(m_sentenceStartWord);
+  std::vector<const Factor*> context;
+  context.push_back(m_sentenceStart);
 
-  return new MorphoLMState(phrase);
+  return new MorphoLMState(context);
 }
 
 void MorphoLM::Load()
@@ -71,17 +89,18 @@ FFState* MorphoLM::EvaluateWhenApplied(
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
-  Phrase context;
+  std::vector<const Factor*> context;
 
   if (prev_state) {
 	  const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
-	  context.Append(prevMorphState->GetPhrase());
+	  context = prevMorphState->GetPhrase();
   }
 
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
-	  context.AddWord(word);
-	  // score
+	  const Factor *factor = word[m_factorType];
+	  context.push_back(factor);
+	  // score TODO
 
   }
 
@@ -111,6 +130,9 @@ void MorphoLM::SetParameter(const std::string& key, const std::string& value)
   }
   else if (key == "factor") {
 	m_factorType = Scan<FactorType>(value);
+  }
+  else if (key == "marker") {
+	  m_marker = value;
   }
   else {
     StatefulFeatureFunction::SetParameter(key, value);
