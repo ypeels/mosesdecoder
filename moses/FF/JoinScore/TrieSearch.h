@@ -6,7 +6,7 @@
 namespace Moses
 {
 // QUERY ///////////////////////////////
-template<typename V>
+template<typename V, typename VEC>
 class NodeSearch
 {
 public:
@@ -35,7 +35,7 @@ public:
     m_child = NULL;
   }
 
-  bool Find(V &value, const std::string &str, size_t pos, const char *data) {
+  bool Find(V &value, const VEC &str, size_t pos, const char *data) {
     if (pos >= str.size()) {
       value = *((const V *)m_ptr);
       return true;
@@ -46,7 +46,7 @@ public:
 
       const char *childrenPtr = numChildrenPtr + sizeof(uint64_t);
 
-      char keySought = str[pos];
+      const typename VEC::value_type &keySought = str[pos];
       //std::cerr << "searching for " << keySought << " at " << (size_t) m_ptr << std::endl;
 
       m_child = Search(numChildren, data, childrenPtr, keySought);
@@ -107,7 +107,7 @@ public:
 };
 
 // container class
-template<typename V>
+template<typename V, typename VEC>
 class TrieSearch
 {
   boost::iostreams::mapped_file_source file;
@@ -135,7 +135,7 @@ public:
   }
 
   bool Find(V &value, const std::string &str) const {
-    NodeSearch<V> rootNode(data, rootPos);
+    NodeSearch<V, VEC> rootNode(data, rootPos);
     bool ret = rootNode.Find(value, str, 0, data);
 
     return ret;
