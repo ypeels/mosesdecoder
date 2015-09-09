@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
   cerr << "Starting..." << endl;
 
   string modelPath(argv[1]);
-  TrieSearch<bool> trieSearch;
+  TrieSearch<bool, std::string> trieSearch;
   trieSearch.Create(modelPath);
 
   // MAIN LOOP

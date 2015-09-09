@@ -4,6 +4,7 @@
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
 #include "moses/FF/JoinScore/TrieSearch.h"
+#include "moses/FF/MorphoTrie/utils.h"
 
 namespace Moses
 {
@@ -39,7 +40,8 @@ protected:
     FactorType	m_factorType;
     std::string m_marker;
 
-    TrieSearch<LMScores> m_trieSearch;
+    //TrieSearch<LMScores, std::string> m_trieSearch;
+    MorphTrie<string, float>* root;
 
     const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
 

@@ -7,7 +7,7 @@
 
 namespace Moses
 {
-template<typename V>
+template<typename V, typename VEC>
 class Trie
 {
 public:
@@ -34,10 +34,10 @@ public:
   // NODE ///////////////////////////////
   class Node
   {
-    typedef std::map<char, Node> Children;
+    typedef std::map<typename VEC::value_type, Node> Children;
     Children m_children;
 
-    void Save(const std::string &line,
+    void Save(const VEC &line,
               std::ostream &outStrme,
               size_t pos,
               const Parameters &params);
@@ -77,8 +77,8 @@ protected:
 //#include "Trie.inc"
 namespace Moses
 {
-template <typename V>
-void Trie<V>::Node::Save(const Parameters &params)
+template <typename V, typename VEC>
+void Trie<V, VEC>::Node::Save(const Parameters &params)
 {
   InputFileStream inStrme(params.m_inPath);
 
@@ -116,8 +116,8 @@ void Trie<V>::Node::Save(const Parameters &params)
   inStrme.Close();
 }
 
-template <typename V>
-void Trie<V>::Node::Save(const std::string &line,
+template <typename V, typename VEC>
+void Trie<V, VEC>::Node::Save(const VEC &line,
                          std::ostream &outStrme, size_t pos,
                          const Parameters &params)
 {
@@ -125,7 +125,7 @@ void Trie<V>::Node::Save(const std::string &line,
   if (pos >= line.size()) {
     m_value = params.m_fullV;
   } else {
-    const char &c = line[pos];
+    const typename VEC::value_type &c = line[pos];
     Node &child = m_children[c];
 
     if (m_prevChild != &child) {
@@ -145,8 +145,8 @@ void Trie<V>::Node::Save(const std::string &line,
   } // if (pos >= line.size()) {
 } // void Trie<V>::Node::Save(...)
 
-template <typename V>
-void Trie<V>::Node::WriteToDisk(std::ostream &outStrme)
+template <typename V, typename VEC>
+void Trie<V, VEC>::Node::WriteToDisk(std::ostream &outStrme)
 {
   // recursively write children 1st
   BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
@@ -168,11 +168,11 @@ void Trie<V>::Node::WriteToDisk(std::ostream &outStrme)
   //std::cerr << m_filePos << "=" << m_value << "=" << numChildren << ": " << std::flush;
 
   BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
-    const char &key = mapPair.first;
+    const typename VEC::value_type &key = mapPair.first;
     Node &node = mapPair.second;
     UTIL_THROW_IF2(!node.m_saved, "Child not saved");
 
-    outStrme.write(&key, sizeof(char));
+    outStrme.write(&key, sizeof(typename VEC::value_type));
     outStrme.write((char*) &node.m_filePos, sizeof(node.m_filePos));
 
     //std::cerr << key << "=" << node.m_filePos << " " << std::flush;

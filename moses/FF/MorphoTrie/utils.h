@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void LoadLm(string lmPath, MorphTrie<string, float>* root) {
+inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
 	ifstream infile(lmPath);
 	string line;
 	char c = '\t';

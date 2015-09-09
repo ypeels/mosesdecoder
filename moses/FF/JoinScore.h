@@ -133,7 +133,7 @@ protected:
   std::string m_vocabPath;
 
   //Node m_vocabRoot;
-  TrieSearch<bool> m_trieSearch;
+  TrieSearch<bool, std::string> m_trieSearch;
 
   int GetMarker(const Word &word) const;
   void CalcScores(size_t &numWord, size_t&numCompoundWord,
