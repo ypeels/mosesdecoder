@@ -1521,6 +1521,11 @@
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MorphoLM.h</locationURI>
 		</link>
 		<link>
+			<name>FF/MorphoTrie</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>FF/NieceTerminal.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/NieceTerminal.cpp</locationURI>
@@ -2769,6 +2774,21 @@
 			<name>FF/LexicalReordering/SparseReordering.h</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/LexicalReordering/SparseReordering.h</locationURI>
+		</link>
+		<link>
+			<name>FF/MorphoTrie/MorphTrie.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MorphoTrie/MorphTrie.h</locationURI>
+		</link>
+		<link>
+			<name>FF/MorphoTrie/Node.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MorphoTrie/Node.h</locationURI>
+		</link>
+		<link>
+			<name>FF/MorphoTrie/utils.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/moses/FF/MorphoTrie/utils.h</locationURI>
 		</link>
 		<link>
 			<name>FF/OSM-Feature/KenOSM.cpp</name>
