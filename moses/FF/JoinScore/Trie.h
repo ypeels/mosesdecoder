@@ -21,6 +21,9 @@ public:
     V m_prefixV;
     V m_fullV;
 
+    Parameters()
+    {}
+
     Parameters(const std::string &inPath, const std::string &outPath,
                const V &prefixV, const V &fullV)
       :m_inPath(inPath)
@@ -35,14 +38,10 @@ public:
   class Node
   {
     typedef std::map<typename VEC::value_type, Node> Children;
+
+  public:
     Children m_children;
 
-    void Save(const VEC &line,
-              std::ostream &outStrme,
-              size_t pos,
-              const Parameters &params);
-    void WriteToDisk(std::ostream &outStrme);
-  public:
     V m_value;
     Node *m_prevChild;
     uint64_t m_filePos;
@@ -55,9 +54,18 @@ public:
 
     void Save(const Parameters &params);
 
+    void Save(const VEC &line,
+              std::ostream &outStrme,
+              size_t pos,
+              const Parameters &params);
+    void WriteToDisk(std::ostream &outStrme);
+
   }; // class Node
 
   // TRIE ///////////////////////
+  Trie()
+  {}
+
   Trie(const std::string &inPath, const std::string &outPath,
        const V &prefixV, const V &fullV)
     :m_params(inPath, outPath, prefixV, fullV)
@@ -67,9 +75,10 @@ public:
     m_root.m_value = m_params.m_prefixV;
     m_root.Save(m_params);
   }
-protected:
+
   Parameters m_params;
   Node m_root;
+protected:
 }; // class Trie
 } // namespace Moses
 
@@ -107,7 +116,7 @@ void Trie<V, VEC>::Node::Save(const Parameters &params)
   WriteToDisk(outStrme);
   std::cerr << "Saved root "
             << m_filePos << "="
-            << m_value << "="
+            //<< m_value << "="
             << numChildren << std::endl;
 
   outStrme.write((char*)&m_filePos, sizeof(m_filePos));
@@ -172,7 +181,7 @@ void Trie<V, VEC>::Node::WriteToDisk(std::ostream &outStrme)
     Node &node = mapPair.second;
     UTIL_THROW_IF2(!node.m_saved, "Child not saved");
 
-    outStrme.write(&key, sizeof(typename VEC::value_type));
+    outStrme.write((char*) key, sizeof(typename VEC::value_type));
     outStrme.write((char*) &node.m_filePos, sizeof(node.m_filePos));
 
     //std::cerr << key << "=" << node.m_filePos << " " << std::flush;
