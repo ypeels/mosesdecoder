@@ -3,11 +3,12 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include "moses/Util.h"
 
 using namespace std;
 
 inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
-	ifstream infile(lmPath);
+  ifstream infile(lmPath.c_str());
 	string line;
 	char c = '\t';
 	while (getline(infile, line)) {
@@ -27,7 +28,7 @@ inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
 	    if (substrings.size() < 2)
 	   		continue;
 
-	    float weight = stof(substrings[0]);
+	    float weight = Moses::Scan<float>(substrings[0]);
         
         char d = ' ';
         string ngram = substrings[1];
@@ -46,7 +47,7 @@ inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
 
         float backoff = 0.f;
         if (substrings.size() == 3)
-            backoff = stof(substrings[2]);
+	  backoff = Moses::Scan<float>(substrings[2]);
 
 
 	   reverse(key.begin(), key.end());

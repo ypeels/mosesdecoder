@@ -103,7 +103,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
-          if (str.front() == '+' && prevIsMorph == true) {
+          if (str[0] == '+' && prevIsMorph == true) {
             //TODO combine morphemes
             //prevFactor = context.pop(); //Get the last one
             //prevFactor.pop_back; //Get rid of the trailing +
@@ -111,10 +111,10 @@ FFState* MorphoLM::EvaluateWhenApplied(
             //factor = prevFactor + factor;
             //TODO score
           }
-          else if (str.front() == '+' && prevIsMorph == false) {
+          else if (str[0] == '+' && prevIsMorph == false) {
             //TODO Give bad score
           }
-          else if (str.front() != '+' && prevIsMorph == true) {
+          else if (str[0] != '+' && prevIsMorph == true) {
             //TODO GIve bad score
           }
           else {
