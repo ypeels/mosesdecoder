@@ -92,6 +92,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   // dense scores
   float score = 0;
   bool prevIsMorph = false;
+  string prevMorph = "";
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
@@ -106,16 +107,15 @@ FFState* MorphoLM::EvaluateWhenApplied(
 	  string str = factor->GetString().as_string();
           if (str.front() == '+' && prevIsMorph == true) {
             //TODO combine morphemes
-            //prevFactor = context.pop(); //Get the last one
-            //prevFactor.pop_back; //Get rid of the trailing +
-            //factor = ; // Get rid of the starting +
-            //factor = prevFactor + factor;
+            str = prevMorph.pop_back() + str.erase(str.begin()); //Combine two morphemes and delete +s
             //TODO score
           }
           else if (str.front() == '+' && prevIsMorph == false) {
+            str.erase(str.begin()); //Get rid of starting +
             //TODO Give bad score
           }
           else if (str.front() != '+' && prevIsMorph == true) {
+             prevMorph.pop_back(); // Get rid of that trailing +
             //TODO GIve bad score
           }
           else {
@@ -123,11 +123,15 @@ FFState* MorphoLM::EvaluateWhenApplied(
           }
           if (str.at(str.length() -1) == '+') {
         	  prevIsMorph = true;
+                  prevMorph = str;
             //TODO estimate score of the rest
           }
           else {
         	  prevIsMorph = false;
+                  prevMorph = "";
           }
+          FactorCollection &fc = FactorCollection::Instance();
+          m_sentenceStart = fc.AddFactor(str, false);
 	  context.push_back(factor);
 	  // score TODO
 
