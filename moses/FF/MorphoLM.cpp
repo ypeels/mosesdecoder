@@ -99,6 +99,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
   std::vector<const Factor*> context(prevMorphState->GetPhrase());
+          
+  //FactorCollection &fc = FactorCollection::Instance();
 
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
@@ -128,17 +130,19 @@ FFState* MorphoLM::EvaluateWhenApplied(
           else {
         	  prevIsMorph = false;
                   prevMorph = "";
+             // TODO: Subtract itermediate?
           }
-          FactorCollection &fc = FactorCollection::Instance();
-          m_sentenceStart = fc.AddFactor(str, false);
-	  context.push_back(factor);
+          //m_sentenceStart = fc.AddFactor(str, false);
+	  //context.push_back(factor);
 	  // score TODO
+          score += MorphoLM::KneserNey(factor);
 
   }
 
   // finished scoring. set score
   accumulator->PlusEquals(this, score);
 
+  // TODO: Subtract itermediate?
 
   return new MorphoLMState(context);
 }
@@ -150,6 +154,31 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   abort();
   return NULL;
+}
+
+float MorphoLM::KneserNey(std::vector& context)
+{
+  float oov = -10000000000.0;
+  float delta = 1.0;
+  float prob = 0.0;
+
+  //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
+
+  prob = root.getProb(context);
+
+  if (prob != 0.0) {
+    return prob;
+  }
+  else if (context.size() > 1) {
+    context.pop_front();
+    return(MorphoLM::KneserNey(context));
+    // TODO: add in backoff penalty
+  }
+  else {
+    return oov;
+  }
+
+  //return p;
 }
 
 void MorphoLM::SetParameter(const std::string& key, const std::string& value)
