@@ -19,17 +19,15 @@ public:
     std::string m_inPath;
     std::string m_outPath;
     V m_prefixV;
-    V m_fullV;
 
     Parameters()
     {}
 
     Parameters(const std::string &inPath, const std::string &outPath,
-               const V &prefixV, const V &fullV)
+               const V &prefixV)
       :m_inPath(inPath)
       ,m_outPath(outPath)
       ,m_prefixV(prefixV)
-      ,m_fullV(fullV)
     {}
 
   };
@@ -57,7 +55,8 @@ public:
     void Save(const VEC &line,
               std::ostream &outStrme,
               size_t pos,
-              const Parameters &params);
+              const Parameters &params,
+			  const V &value);
     void WriteToDisk(std::ostream &outStrme);
 
   }; // class Node
@@ -67,8 +66,8 @@ public:
   {}
 
   Trie(const std::string &inPath, const std::string &outPath,
-       const V &prefixV, const V &fullV)
-    :m_params(inPath, outPath, prefixV, fullV)
+       const V &prefixV)
+    :m_params(inPath, outPath, prefixV)
   { }
 
   void Save() {
@@ -108,7 +107,7 @@ void Trie<V, VEC>::Node::Save(const Parameters &params)
       continue;
     }
 
-    Save(line, outStrme, 0, params);
+    Save(line, outStrme, 0, params, true);
   }
 
   // write root node;
@@ -128,11 +127,11 @@ void Trie<V, VEC>::Node::Save(const Parameters &params)
 template <typename V, typename VEC>
 void Trie<V, VEC>::Node::Save(const VEC &line,
                          std::ostream &outStrme, size_t pos,
-                         const Parameters &params)
+                         const Parameters &params, const V &value)
 {
   //std::cerr << "line=" << line << std::endl;
   if (pos >= line.size()) {
-    m_value = params.m_fullV;
+    m_value = value;
   } else {
     const typename VEC::value_type &c = line[pos];
     Node &child = m_children[c];
@@ -150,7 +149,7 @@ void Trie<V, VEC>::Node::Save(const VEC &line,
 
     //std::cerr << "Saving " << child.m_value << std::endl;
     // recursively add next char
-    child.Save(line, outStrme, pos + 1, params);
+    child.Save(line, outStrme, pos + 1, params, value);
   } // if (pos >= line.size()) {
 } // void Trie<V>::Node::Save(...)
 
