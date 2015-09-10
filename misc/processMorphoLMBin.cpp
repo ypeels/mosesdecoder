@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <boost/foreach.hpp>
 #include "moses/FF/JoinScore/Trie.h"
 #include "moses/Util.h"
 
@@ -11,15 +12,21 @@ struct LMScores
 	float prob, backoff;
 };
 
-map<string, int64_t> vocab;
+std::ostream& operator<<(std::ostream &out, const LMScores &obj)
+{
+	out << "(" << obj.prob << "," << obj.backoff << ")" << flush;
+	return out;
+}
 
-typedef vector<int64_t> NGRAM;
+map<string, uint64_t> vocab;
+
+typedef vector<uint64_t> NGRAM;
 typedef Trie<LMScores, NGRAM> MYTRIE;
 
 int64_t GetVocabId(const string &str)
 {
   int64_t ret;
-	map<string, int64_t>::iterator iter = vocab.find(str);
+	map<string, uint64_t>::iterator iter = vocab.find(str);
 	if (iter == vocab.end()) {
 		ret = vocab.size() + 1;
 		vocab[str] = ret;
@@ -66,15 +73,15 @@ void Save(MYTRIE &trie, const string &inPath, const string &outPath)
   while (getline(inStrme, line)) {
     lineNum++;
     if (lineNum%100000 == 0) std::cerr << lineNum << " " << std::flush;
-    std::cerr << lineNum << " " << line << std::endl;
+    //std::cerr << lineNum << " " << line << std::endl;
 
     if (line.empty() || line.size() > 150) {
       continue;
     }
 
-		NGRAM ngram;
-		LMScores lmScores;
-		ParseLine(ngram, lmScores, line);
+	NGRAM ngram;
+	LMScores lmScores;
+	ParseLine(ngram, lmScores, line);
 		
     trie.m_root.Save(ngram, outStrme, 0, params);
   }
@@ -100,6 +107,22 @@ int main(int argc, char* argv[])
 
   MYTRIE trie;
   Save(trie, argv[1], argv[2]);
+
+  // save vocab
+  string vocabPath = string(argv[2]) + ".vocab";
+  ofstream vocabStrme;
+  vocabStrme.open(vocabPath.c_str());
+
+/*
+  BOOST_FOREACH(const map<string, uint64_t>::value_type &e, vocab) {
+	  cerr << e.first << " " << e.second << endl;
+  }
+*/
+  map<string, uint64_t>::const_iterator iter;
+  for (iter = vocab.begin(); iter != vocab.end(); ++iter) {
+	  vocabStrme << iter->first << " " << iter->second << endl;
+  }
+  vocabStrme.close();
 
   cerr << "Finished" << endl;
 }

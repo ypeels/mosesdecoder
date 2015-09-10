@@ -172,19 +172,18 @@ void Trie<V, VEC>::Node::WriteToDisk(std::ostream &outStrme)
 
   // pointers to children
   uint64_t numChildren = m_children.size();
-  outStrme.write((char*)&numChildren, sizeof(uint64_t));
+  outStrme.write((char*)&numChildren, sizeof(numChildren));
 
-  //std::cerr << m_filePos << "=" << m_value << "=" << numChildren << ": " << std::flush;
+  //std::cerr << "A: " << m_filePos << "=" << m_value << "=" << numChildren << ": " << std::endl;
 
   BOOST_FOREACH(typename Children::value_type &mapPair, m_children) {
     const typename VEC::value_type &key = mapPair.first;
     Node &node = mapPair.second;
     UTIL_THROW_IF2(!node.m_saved, "Child not saved");
 
-    outStrme.write((char*) key, sizeof(typename VEC::value_type));
+    //std::cerr << "B: " << key << "=" << node.m_filePos << " " << std::endl;
+    outStrme.write((char*) &key, sizeof(key));
     outStrme.write((char*) &node.m_filePos, sizeof(node.m_filePos));
-
-    //std::cerr << key << "=" << node.m_filePos << " " << std::flush;
   }
 
   //std::cerr << std::endl;
