@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "moses/FF/JoinScore/Trie.h"
+#include "moses/Util.h"
 
 using namespace std;
 using namespace Moses;
@@ -13,7 +14,7 @@ struct LMScores
 map<string, int64_t> vocab;
 
 typedef vector<int64_t> NGRAM;
-typedef Trie<LMScores, NGRAM > MYTRIE;
+typedef Trie<LMScores, NGRAM> MYTRIE;
 
 int64_t GetVocabId(const string &str)
 {
@@ -28,6 +29,19 @@ int64_t GetVocabId(const string &str)
 	}
 	
 	return ret;
+}
+
+void ParseLine(NGRAM &ngram, LMScores &lmScores, const string &line)
+{
+	vector<string> toks = Tokenize(line);
+	for (size_t i = 0; i < toks.size() - 2; ++i) {
+		const string &tok = toks[i];
+		int64_t vocabId = GetVocabId(tok);
+		ngram.push_back(vocabId);
+	}
+	
+	lmScores.prob = Scan<float>(toks[toks.size() - 2]);
+	lmScores.backoff = Scan<float>(toks[toks.size() - 1]);
 }
 
 void Save(MYTRIE &trie, const string &inPath, const string &outPath)
@@ -52,14 +66,15 @@ void Save(MYTRIE &trie, const string &inPath, const string &outPath)
   while (getline(inStrme, line)) {
     lineNum++;
     if (lineNum%100000 == 0) std::cerr << lineNum << " " << std::flush;
-    //std::cerr << lineNum << " " << std::flush;
+    std::cerr << lineNum << " " << line << std::endl;
 
     if (line.empty() || line.size() > 150) {
       continue;
     }
 
 		NGRAM ngram;
-		
+		LMScores lmScores;
+		ParseLine(ngram, lmScores, line);
 		
     trie.m_root.Save(ngram, outStrme, 0, params);
   }
