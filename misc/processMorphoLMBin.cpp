@@ -83,7 +83,7 @@ void Save(MYTRIE &trie, const string &inPath, const string &outPath)
 	LMScores lmScores;
 	ParseLine(ngram, lmScores, line);
 		
-    trie.m_root.Save(ngram, outStrme, 0, params);
+    trie.m_root.Save(ngram, outStrme, 0, params, lmScores);
   }
 
   // write root node;
