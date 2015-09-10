@@ -165,22 +165,18 @@ float MorphoLM::KneserNey(std::vector<int>* context)
 
   //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
 
-  //prob = root.getProb(context);
+  float prob = root.getProb(context);
 
-  if (prob != 0.0) {
+  if (prob != 0.0) 
     return prob;
-  }
-  /*else if (context.size() > 1) {
+  
+  if (context.size() > 0) {
     backoff = root.getBackoff(context);
     context.pop_front();
-    return(backoff + MorphoLM::KneserNey(context));
-    // TODO: add in backoff penalty
-  }*/
-  else {
-    return oov;
+    return (backoff + MorphoLM::KneserNey(context));
   }
-
-  //return p;
+  
+  return oov;
 }
 
 void MorphoLM::SetParameter(const std::string& key, const std::string& value)
