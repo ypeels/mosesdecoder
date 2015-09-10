@@ -3,6 +3,7 @@
 #include "moses/ScoreComponentCollection.h"
 #include "moses/Hypothesis.h"
 #include "moses/FactorCollection.h"
+#include "moses/InputFileStream.h"
 #include "util/exception.hh"
 
 #include "moses/FF/JoinScore/TrieSearch.h"
@@ -40,6 +41,7 @@ MorphoLM::MorphoLM(const std::string &line)
 ,m_order(0)
 ,m_factorType(0)
 ,m_marker("+")
+,m_binLM(false)
 {
   ReadParameters();
 
@@ -61,8 +63,30 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
 
 void MorphoLM::Load()
 {
-  root = new MorphTrie<string, float>;
-  LoadLm(m_path, root);
+  if (m_binLM) {
+	  m_trieSearch = new TrieSearch<LMScores, NGRAM>;
+	  m_trieSearch->Create(m_path);
+
+	  // vocab
+	  FactorCollection &fc = FactorCollection::Instance();
+
+	  m_vocab = new std::map<const Factor *, uint64_t>;
+
+	  InputFileStream vocabStrme(m_path + ".vocab");
+	  string line;
+	  while (getline(vocabStrme, line)) {
+		  vector<string> toks = Tokenize(line);
+		  assert(toks.size() == 2);
+
+		  const Factor *factor = fc.AddFactor(toks[0], false);
+		  uint64_t vocabId = Scan<uint64_t>(toks[1]);
+		  (*m_vocab)[factor] = vocabId;
+	  }
+  }
+  else {
+	  root = new MorphTrie<string, float>;
+	  LoadLm(m_path, root);
+  }
 }
 
 void MorphoLM::EvaluateInIsolation(const Phrase &source
@@ -192,6 +216,9 @@ void MorphoLM::SetParameter(const std::string& key, const std::string& value)
   }
   else if (key == "marker") {
 	  m_marker = value;
+  }
+  else if (key == "binary") {
+	  m_binLM = Scan<bool>(value);
   }
   else {
     StatefulFeatureFunction::SetParameter(key, value);

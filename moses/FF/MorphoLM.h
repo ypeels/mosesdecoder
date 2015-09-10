@@ -39,8 +39,15 @@ protected:
 	size_t m_order;
     FactorType	m_factorType;
     std::string m_marker;
+    bool m_binLM;
 
-    //TrieSearch<LMScores, std::string> m_trieSearch;
+    // binary trie
+    std::map<const Factor*, uint64_t> *m_vocab;
+
+    typedef std::vector<uint64_t> NGRAM;
+    TrieSearch<LMScores, NGRAM> *m_trieSearch;
+
+    // in-mem trie
     MorphTrie<string, float>* root;
 
     const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
