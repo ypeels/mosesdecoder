@@ -114,6 +114,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   // dense scores
   float score = 0;
+  float bad_score = -10000000000000.0;
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
@@ -123,6 +124,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   bool prevIsMorph = prevMorphState->GetPrevIsMorph();
   string prevMorph = prevMorphState->GetPrevMorph();
+  bool wasBad = false;
   std::vector<const Factor*> context(prevMorphState->GetPhrase());
 
   vector<string> stringContext;
@@ -143,14 +145,13 @@ FFState* MorphoLM::EvaluateWhenApplied(
             str = prevClear + str;
         }
         else if (str[0] == '+' && prevIsMorph == false) {
-          //TODO Give bad score
           str.erase(str.begin()); //Get rid of starting +
+          score += bad_score;
+          wasBad = true;
         }
         else if (str[0] != '+' && prevIsMorph == true) {
-          //TODO GIve bad score
-           //prevMorph.pop_back(); // Get rid of that trailing +
-            //size_t lastElement = context.size() - 1;
-            //context[lastElement]->GetString()erase(context[lastElement].end() - 1);
+          score += bad_score;
+          wasBad = true;
         }
         else {
           //Yay! Easy ... just words
@@ -168,10 +169,13 @@ FFState* MorphoLM::EvaluateWhenApplied(
            // TODO: Subtract itermediate?
         }
           //m_sentenceStart = fc.AddFactor(str, false);
-	  //context.push_back(factor);
-	  // score TODO
     stringContext.push_back(str);
-    score += KneserNey(stringContext); // factor is int& ... fix this
+    if (!wasBad) {
+      score += KneserNey(stringContext);
+    }
+    wasBad = false;
+
+    //TODO: Subtract 
 
   }
 
