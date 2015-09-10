@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "moses/Util.h"
+#include "moses/Factor.h"
 
 using namespace std;
 
@@ -41,7 +42,7 @@ inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
             backoff = Moses::Scan<float>(substrings[2]);
 
 
-       reverse(key.begin(), key.end());
+       //reverse(key.begin(), key.end());
        root->insert(key, weight, backoff);
     }
 
