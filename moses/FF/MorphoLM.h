@@ -79,7 +79,7 @@ public:
     int /* featureID - used to index the state in the previous hypotheses */,
     ScoreComponentCollection* accumulator) const;
 
-  float KneserNey(std::vector<int>* context);
+  float KneserNey(std::vector<Factor*>& context);
 
   void SetParameter(const std::string& key, const std::string& value);
 

@@ -99,43 +99,52 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
   std::vector<const Factor*> context(prevMorphState->GetPhrase());
+
+  vector<string> nGramContext;
           
   //FactorCollection &fc = FactorCollection::Instance();
-
+/*
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
-          if (str[0] == '+' && prevIsMorph == true) {
-            //TODO combine morphemes
-            //str = prevMorph.pop_back() + str.erase(str.begin()); //Combine two morphemes and delete +s
-            //TODO score
-          }
-          else if (str[0] == '+' && prevIsMorph == false) {
-            //TODO Give bad score
-            str.erase(str.begin()); //Get rid of starting +
-          }
-          else if (str[0] != '+' && prevIsMorph == true) {
-            //TODO GIve bad score
-             //prevMorph.pop_back(); // Get rid of that trailing +
-          }
-          else {
-            //Yay! Easy ... just words
-          }
-          if (str.at(str.length() -1) == '+') {
-        	  prevIsMorph = true;
-                  prevMorph = str;
+        if (str[0] == '+' && prevIsMorph == true) {
+          //TODO combine morphemes
+            string prevClear = context.back()->GetString().as_string();
+            str.erase(str.begin());
+
+            str = prevClear + str;
+        }
+        else if (str[0] == '+' && prevIsMorph == false) {
+          //TODO Give bad score
+          str.erase(str.begin()); //Get rid of starting +
+        }
+        else if (str[0] != '+' && prevIsMorph == true) {
+          //TODO GIve bad score
+           //prevMorph.pop_back(); // Get rid of that trailing +
+            //size_t lastElement = context.size() - 1;
+            //context[lastElement]->GetString()erase(context[lastElement].end() - 1);
+        }
+        else {
+          //Yay! Easy ... just words
+        }
+        
+        if (str[str.length() - 1] == '+') {
+            str.erase(str.end() - 1);
+            prevIsMorph = true;
+            prevMorph = str;
             //TODO estimate score of the rest
-          }
-          else {
-        	  prevIsMorph = false;
-                  prevMorph = "";
-             // TODO: Subtract itermediate?
-          }
+        }
+        else {
+          prevIsMorph = false;
+          prevMorph = "";
+           // TODO: Subtract itermediate?
+        }
           //m_sentenceStart = fc.AddFactor(str, false);
 	  //context.push_back(factor);
 	  // score TODO
-          //score += MorphoLM::KneserNey(factor); // factor is int& ... fix this
+    context.push_back(new Factor(str));
+    score += MorphoLM::KneserNey(context); // factor is int& ... fix this
 
   }
 
@@ -143,7 +152,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   accumulator->PlusEquals(this, score);
 
   // TODO: Subtract itermediate?
-
+*/
   return new MorphoLMState(context);
 }
 
@@ -156,15 +165,19 @@ FFState* MorphoLM::EvaluateWhenApplied(
   return NULL;
 }
 
-float MorphoLM::KneserNey(std::vector<int>* context)
+float MorphoLM::KneserNey(std::vector<Factor*>& context)
 {
   float oov = -10000000000.0;
   float delta = 1.0;
   float prob = 0.0;
   float backoff = 0.0;
 
-  //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
+  vector<string> stringContext;
+  for (size_t i = 0; i < context.size(); ++i)
+    stringContext.push_back(context[i]->GetString().as_string());
 
+  //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
+/*
   float prob = root.getProb(context);
 
   if (prob != 0.0) 
@@ -175,7 +188,7 @@ float MorphoLM::KneserNey(std::vector<int>* context)
     context.pop_front();
     return (backoff + MorphoLM::KneserNey(context));
   }
-  
+  */
   return oov;
 }
 
