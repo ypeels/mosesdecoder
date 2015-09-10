@@ -125,10 +125,12 @@ FFState* MorphoLM::EvaluateWhenApplied(
   string prevMorph = prevMorphState->GetPrevMorph();
   std::vector<const Factor*> context(prevMorphState->GetPhrase());
 
-  vector<string> nGramContext;
+  vector<string> stringContext;
+  if (!prevIsMorph)
+    stringContext.push_back(prevMorph);
           
   //FactorCollection &fc = FactorCollection::Instance();
-/*
+
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
@@ -168,8 +170,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
           //m_sentenceStart = fc.AddFactor(str, false);
 	  //context.push_back(factor);
 	  // score TODO
-    context.push_back(new Factor(str));
-    score += MorphoLM::KneserNey(context); // factor is int& ... fix this
+    stringContext.push_back(str);
+    score += KneserNey(stringContext); // factor is int& ... fix this
 
   }
 
@@ -177,7 +179,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   accumulator->PlusEquals(this, score);
 
   // TODO: Subtract itermediate?
-*/
+
   return new MorphoLMState(context, prevMorph);
 }
 
@@ -190,32 +192,32 @@ FFState* MorphoLM::EvaluateWhenApplied(
   return NULL;
 }
 
-float MorphoLM::KneserNey(std::vector<Factor*>& context)
+float MorphoLM::KneserNey(std::vector<string>& context) const
 {
   float oov = -10000000000.0;
-  float delta = 1.0;
-  float prob = 0.0;
   float backoff = 0.0;
-/*
-  vector<string> stringContext;
-  for (size_t i = 0; i < context.size(); ++i)
-    stringContext.push_back(context[i]->GetString().as_string());
 
   //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
 
-  float prob = root.getProb(context);
+  Node<string, float>* result = root->getProb(context);
 
   //prob = root->getProb(context);
 
-  if (prob != 0.0) 
-    return prob;
-  /*TODO:
+  if (result) 
+    return result->getProb();
+  //TODO:
   if (context.size() > 0) {
-    backoff = root.getBackoff(context);
-    context.pop_front();
+    std::vector<string> backOffContext(context.begin(), context.end() - 1);
+    
+    result = root->getProb(backOffContext);
+    if (result)
+      backoff = result->getBackOff();
+
+    context.erase(context.begin());
+
     return (backoff + MorphoLM::KneserNey(context));
   }
-  */
+  
   return oov;
 }
 

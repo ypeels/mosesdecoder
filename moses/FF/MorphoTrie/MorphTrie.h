@@ -13,7 +13,7 @@ class MorphTrie
     public:
         MorphTrie() : root(new Node<KeyClass, ValueClass>()) {}
         Node<KeyClass, ValueClass>* insert(const vector<KeyClass>& word, const ValueClass& weight, const ValueClass& backoff);
-        float getProb(const vector<KeyClass>& word);
+        Node<KeyClass, ValueClass>* getProb(const vector<KeyClass>& word);
         virtual ~MorphTrie();
     private:
         void deleteNode(Node<KeyClass, ValueClass>* node);
@@ -43,7 +43,7 @@ Node<KeyClass, ValueClass>* MorphTrie<KeyClass, ValueClass>::insert(const vector
 }
 
 template<class KeyClass, class ValueClass>
-float MorphTrie<KeyClass, ValueClass>::getProb(const vector<KeyClass>& word)
+Node<KeyClass, ValueClass>* MorphTrie<KeyClass, ValueClass>::getProb(const vector<KeyClass>& word)
 {
     Node<KeyClass, ValueClass>* cRoot = root;
     for (size_t i = 0; i < word.size(); ++i)
@@ -52,12 +52,12 @@ float MorphTrie<KeyClass, ValueClass>::getProb(const vector<KeyClass>& word)
         Node<KeyClass, ValueClass>* cNode = root->findSub(cKey);
         if (cNode == NULL)
         {
-            return 0.f;
+            return NULL;
         }
 
         cRoot = cNode;
     }
-    return root->getProb();
+    return cRoot;
 }
 
 template<class KeyClass, class ValueClass>
