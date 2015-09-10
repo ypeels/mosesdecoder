@@ -58,7 +58,7 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
   std::vector<const Factor*> context;
   context.push_back(m_sentenceStart);
 
-  return new MorphoLMState(context);
+  return new MorphoLMState(context, "");
 }
 
 void MorphoLM::Load()
@@ -114,14 +114,15 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   // dense scores
   float score = 0;
-  bool prevIsMorph = false;
-  string prevMorph = "";
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
   assert(prev_state);
 
   const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
+
+  bool prevIsMorph = prevMorphState->GetPrevIsMorph();
+  string prevMorph = prevMorphState->GetPrevMorph();
   std::vector<const Factor*> context(prevMorphState->GetPhrase());
 
   vector<string> nGramContext;
@@ -177,7 +178,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   // TODO: Subtract itermediate?
 */
-  return new MorphoLMState(context);
+  return new MorphoLMState(context, prevMorph);
 }
 
 FFState* MorphoLM::EvaluateWhenApplied(

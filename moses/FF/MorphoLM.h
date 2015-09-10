@@ -18,8 +18,12 @@ class MorphoLMState : public FFState
   std::vector<const Factor*> m_lastWords;
   std::string m_unfinishedWord;
 public:
-  MorphoLMState(const std::vector<const Factor*> &context)
-    :m_lastWords(context) {
+
+  MorphoLMState(const std::vector<const Factor*> &context,
+		  	  const std::string &unfinishedWord)
+    :m_lastWords(context)
+  	,m_unfinishedWord(unfinishedWord)
+  {
   }
 
   int Compare(const FFState& other) const;
@@ -30,6 +34,12 @@ public:
 
   const std::vector<const Factor*> &GetPhrase() const
   { return m_lastWords; }
+
+  bool GetPrevIsMorph() const
+  { return !m_unfinishedWord.empty(); }
+
+  const std::string &GetPrevMorph() const
+  { return m_unfinishedWord; }
 };
 
 class MorphoLM : public StatefulFeatureFunction
