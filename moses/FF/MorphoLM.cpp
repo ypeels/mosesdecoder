@@ -108,7 +108,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 	  string str = factor->GetString().as_string();
           if (str[0] == '+' && prevIsMorph == true) {
             //TODO combine morphemes
-            str = prevMorph.pop_back() + str.erase(str.begin()); //Combine two morphemes and delete +s
+            //str = prevMorph.pop_back() + str.erase(str.begin()); //Combine two morphemes and delete +s
             //TODO score
           }
           else if (str[0] == '+' && prevIsMorph == false) {
@@ -117,7 +117,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
           }
           else if (str[0] != '+' && prevIsMorph == true) {
             //TODO GIve bad score
-             prevMorph.pop_back(); // Get rid of that trailing +
+             //prevMorph.pop_back(); // Get rid of that trailing +
           }
           else {
             //Yay! Easy ... just words
@@ -135,7 +135,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
           //m_sentenceStart = fc.AddFactor(str, false);
 	  //context.push_back(factor);
 	  // score TODO
-          score += MorphoLM::KneserNey(factor);
+          //score += MorphoLM::KneserNey(factor); // factor is int& ... fix this
 
   }
 
@@ -156,24 +156,26 @@ FFState* MorphoLM::EvaluateWhenApplied(
   return NULL;
 }
 
-float MorphoLM::KneserNey(std::vector& context)
+float MorphoLM::KneserNey(std::vector<int>* context)
 {
   float oov = -10000000000.0;
   float delta = 1.0;
   float prob = 0.0;
+  float backoff = 0.0;
 
   //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
 
-  prob = root.getProb(context);
+  //prob = root.getProb(context);
 
   if (prob != 0.0) {
     return prob;
   }
-  else if (context.size() > 1) {
+  /*else if (context.size() > 1) {
+    backoff = root.getBackoff(context);
     context.pop_front();
-    return(MorphoLM::KneserNey(context));
+    return(backoff + MorphoLM::KneserNey(context));
     // TODO: add in backoff penalty
-  }
+  }*/
   else {
     return oov;
   }
