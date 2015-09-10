@@ -106,18 +106,18 @@ FFState* MorphoLM::EvaluateWhenApplied(
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
-          if (str.front() == '+' && prevIsMorph == true) {
+          if (str[0] == '+' && prevIsMorph == true) {
             //TODO combine morphemes
             str = prevMorph.pop_back() + str.erase(str.begin()); //Combine two morphemes and delete +s
             //TODO score
           }
-          else if (str.front() == '+' && prevIsMorph == false) {
-            str.erase(str.begin()); //Get rid of starting +
+          else if (str[0] == '+' && prevIsMorph == false) {
             //TODO Give bad score
+            str.erase(str.begin()); //Get rid of starting +
           }
-          else if (str.front() != '+' && prevIsMorph == true) {
-             prevMorph.pop_back(); // Get rid of that trailing +
+          else if (str[0] != '+' && prevIsMorph == true) {
             //TODO GIve bad score
+             prevMorph.pop_back(); // Get rid of that trailing +
           }
           else {
             //Yay! Easy ... just words
