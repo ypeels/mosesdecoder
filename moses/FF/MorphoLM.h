@@ -17,16 +17,12 @@ struct LMScores
 class MorphoLMState : public FFState
 {
   std::vector<const Factor*> m_lastWords;
-  bool m_isPrevIsMorph;
+  std::string m_unfinishedWord;
 public:
-  MorphoLMState()
-	:m_isPrevIsMorph(false)
-	{}
-
   MorphoLMState(const std::vector<const Factor*> &context,
-		  	  bool isPrevIsMorph)
+		  	  const std::string &unfinished)
     :m_lastWords(context)
-  	,m_isPrevIsMorph(isPrevIsMorph)
+  	,m_unfinishedWord(unfinished)
   {
   }
 
@@ -40,13 +36,11 @@ public:
   { return m_lastWords; }
 
   bool GetPrevIsMorph() const
-  { return m_isPrevIsMorph; }
+  { return !m_unfinishedWord.empty(); }
 
-  std::string &GetPrevMorph() const
+  const std::string &GetPrevMorph() const
   {
-	  assert(m_isPrevIsMorph);
-	  assert(m_lastWords.size());
-	  return m_lastWords.back();
+	  return m_unfinishedWord;
   }
 
 };
@@ -70,6 +64,9 @@ protected:
     MorphTrie<string, float>* root;
 
     const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
+
+    void SetContext(std::vector<std::string>  &context, const std::vector<const Factor*> &phrase) const;
+    void SetContext2(const std::vector<std::string>  &context, std::vector<const Factor*> &phrase) const;
 
 public:
   MorphoLM(const std::string &line);
