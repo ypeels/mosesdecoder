@@ -200,16 +200,12 @@ float MorphoLM::KneserNey(std::vector<string>& context) const
   float oov = -10000000000.0;
   float backoff = 0.0;
 
-  //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
-
   Node<string, float>* result = root->getProb(context);
 
-  //prob = root->getProb(context);
 
   if (result) 
     return result->getProb();
-  //TODO:
-  if (context.size() > 0) {
+  if (context.size() > 1) {
     std::vector<string> backOffContext(context.begin(), context.end() - 1);
     
     result = root->getProb(backOffContext);
