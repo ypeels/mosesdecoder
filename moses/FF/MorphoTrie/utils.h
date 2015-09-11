@@ -23,7 +23,7 @@ inline void ParseLineByChar(string& line, char c, vector<string>& substrings) {
     }
 }
 
-inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
+inline void LoadLm(string lmPath, MorphTrie<string, float>* root, float &oov) {
     Moses::InputFileStream infile(lmPath.c_str());
     string line;
     while (getline(infile, line)) {
@@ -34,6 +34,10 @@ inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
                continue;
 
         float weight = Moses::Scan<float>(substrings[0]);
+        if (substrings[1] == "<unk>") {
+        	oov = weight;
+        	continue;
+        }
 
         vector<string> key;
         ParseLineByChar(substrings[1], ' ', key);

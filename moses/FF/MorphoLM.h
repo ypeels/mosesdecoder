@@ -18,11 +18,13 @@ class MorphoLMState : public FFState
 {
   std::vector<const Factor*> m_lastWords;
   std::string m_unfinishedWord;
+  float m_unfurnishedScore;
 public:
   MorphoLMState(const std::vector<const Factor*> &context,
 		  	  const std::string &unfinished)
     :m_lastWords(context)
   	,m_unfinishedWord(unfinished)
+	,m_unfurnishedScore(0)
   {
   }
 
@@ -53,6 +55,7 @@ protected:
     FactorType	m_factorType;
     std::string m_marker;
     bool m_binLM;
+    float m_oov;
 
     // binary trie
     std::map<const Factor*, uint64_t> *m_vocab;
@@ -102,7 +105,7 @@ public:
     int /* featureID - used to index the state in the previous hypotheses */,
     ScoreComponentCollection* accumulator) const;
 
-  float KneserNey(std::vector<string>& context) const;
+  float KneserNey(std::vector<string> context) const;
 
   void SetParameter(const std::string& key, const std::string& value);
 

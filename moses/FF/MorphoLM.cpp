@@ -85,7 +85,7 @@ void MorphoLM::Load()
   }
   else {
 	  root = new MorphTrie<string, float>;
-	  LoadLm(m_path, root);
+	  LoadLm(m_path, root, m_oov);
   }
 }
 
@@ -208,10 +208,10 @@ FFState* MorphoLM::EvaluateWhenApplied(
   return NULL;
 }
 
-float MorphoLM::KneserNey(std::vector<string>& context) const
+float MorphoLM::KneserNey(std::vector<string> context) const
 {
   assert(context.size() <= m_order);
-  float oov = -10000000000.0;
+
   float backoff = 0.0;
 
   cerr << "CONTEXT:";
@@ -220,21 +220,28 @@ float MorphoLM::KneserNey(std::vector<string>& context) const
 
   Node<string, float>* result = root->getProb(context);
 
-  if (result) 
-    return result->getProb();
-  if (context.size() > 1) {
-    std::vector<string> backOffContext(context.begin(), context.end() - 1);
-    
-    result = root->getProb(backOffContext);
-    if (result)
-      backoff = result->getBackOff();
+  float ret = -99999;
+  if (result) {
+    ret = result->getProb();
+  }
+  else if (context.size() > 1) {
+	  std::vector<string> backOffContext(context.begin(), context.end() - 1);
+	  result = root->getProb(backOffContext);
+	  if (result) {
+		  backoff = result->getBackOff();
+	  }
 
-    context.erase(context.begin());
+	  context.erase(context.begin());
 
-    return (backoff + MorphoLM::KneserNey(context));
+	ret = backoff + KneserNey(context);
+  }
+  else {
+	  assert(context.size() == 1);
+	  ret = m_oov;
   }
   
-  return oov;
+  cerr << "ret=" << ret << endl;
+  return ret;
 }
 
 void MorphoLM::SetParameter(const std::string& key, const std::string& value)
