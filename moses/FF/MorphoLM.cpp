@@ -58,7 +58,7 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
   std::vector<const Factor*> context;
   context.push_back(m_sentenceStart);
 
-  return new MorphoLMState(context, "");
+  return new MorphoLMState(context, "", 0.0);
 }
 
 void MorphoLM::Load()
@@ -114,7 +114,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   // dense scores
   float score = 0;
-  float bad_score = -10000000000000.0;
+  float prev_score = 0.0;
+  float kn_score = 0.0;
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
@@ -124,27 +125,31 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   bool prevIsMorph = prevMorphState->GetPrevIsMorph();
   string prevMorph = prevMorphState->GetPrevMorph();
+  prev_score = prevMorphState->GetPrevScore();
 
   vector<string> stringContext;
   SetContext(stringContext, prevMorphState->GetPhrase());
 
   for (size_t pos = 0; pos < targetLen; ++pos){
-	  const Word &word = cur_hypo.GetCurrWord(pos);
-	  const Factor *factor = word[m_factorType];
-	  string str = factor->GetString().as_string();
-	  if (str.size() == 1 && str == "+") {
+     const Word &word = cur_hypo.GetCurrWord(pos);
+     const Factor *factor = word[m_factorType];
+     string str = factor->GetString().as_string();
+     if (str.size() == 1 && str == "+") {
 	  		// do nothing
-	  }
-	  else if (str[0] == '+' && prevIsMorph == true) {
+      }
+      else if (str[0] == '+' && prevIsMorph == true) {
         	cerr << "POINT a";
-            str.erase(str.begin());
-            str = prevMorph + str;
+          str.erase(str.begin());
+          str = prevMorph + str;
+          score -= prev_score;
       }
       else if (str[0] == '+' && prevIsMorph == false) {
+          // Treat this as two separate words
         	cerr << "POINT b";
           str.erase(str.begin()); //Get rid of starting +
       }
       else if (str[0] != '+' && prevIsMorph == true) {
+          // Treat this as two separate words
         	cerr << "POINT c";
       }
       else {
@@ -172,21 +177,24 @@ FFState* MorphoLM::EvaluateWhenApplied(
     	  stringContext.erase(stringContext.begin());
         }
       }
-      score += KneserNey(stringContext);
+      kn_score = KneserNey(stringContext);
+      score += kn_score;
 
       // If it is a morph, pop it off and keep it separate
       if (prevIsMorph) {
     	  stringContext.pop_back();
+          prev_score = kn_score;
+      }
+      else {
+        prev_score = 0.0; // End of a word, don't need to subtract
       }
 
-      //TODO: Subtract
 
   }
 
   // finished scoring. set score
   accumulator->PlusEquals(this, score);
 
-  // TODO: Subtract itermediate?
   if (stringContext.size() >= m_order) {
 	  stringContext.erase(stringContext.begin());
   }
@@ -196,7 +204,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   SetContext2(stringContext, context);
 
   assert(context.size() < m_order);
-  return new MorphoLMState(context, prevMorph);
+  return new MorphoLMState(context, prevMorph, prev_score);
 }
 
 FFState* MorphoLM::EvaluateWhenApplied(
