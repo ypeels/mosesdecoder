@@ -64,7 +64,7 @@ protected:
     TrieSearch<LMScores, NGRAM> *m_trieSearch;
 
     // in-mem trie
-    MorphTrie<string, float>* root;
+    MorphTrie<const Factor*, float>* root;
 
     const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
 
@@ -105,7 +105,7 @@ public:
     int /* featureID - used to index the state in the previous hypotheses */,
     ScoreComponentCollection* accumulator) const;
 
-  float KneserNey(std::vector<string> context) const;
+  float KneserNey(std::vector<const Factor*> context) const;
 
   void SetParameter(const std::string& key, const std::string& value);
 

@@ -50,7 +50,7 @@ Node<KeyClass, ValueClass>* MorphTrie<KeyClass, ValueClass>::getProb(const vecto
     {
         KeyClass cKey = word[i];
         Node<KeyClass, ValueClass>* cNode = root->findSub(cKey);
-        if (cNode == NULL)
+        if (!cNode)
         {
             return NULL;
         }
@@ -75,4 +75,5 @@ MorphTrie<KeyClass, ValueClass>::~MorphTrie()
 {
     deleteNode(root);
 }
+
 #endif /* end of include guard: MORPHTRIE_H_ */

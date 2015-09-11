@@ -84,8 +84,41 @@ void MorphoLM::Load()
 	  }
   }
   else {
-	  root = new MorphTrie<string, float>;
-	  LoadLm(m_path, root, m_oov);
+	  FactorCollection &fc = FactorCollection::Instance();
+	  root = new MorphTrie<const Factor*, float>;
+
+	  InputFileStream infile(m_path);
+	  string line;
+	  while (getline(infile, line)) {
+		  vector<string> substrings;
+		  Tokenize(substrings, line, "\t");
+
+		  if (substrings.size() < 2)
+			   continue;
+
+		  float weight = Moses::Scan<float>(substrings[0]);
+		  if (substrings[1] == "<unk>") {
+			  m_oov = weight;
+			  continue;
+		  }
+
+		  vector<string> key;
+		  Tokenize(key, substrings[1], " ");
+
+		  vector<const Factor*> factorKey;
+		  for (int i = 0; i < key.size(); ++i)
+			  factorKey.push_back(fc.AddFactor(key[i], false));
+
+		  float backoff = 0.f;
+		  if (substrings.size() == 3)
+			backoff = Moses::Scan<float>(substrings[2]);
+
+
+	   //reverse(key.begin(), key.end());
+		  root->insert(factorKey, weight, backoff);
+	  }
+
+	  //LoadLm(m_path, root, m_oov);
   }
 }
 
@@ -114,7 +147,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   // dense scores
   float score = 0;
-  float bad_score = -10000000000000.0;
+  //float bad_score = -10000000000000.0;
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
@@ -125,24 +158,31 @@ FFState* MorphoLM::EvaluateWhenApplied(
   bool prevIsMorph = prevMorphState->GetPrevIsMorph();
   string prevMorph = prevMorphState->GetPrevMorph();
 
-  vector<string> stringContext;
-  SetContext(stringContext, prevMorphState->GetPhrase());
+  vector<const Factor*> context = prevMorphState->GetPhrase();
 
+
+
+  //vector<string> stringContext;
+  //SetContext(stringContext, prevMorphState->GetPhrase());
+  FactorCollection &fc = FactorCollection::Instance();
   for (size_t pos = 0; pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetCurrWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
+
 	  if (str.size() == 1 && str == "+") {
 	  		// do nothing
 	  }
 	  else if (str[0] == '+' && prevIsMorph == true) {
         	cerr << "POINT a";
             str.erase(str.begin());
+            factor = fc.AddFactor(prevMorph + str, false);
             str = prevMorph + str;
       }
       else if (str[0] == '+' && prevIsMorph == false) {
         	cerr << "POINT b";
           str.erase(str.begin()); //Get rid of starting +
+          factor = fc.AddFactor(str, false);
       }
       else if (str[0] != '+' && prevIsMorph == true) {
         	cerr << "POINT c";
@@ -167,16 +207,16 @@ FFState* MorphoLM::EvaluateWhenApplied(
     
       // If the current hypotheis is null, ignore it (just a +, start of this method, etc.)
       if (str.length() > 0) {
-        stringContext.push_back(str);
-        if (stringContext.size() > m_order) {
-    	  stringContext.erase(stringContext.begin());
+        context.push_back(factor);
+        if (context.size() > m_order) {
+    	  context.erase(context.begin());
         }
       }
-      score += KneserNey(stringContext);
+      score += KneserNey(context);
 
       // If it is a morph, pop it off and keep it separate
       if (prevIsMorph) {
-    	  stringContext.pop_back();
+    	  context.pop_back();
       }
 
       //TODO: Subtract
@@ -187,13 +227,13 @@ FFState* MorphoLM::EvaluateWhenApplied(
   accumulator->PlusEquals(this, score);
 
   // TODO: Subtract itermediate?
-  if (stringContext.size() >= m_order) {
-	  stringContext.erase(stringContext.begin());
+  if (context.size() >= m_order) {
+	  context.erase(context.begin());
   }
   cerr << "prevMorph=" << prevMorph << endl;
 
-  std::vector<const Factor*>  context;
-  SetContext2(stringContext, context);
+  //std::vector<const Factor*>  context;
+  //SetContext2(stringContext, context);
 
   assert(context.size() < m_order);
   return new MorphoLMState(context, prevMorph);
@@ -208,24 +248,24 @@ FFState* MorphoLM::EvaluateWhenApplied(
   return NULL;
 }
 
-float MorphoLM::KneserNey(std::vector<string> context) const
+float MorphoLM::KneserNey(std::vector<const Factor*> context) const
 {
   assert(context.size() <= m_order);
 
   float backoff = 0.0;
 
   cerr << "CONTEXT:";
-  std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
+  //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
   cerr << endl;
 
-  Node<string, float>* result = root->getProb(context);
+  Node<const Factor*, float>* result = root->getProb(context);
 
   float ret = -99999;
   if (result) {
     ret = result->getProb();
   }
   else if (context.size() > 1) {
-	  std::vector<string> backOffContext(context.begin(), context.end() - 1);
+	  std::vector<const Factor*> backOffContext(context.begin(), context.end() - 1);
 	  result = root->getProb(backOffContext);
 	  if (result) {
 		  backoff = result->getBackOff();
