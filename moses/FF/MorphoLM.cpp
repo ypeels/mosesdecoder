@@ -131,17 +131,13 @@ FFState* MorphoLM::EvaluateWhenApplied(
   if (!prevIsMorph)
     stringContext.push_back(prevMorph);
           
-  //FactorCollection &fc = FactorCollection::Instance();
-
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
         if (str[0] == '+' && prevIsMorph == true) {
-          //TODO combine morphemes
             string prevClear = context.back()->GetString().as_string();
             str.erase(str.begin());
-
             str = prevClear + str;
         }
         else if (str[0] == '+' && prevIsMorph == false) {
@@ -168,8 +164,11 @@ FFState* MorphoLM::EvaluateWhenApplied(
           prevMorph = "";
            // TODO: Subtract itermediate?
         }
-          //m_sentenceStart = fc.AddFactor(str, false);
-    stringContext.push_back(str);
+    
+    // If the current hypotheis is null, ignore it (just a +, start of this method, etc.)
+    if (str.length() > 0) {
+      stringContext.push_back(str);
+    }
     if (!wasBad) {
       score += KneserNey(stringContext);
     }
