@@ -58,7 +58,7 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
   std::vector<const Factor*> context;
   context.push_back(m_sentenceStart);
 
-  return new MorphoLMState(context, "");
+  return new MorphoLMState(context, "", 0.0);
 }
 
 void MorphoLM::Load()
@@ -147,7 +147,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   // dense scores
   float score = 0;
-  //float bad_score = -10000000000000.0;
+  float prev_score = 0.0;
+  float kn_score = 0.0;
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
   const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
@@ -157,6 +158,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   bool prevIsMorph = prevMorphState->GetPrevIsMorph();
   string prevMorph = prevMorphState->GetPrevMorph();
+  prev_score = prevMorphState->GetPrevScore();
 
   vector<const Factor*> context = prevMorphState->GetPhrase();
 
@@ -172,19 +174,22 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
 	  if (str.size() == 1 && str == "+") {
 	  		// do nothing
-	  }
-	  else if (str[0] == '+' && prevIsMorph == true) {
+      }
+      else if (str[0] == '+' && prevIsMorph == true) {
         	cerr << "POINT a";
             str.erase(str.begin());
             factor = fc.AddFactor(prevMorph + str, false);
-            str = prevMorph + str;
+
+          score -= prev_score;
       }
       else if (str[0] == '+' && prevIsMorph == false) {
+          // Treat this as two separate words
         	cerr << "POINT b";
           str.erase(str.begin()); //Get rid of starting +
           factor = fc.AddFactor(str, false);
       }
       else if (str[0] != '+' && prevIsMorph == true) {
+          // Treat this as two separate words
         	cerr << "POINT c";
       }
       else {
@@ -212,14 +217,19 @@ FFState* MorphoLM::EvaluateWhenApplied(
     	  context.erase(context.begin());
         }
       }
-      score += KneserNey(context);
+
+      kn_score = KneserNey(context);
+      score += kn_score;
 
       // If it is a morph, pop it off and keep it separate
       if (prevIsMorph) {
     	  context.pop_back();
+          prev_score = kn_score;
+      }
+      else {
+        prev_score = 0.0; // End of a word, don't need to subtract
       }
 
-      //TODO: Subtract
 
   }
 
@@ -236,7 +246,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   //SetContext2(stringContext, context);
 
   assert(context.size() < m_order);
-  return new MorphoLMState(context, prevMorph);
+  return new MorphoLMState(context, prevMorph, prev_score);
 }
 
 FFState* MorphoLM::EvaluateWhenApplied(

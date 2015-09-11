@@ -19,12 +19,14 @@ class MorphoLMState : public FFState
   std::vector<const Factor*> m_lastWords;
   std::string m_unfinishedWord;
   float m_unfurnishedScore;
+  float m_prevScore;
 public:
   MorphoLMState(const std::vector<const Factor*> &context,
-		  	  const std::string &unfinished)
+		  	  const std::string &unfinished, float score)
     :m_lastWords(context)
   	,m_unfinishedWord(unfinished)
 	,m_unfurnishedScore(0)
+        ,m_prevScore(score)
   {
   }
 
@@ -43,6 +45,14 @@ public:
   const std::string &GetPrevMorph() const
   {
 	  return m_unfinishedWord;
+  }
+
+  float GetPrevScore() const
+  { return m_prevScore; }
+
+  void SetPrevScore(float score)
+  {
+      m_prevScore = score;
   }
 
 };
