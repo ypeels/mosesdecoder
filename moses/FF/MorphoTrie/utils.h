@@ -5,6 +5,7 @@
 #include <vector>
 #include "moses/Util.h"
 #include "moses/Factor.h"
+#include "moses/InputFileStream.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ inline void ParseLineByChar(string& line, char c, vector<string>& substrings) {
 }
 
 inline void LoadLm(string lmPath, MorphTrie<string, float>* root) {
-  ifstream infile(lmPath.c_str());
+    Moses::InputFileStream infile(lmPath.c_str());
     string line;
     while (getline(infile, line)) {
         vector<string> substrings;
