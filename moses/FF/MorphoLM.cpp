@@ -123,34 +123,37 @@ FFState* MorphoLM::EvaluateWhenApplied(
   const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
 
   bool prevIsMorph = prevMorphState->GetPrevIsMorph();
-  string prevMorph = prevMorphState->GetPrevMorph();
   bool wasBad = false;
   std::vector<const Factor*> context(prevMorphState->GetPhrase());
 
   vector<string> stringContext;
   if (!prevIsMorph)
-    stringContext.push_back(prevMorph);
+    stringContext.push_back(prevMorphState->GetPrevMorph());
           
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
         if (str[0] == '+' && prevIsMorph == true) {
+        	cerr << "POINT a";
             string prevClear = context.back()->GetString().as_string();
             str.erase(str.begin());
             str = prevClear + str;
         }
         else if (str[0] == '+' && prevIsMorph == false) {
+        	cerr << "POINT b";
           str.erase(str.begin()); //Get rid of starting +
           score += bad_score;
           wasBad = true;
         }
         else if (str[0] != '+' && prevIsMorph == true) {
+        	cerr << "POINT c";
           score += bad_score;
           wasBad = true;
         }
         else {
           //Yay! Easy ... just words
+        	cerr << "POINT d";
         }
         
         if (str[str.length() - 1] == '+') {
@@ -182,8 +185,9 @@ FFState* MorphoLM::EvaluateWhenApplied(
   accumulator->PlusEquals(this, score);
 
   // TODO: Subtract itermediate?
+  cerr << "prevMorph=" << prevMorph << endl;
 
-  return new MorphoLMState(context, prevMorph);
+  return new MorphoLMState(context, prevIsMorph);
 }
 
 FFState* MorphoLM::EvaluateWhenApplied(
@@ -200,8 +204,11 @@ float MorphoLM::KneserNey(std::vector<string>& context) const
   float oov = -10000000000.0;
   float backoff = 0.0;
 
-  Node<string, float>* result = root->getProb(context);
+  cerr << "CONTEXT:";
+  std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
+  cerr << endl;
 
+  Node<string, float>* result = root->getProb(context);
 
   if (result) 
     return result->getProb();

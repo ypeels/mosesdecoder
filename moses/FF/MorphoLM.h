@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 #include "StatefulFeatureFunction.h"
 #include "FFState.h"
@@ -16,13 +17,16 @@ struct LMScores
 class MorphoLMState : public FFState
 {
   std::vector<const Factor*> m_lastWords;
-  std::string m_unfinishedWord;
+  bool m_isPrevIsMorph;
 public:
+  MorphoLMState()
+	:m_isPrevIsMorph(false)
+	{}
 
   MorphoLMState(const std::vector<const Factor*> &context,
-		  	  const std::string &unfinishedWord)
+		  	  bool isPrevIsMorph)
     :m_lastWords(context)
-  	,m_unfinishedWord(unfinishedWord)
+  	,m_isPrevIsMorph(isPrevIsMorph)
   {
   }
 
@@ -36,10 +40,15 @@ public:
   { return m_lastWords; }
 
   bool GetPrevIsMorph() const
-  { return !m_unfinishedWord.empty(); }
+  { return m_isPrevIsMorph; }
 
-  const std::string &GetPrevMorph() const
-  { return m_unfinishedWord; }
+  std::string &GetPrevMorph() const
+  {
+	  assert(m_isPrevIsMorph);
+	  assert(m_lastWords.size());
+	  return m_lastWords.back();
+  }
+
 };
 
 class MorphoLM : public StatefulFeatureFunction
