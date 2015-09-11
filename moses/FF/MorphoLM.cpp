@@ -131,17 +131,13 @@ FFState* MorphoLM::EvaluateWhenApplied(
   if (!prevIsMorph)
     stringContext.push_back(prevMorph);
           
-  //FactorCollection &fc = FactorCollection::Instance();
-
   for (size_t pos = targetRange.GetStartPos(); pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
         if (str[0] == '+' && prevIsMorph == true) {
-          //TODO combine morphemes
             string prevClear = context.back()->GetString().as_string();
             str.erase(str.begin());
-
             str = prevClear + str;
         }
         else if (str[0] == '+' && prevIsMorph == false) {
@@ -168,8 +164,11 @@ FFState* MorphoLM::EvaluateWhenApplied(
           prevMorph = "";
            // TODO: Subtract itermediate?
         }
-          //m_sentenceStart = fc.AddFactor(str, false);
-    stringContext.push_back(str);
+    
+    // If the current hypotheis is null, ignore it (just a +, start of this method, etc.)
+    if (str.length() > 0) {
+      stringContext.push_back(str);
+    }
     if (!wasBad) {
       score += KneserNey(stringContext);
     }
@@ -201,16 +200,12 @@ float MorphoLM::KneserNey(std::vector<string>& context) const
   float oov = -10000000000.0;
   float backoff = 0.0;
 
-  //p = max() / count[order] + delta * N1 * p_1(backoff)/count[order];
-
   Node<string, float>* result = root->getProb(context);
 
-  //prob = root->getProb(context);
 
   if (result) 
     return result->getProb();
-  //TODO:
-  if (context.size() > 0) {
+  if (context.size() > 1) {
     std::vector<string> backOffContext(context.begin(), context.end() - 1);
     
     result = root->getProb(backOffContext);
