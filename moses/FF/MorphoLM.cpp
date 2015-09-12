@@ -85,23 +85,35 @@ void MorphoLM::Load()
   }
   else {
 	  FactorCollection &fc = FactorCollection::Instance();
-	  root = new MorphTrie<const Factor*, float>;
+	  root = new MorphTrie<const Factor*, LMScores>;
 
 	  InputFileStream infile(m_path);
+	  size_t lineNum = 0;
 	  string line;
 	  while (getline(infile, line)) {
+		  if (++lineNum % 10000 == 0) {
+			  cerr << lineNum << " ";
+		  }
+
 		  vector<string> substrings;
 		  Tokenize(substrings, line, "\t");
 
 		  if (substrings.size() < 2)
 			   continue;
 
-		  float weight = Moses::Scan<float>(substrings[0]);
+		  assert(substrings.size() == 2 || substrings.size() == 3);
+
+		  float prob = Moses::Scan<float>(substrings[0]);
 		  if (substrings[1] == "<unk>") {
-			  m_oov = weight;
+			  m_oov = prob;
 			  continue;
 		  }
 
+		  float backoff = 0.f;
+		  if (substrings.size() == 3)
+			backoff = Moses::Scan<float>(substrings[2]);
+
+		  // ngram
 		  vector<string> key;
 		  Tokenize(key, substrings[1], " ");
 
@@ -109,13 +121,9 @@ void MorphoLM::Load()
 		  for (int i = 0; i < key.size(); ++i)
 			  factorKey.push_back(fc.AddFactor(key[i], false));
 
-		  float backoff = 0.f;
-		  if (substrings.size() == 3)
-			backoff = Moses::Scan<float>(substrings[2]);
-
 
 	   //reverse(key.begin(), key.end());
-		  root->insert(factorKey, weight, backoff);
+		  //root->insert(factorKey, LMScores(prob, backoff));
 	  }
 
 	  //LoadLm(m_path, root, m_oov);
@@ -206,7 +214,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
       else {
           prevMorph = "";
           prevIsMorph = false;
-          //score -= KneserNey(stringContext); //TODO: Double check this is right
+          //score -= Score(stringContext); //TODO: Double check this is right
           // TODO: Subtract itermediate?
       }
     
@@ -218,7 +226,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
         }
       }
 
-      kn_score = KneserNey(context);
+      kn_score = Score(context);
       score += kn_score;
 
       // If it is a morph, pop it off and keep it separate
@@ -258,34 +266,41 @@ FFState* MorphoLM::EvaluateWhenApplied(
   return NULL;
 }
 
-float MorphoLM::KneserNey(std::vector<const Factor*> context) const
+float MorphoLM::Score(std::vector<const Factor*> context) const
 {
   assert(context.size() <= m_order);
 
   float backoff = 0.0;
 
   cerr << "CONTEXT:";
+  for (size_t i = 0; i < context.size(); ++i) {
+	  cerr << context[i]->GetString() << " ";
+  }
   //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
   cerr << endl;
 
-  Node<const Factor*, float>* result = root->getProb(context);
+  Node<const Factor*, LMScores>* result = root->getNode(context);
 
   float ret = -99999;
   if (result) {
-    ret = result->getProb();
+	cerr << "HELL A";
+    ret = result->getValue().prob;
   }
   else if (context.size() > 1) {
+		cerr << "HELL B";
 	  std::vector<const Factor*> backOffContext(context.begin(), context.end() - 1);
-	  result = root->getProb(backOffContext);
+	  result = root->getNode(backOffContext);
 	  if (result) {
-		  backoff = result->getBackOff();
+			cerr << "HELL C";
+		  backoff = result->getValue().backoff;
 	  }
 
 	  context.erase(context.begin());
 
-	ret = backoff + KneserNey(context);
+	ret = backoff + Score(context);
   }
   else {
+		cerr << "HELL D";
 	  assert(context.size() == 1);
 	  ret = m_oov;
   }

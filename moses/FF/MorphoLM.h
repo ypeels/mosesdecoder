@@ -11,6 +11,19 @@ namespace Moses
 {
 struct LMScores
 {
+	LMScores()
+	{}
+
+	LMScores(const LMScores &copy)
+	:prob(copy.prob)
+	,backoff(copy.backoff)
+	{}
+
+	LMScores(float inProb, float inBackoff)
+	:prob(inProb)
+	,backoff(inBackoff)
+	{}
+
 	float prob, backoff;
 };
 
@@ -74,7 +87,7 @@ protected:
     TrieSearch<LMScores, NGRAM> *m_trieSearch;
 
     // in-mem trie
-    MorphTrie<const Factor*, float>* root;
+    MorphTrie<const Factor*, LMScores>* root;
 
     const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
 
@@ -115,7 +128,7 @@ public:
     int /* featureID - used to index the state in the previous hypotheses */,
     ScoreComponentCollection* accumulator) const;
 
-  float KneserNey(std::vector<const Factor*> context) const;
+  float Score(std::vector<const Factor*> context) const;
 
   void SetParameter(const std::string& key, const std::string& value);
 
