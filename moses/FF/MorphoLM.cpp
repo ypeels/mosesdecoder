@@ -123,7 +123,7 @@ void MorphoLM::Load()
 
 
 	   //reverse(key.begin(), key.end());
-		  //root->insert(factorKey, LMScores(prob, backoff));
+		  root->insert(factorKey, LMScores(prob, backoff));
 	  }
 
 	  //LoadLm(m_path, root, m_oov);
@@ -156,9 +156,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
   // dense scores
   float score = 0;
   float prev_score = 0.0;
-  float kn_score = 0.0;
+  float ngramScore = 0.0;
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
-  const WordsRange &targetRange = cur_hypo.GetCurrTargetWordsRange();
 
   assert(prev_state);
 
@@ -226,19 +225,29 @@ FFState* MorphoLM::EvaluateWhenApplied(
         }
       }
 
-      kn_score = Score(context);
-      score += kn_score;
+      ngramScore = Score(context);
+      score += ngramScore;
 
       // If it is a morph, pop it off and keep it separate
       if (prevIsMorph) {
     	  context.pop_back();
-          prev_score = kn_score;
+          prev_score = ngramScore;
       }
       else {
         prev_score = 0.0; // End of a word, don't need to subtract
       }
+  }
 
+  // is it finished?
+  if (cur_hypo.GetWordsBitmap().IsComplete()) {
+      context.push_back(m_sentenceEnd);
+      if (context.size() > m_order) {
+    	  context.erase(context.begin());
+      }
+      prevMorph = "";
 
+      ngramScore = Score(context);
+      score += ngramScore;
   }
 
   // finished scoring. set score

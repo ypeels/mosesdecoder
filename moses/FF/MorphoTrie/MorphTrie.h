@@ -12,7 +12,6 @@ class MorphTrie
         Node<KeyClass, ValueClass>* insert(const std::vector<KeyClass>& word, const ValueClass& value);
         Node<KeyClass, ValueClass>* getNode(const std::vector<KeyClass>& word);
     private:
-        void deleteNode(Node<KeyClass, ValueClass>* node);
         Node<KeyClass, ValueClass> root;
 };
 
