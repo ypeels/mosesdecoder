@@ -31,15 +31,13 @@ class MorphoLMState : public FFState
 {
   std::vector<const Factor*> m_lastWords;
   std::string m_unfinishedWord;
-  float m_unfurnishedScore;
   float m_prevScore;
 public:
   MorphoLMState(const std::vector<const Factor*> &context,
 		  	  const std::string &unfinished, float score)
     :m_lastWords(context)
   	,m_unfinishedWord(unfinished)
-	,m_unfurnishedScore(0)
-        ,m_prevScore(score)
+    ,m_prevScore(score)
   {
   }
 
@@ -79,6 +77,7 @@ protected:
     std::string m_marker;
     bool m_binLM;
     float m_oov;
+    const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
 
     // binary trie
     std::map<const Factor*, uint64_t> *m_vocab;
@@ -89,11 +88,8 @@ protected:
     // in-mem trie
     MorphTrie<const Factor*, LMScores>* root;
 
-    const Factor *m_sentenceStart, *m_sentenceEnd; //! Contains factors which represents the beging and end words for this LM.
-
-    void SetContext(std::vector<std::string>  &context, const std::vector<const Factor*> &phrase) const;
-    void SetContext2(const std::vector<std::string>  &context, std::vector<const Factor*> &phrase) const;
-
+    float Score(std::vector<const Factor*> context) const;
+    std::pair<bool, bool> IsPrefixSuffix(const std::string &str) const;
 public:
   MorphoLM(const std::string &line);
 
@@ -127,8 +123,6 @@ public:
     const ChartHypothesis& /* cur_hypo */,
     int /* featureID - used to index the state in the previous hypotheses */,
     ScoreComponentCollection* accumulator) const;
-
-  float Score(std::vector<const Factor*> context) const;
 
   void SetParameter(const std::string& key, const std::string& value);
 

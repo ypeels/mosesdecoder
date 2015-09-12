@@ -121,12 +121,8 @@ void MorphoLM::Load()
 		  for (int i = 0; i < key.size(); ++i)
 			  factorKey.push_back(fc.AddFactor(key[i], false));
 
-
-	   //reverse(key.begin(), key.end());
 		  root->insert(factorKey, LMScores(prob, backoff));
 	  }
-
-	  //LoadLm(m_path, root, m_oov);
   }
 }
 
@@ -169,8 +165,6 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   vector<const Factor*> context = prevMorphState->GetPhrase();
 
-
-
   //vector<string> stringContext;
   //SetContext(stringContext, prevMorphState->GetPhrase());
   FactorCollection &fc = FactorCollection::Instance();
@@ -178,24 +172,22 @@ FFState* MorphoLM::EvaluateWhenApplied(
 	  const Word &word = cur_hypo.GetCurrWord(pos);
 	  const Factor *factor = word[m_factorType];
 	  string str = factor->GetString().as_string();
+	  std::pair<bool, bool> prefixSuffix = IsPrefixSuffix(str);
 
-	  if (str.size() == 1 && str == "+") {
-	  		// do nothing
-      }
-      else if (str[0] == '+' && prevIsMorph == true) {
+	  if (prefixSuffix.first && prevIsMorph == true) {
         	cerr << "POINT a";
             str.erase(str.begin());
             factor = fc.AddFactor(prevMorph + str, false);
 
           score -= prev_score;
       }
-      else if (str[0] == '+' && prevIsMorph == false) {
+      else if (prefixSuffix.first && prevIsMorph == false) {
           // Treat this as two separate words
         	cerr << "POINT b";
           str.erase(str.begin()); //Get rid of starting +
           factor = fc.AddFactor(str, false);
       }
-      else if (str[0] != '+' && prevIsMorph == true) {
+      else if (!prefixSuffix.first && prevIsMorph == true) {
           // Treat this as two separate words
         	cerr << "POINT c";
       }
@@ -204,7 +196,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
         	cerr << "POINT d";
       }
         
-      if (str[str.length() - 1] == '+' && str.length() > 1) {
+      if (prefixSuffix.second) {
             str.erase(str.end() - 1);
             prevMorph = str;
             prevIsMorph = true;
@@ -226,6 +218,14 @@ FFState* MorphoLM::EvaluateWhenApplied(
       }
 
       ngramScore = Score(context);
+
+      cerr << "CONTEXT:";
+      for (size_t i = 0; i < context.size(); ++i) {
+    	  cerr << context[i]->GetString() << " ";
+      }
+      //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
+      cerr << "ngramScore=" << ngramScore << endl;
+
       score += ngramScore;
 
       // If it is a morph, pop it off and keep it separate
@@ -247,6 +247,14 @@ FFState* MorphoLM::EvaluateWhenApplied(
       prevMorph = "";
 
       ngramScore = Score(context);
+
+      cerr << "CONTEXT:";
+      for (size_t i = 0; i < context.size(); ++i) {
+    	  cerr << context[i]->GetString() << " ";
+      }
+      //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
+      cerr << "ngramScore=" << ngramScore << endl;
+
       score += ngramScore;
   }
 
@@ -281,13 +289,6 @@ float MorphoLM::Score(std::vector<const Factor*> context) const
 
   float backoff = 0.0;
 
-  cerr << "CONTEXT:";
-  for (size_t i = 0; i < context.size(); ++i) {
-	  cerr << context[i]->GetString() << " ";
-  }
-  //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
-  cerr << endl;
-
   Node<const Factor*, LMScores>* result = root->getNode(context);
 
   float ret = -99999;
@@ -314,7 +315,6 @@ float MorphoLM::Score(std::vector<const Factor*> context) const
 	  ret = m_oov;
   }
   
-  cerr << "ret=" << ret << endl;
   return ret;
 }
 
@@ -340,22 +340,22 @@ void MorphoLM::SetParameter(const std::string& key, const std::string& value)
   }
 }
 
-void MorphoLM::SetContext(std::vector<std::string>  &context, const std::vector<const Factor*> &phrase) const
+std::pair<bool, bool> MorphoLM::IsPrefixSuffix(const std::string &str) const
 {
-	for (size_t i = 0; i < phrase.size(); ++i) {
-		context.push_back(phrase[i]->GetString().as_string());
-	}
+	assert(str.size());
+	std::pair<bool, bool> ret(false, false);
+    if (str.size() == 1) {
+    	return ret;
+    }
 
-}
+    if (str[0] == '+') {
+    	ret.first = true;
+    }
 
-void MorphoLM::SetContext2(const std::vector<std::string>  &context, std::vector<const Factor*> &phrase) const
-{
-    FactorCollection &fc = FactorCollection::Instance();
-	for (size_t i = 0; i < context.size(); ++i) {
-		const Factor *factor = fc.AddFactor(context[i], false);
-		phrase.push_back(factor);
-	}
-
+    if (str[str.size() - 1] == '+') {
+    	ret.second = true;
+    }
+    return ret;
 }
 
 }
