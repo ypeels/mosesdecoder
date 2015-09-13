@@ -34,10 +34,10 @@ class MorphoLMState : public FFState
   float m_prevScore;
 public:
   MorphoLMState(const std::vector<const Factor*> &context,
-		  	  const std::string &unfinished, float score)
+		  	  const std::string &unfinished, float prevScore)
     :m_lastWords(context)
   	,m_unfinishedWord(unfinished)
-    ,m_prevScore(score)
+    ,m_prevScore(prevScore)
   {
   }
 
@@ -50,10 +50,10 @@ public:
   const std::vector<const Factor*> &GetPhrase() const
   { return m_lastWords; }
 
-  bool GetPrevIsMorph() const
+  bool IsUnfinished() const
   { return !m_unfinishedWord.empty(); }
 
-  const std::string &GetPrevMorph() const
+  const std::string &GetUnfinishedWord() const
   {
 	  return m_unfinishedWord;
   }
@@ -89,7 +89,11 @@ protected:
     MorphTrie<const Factor*, LMScores>* root;
 
     float Score(std::vector<const Factor*> context) const;
-    std::pair<bool, bool> IsPrefixSuffix(const std::string &str) const;
+
+    // +a = 1. a+ = 2. +a+ = 0
+    int GetMarker(const StringPiece &str) const;
+
+    void DebugContext(const vector<const Factor*> &context) const;
 public:
   MorphoLM(const std::string &line);
 

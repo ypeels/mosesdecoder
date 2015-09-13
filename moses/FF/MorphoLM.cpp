@@ -151,7 +151,6 @@ FFState* MorphoLM::EvaluateWhenApplied(
 {
   // dense scores
   float score = 0;
-  float prev_score = 0.0;
   float ngramScore = 0.0;
   size_t targetLen = cur_hypo.GetCurrTargetPhrase().GetSize();
 
@@ -159,9 +158,9 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
   const MorphoLMState *prevMorphState = static_cast<const MorphoLMState*>(prev_state);
 
-  bool prevIsMorph = prevMorphState->GetPrevIsMorph();
-  string prevMorph = prevMorphState->GetPrevMorph();
-  prev_score = prevMorphState->GetPrevScore();
+  bool isUnfinished = prevMorphState->IsUnfinished();
+  string unfinishedWord = prevMorphState->GetUnfinishedWord();
+  float prevScore = prevMorphState->GetPrevScore();
 
   vector<const Factor*> context = prevMorphState->GetPhrase();
 
@@ -171,70 +170,98 @@ FFState* MorphoLM::EvaluateWhenApplied(
   for (size_t pos = 0; pos < targetLen; ++pos){
 	  const Word &word = cur_hypo.GetCurrWord(pos);
 	  const Factor *factor = word[m_factorType];
-	  string str = factor->GetString().as_string();
-	  std::pair<bool, bool> prefixSuffix = IsPrefixSuffix(str);
+	  string currStr = factor->GetString().as_string();
+	  int prefixSuffix = GetMarker(factor->GetString());
 
-	  if (prefixSuffix.first && prevIsMorph == true) {
-        	cerr << "POINT a";
-            str.erase(str.begin());
-            factor = fc.AddFactor(prevMorph + str, false);
+	  if (prefixSuffix & 1) {
+	      currStr.erase(currStr.begin());
+	  }
+	  if (prefixSuffix & 2) {
+          currStr.erase(currStr.end() - 1);
+	  }
 
-          score -= prev_score;
-      }
-      else if (prefixSuffix.first && prevIsMorph == false) {
-          // Treat this as two separate words
-        	cerr << "POINT b";
-          str.erase(str.begin()); //Get rid of starting +
-          factor = fc.AddFactor(str, false);
-      }
-      else if (!prefixSuffix.first && prevIsMorph == true) {
-          // Treat this as two separate words
-        	cerr << "POINT c";
+	  if (isUnfinished) {
+		  switch (prefixSuffix) {
+		  case 0:
+			  // a+ b. Invalid. Start new word
+			  unfinishedWord = "";
+			  factor = fc.AddFactor(currStr, false);
+			  isUnfinished = false;
+			  break;
+		  case 1:
+			  // a+ +b
+        	  unfinishedWord += currStr;
+              factor = fc.AddFactor(unfinishedWord, false);
+              unfinishedWord = "";
+              score -= prevScore;
+              isUnfinished = false;
+			  break;
+		  case 2:
+        	  // a+ b+. Invalid. Start new word
+        	  cerr << "POINT c";
+        	  unfinishedWord = currStr;
+              factor = fc.AddFactor(currStr, false);
+              isUnfinished = true;
+			  break;
+		  case 3:
+			  // a+ +b+.
+        	  unfinishedWord += currStr;
+              factor = fc.AddFactor(unfinishedWord, false);
+              score -= prevScore;
+              isUnfinished = true;
+			  break;
+		  default:
+			  abort();
+		  }
       }
       else {
-          //Yay! Easy ... just words
-        	cerr << "POINT d";
-      }
-        
-      if (prefixSuffix.second) {
-            str.erase(str.end() - 1);
-            prevMorph = str;
-            prevIsMorph = true;
-            //TODO estimate score of the rest
-      }
-      else {
-          prevMorph = "";
-          prevIsMorph = false;
-          //score -= Score(stringContext); //TODO: Double check this is right
-          // TODO: Subtract itermediate?
-      }
-    
-      // If the current hypotheis is null, ignore it (just a +, start of this method, etc.)
-      if (str.length() > 0) {
-        context.push_back(factor);
-        if (context.size() > m_order) {
-    	  context.erase(context.begin());
-        }
+		  switch (prefixSuffix) {
+		  case 0:
+			  // a b
+              factor = fc.AddFactor(currStr, false);
+        	  unfinishedWord = currStr;
+              isUnfinished = false;
+			  break;
+		  case 1:
+			  // a +b. Invalid. New word
+        	  factor = fc.AddFactor(currStr, false);
+              unfinishedWord = "";
+              isUnfinished = false;
+			  break;
+		  case 2:
+        	  // a b+. start new unfinished word
+        	  unfinishedWord = currStr;
+        	  factor = fc.AddFactor(unfinishedWord, false);
+              isUnfinished = true;
+              break;
+		  case 3:
+			  // a +b+. Invalid. Start new word
+        	  unfinishedWord = currStr;
+        	  factor = fc.AddFactor(unfinishedWord, false);
+              isUnfinished = true;
+			  break;
+		  default:
+			  abort();
+		  }
       }
 
-      ngramScore = Score(context);
+	  context.push_back(factor);
 
-      cerr << "CONTEXT:";
-      for (size_t i = 0; i < context.size(); ++i) {
-    	  cerr << context[i]->GetString() << " ";
-      }
-      //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
-      cerr << "ngramScore=" << ngramScore << endl;
+	  // SCORE
+	  if (context.size() > m_order) {
+	    context.erase(context.begin());
+	  }
 
+	  ngramScore = Score(context);
       score += ngramScore;
 
-      // If it is a morph, pop it off and keep it separate
-      if (prevIsMorph) {
-    	  context.pop_back();
-          prev_score = ngramScore;
-      }
-      else {
-        prev_score = 0.0; // End of a word, don't need to subtract
+      prevScore = ngramScore;
+
+      DebugContext(context);
+      cerr << " ngramScore=" << ngramScore << endl;
+
+      if (isUnfinished) {
+    	  context.resize(context.size() - 1);
       }
   }
 
@@ -244,15 +271,12 @@ FFState* MorphoLM::EvaluateWhenApplied(
       if (context.size() > m_order) {
     	  context.erase(context.begin());
       }
-      prevMorph = "";
+      unfinishedWord = "";
+      prevScore = 0;
 
       ngramScore = Score(context);
 
-      cerr << "CONTEXT:";
-      for (size_t i = 0; i < context.size(); ++i) {
-    	  cerr << context[i]->GetString() << " ";
-      }
-      //std::copy ( context.begin(), context.end(), std::ostream_iterator<string>(std::cerr,", ") );
+      DebugContext(context);
       cerr << "ngramScore=" << ngramScore << endl;
 
       score += ngramScore;
@@ -265,13 +289,21 @@ FFState* MorphoLM::EvaluateWhenApplied(
   if (context.size() >= m_order) {
 	  context.erase(context.begin());
   }
-  cerr << "prevMorph=" << prevMorph << endl;
+  cerr << "unfinishedWord=" << unfinishedWord << endl;
 
   //std::vector<const Factor*>  context;
   //SetContext2(stringContext, context);
 
   assert(context.size() < m_order);
-  return new MorphoLMState(context, prevMorph, prev_score);
+  return new MorphoLMState(context, unfinishedWord, prevScore);
+}
+
+void MorphoLM::DebugContext(const vector<const Factor*> &context) const
+{
+    cerr << "CONTEXT:";
+    for (size_t i = 0; i < context.size(); ++i) {
+  	  cerr << context[i]->GetString() << " ";
+    }
 }
 
 FFState* MorphoLM::EvaluateWhenApplied(
@@ -340,22 +372,20 @@ void MorphoLM::SetParameter(const std::string& key, const std::string& value)
   }
 }
 
-std::pair<bool, bool> MorphoLM::IsPrefixSuffix(const std::string &str) const
+int MorphoLM::GetMarker(const StringPiece &str) const
 {
-	assert(str.size());
-	std::pair<bool, bool> ret(false, false);
-    if (str.size() == 1) {
-    	return ret;
-    }
+  int ret = 0;
 
-    if (str[0] == '+') {
-    	ret.first = true;
+  if (str.size() > 1) {
+    if (str.starts_with("+")) {
+      ret += 1;
     }
+    if (str.ends_with("+")) {
+      ret += 2;
+    }
+  }
 
-    if (str[str.size() - 1] == '+') {
-    	ret.second = true;
-    }
-    return ret;
+  return ret;
 }
 
 }
