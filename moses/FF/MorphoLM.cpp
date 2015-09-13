@@ -198,7 +198,6 @@ FFState* MorphoLM::EvaluateWhenApplied(
 			  break;
 		  case 2:
         	  // a+ b+. Invalid. Start new word
-        	  cerr << "POINT c";
         	  unfinishedWord = currStr;
               factor = fc.AddFactor(currStr, false);
               isUnfinished = true;
@@ -257,8 +256,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
       prevScore = ngramScore;
 
-      DebugContext(context);
-      cerr << " ngramScore=" << ngramScore << endl;
+      //DebugContext(context);
+      //cerr << " ngramScore=" << ngramScore << endl;
 
       if (isUnfinished) {
     	  context.resize(context.size() - 1);
@@ -276,8 +275,8 @@ FFState* MorphoLM::EvaluateWhenApplied(
 
       ngramScore = Score(context);
 
-      DebugContext(context);
-      cerr << "ngramScore=" << ngramScore << endl;
+      //DebugContext(context);
+      //cerr << "ngramScore=" << ngramScore << endl;
 
       score += ngramScore;
   }
@@ -289,7 +288,7 @@ FFState* MorphoLM::EvaluateWhenApplied(
   if (context.size() >= m_order) {
 	  context.erase(context.begin());
   }
-  cerr << "unfinishedWord=" << unfinishedWord << endl;
+  //cerr << "unfinishedWord=" << unfinishedWord << endl;
 
   //std::vector<const Factor*>  context;
   //SetContext2(stringContext, context);
@@ -325,15 +324,12 @@ float MorphoLM::Score(std::vector<const Factor*> context) const
 
   float ret = -99999;
   if (result) {
-	cerr << "HELL A";
-    ret = result->getValue().prob;
+	ret = result->getValue().prob;
   }
   else if (context.size() > 1) {
-		cerr << "HELL B";
 	  std::vector<const Factor*> backOffContext(context.begin(), context.end() - 1);
 	  result = root->getNode(backOffContext);
 	  if (result) {
-			cerr << "HELL C";
 		  backoff = result->getValue().backoff;
 	  }
 
@@ -342,7 +338,6 @@ float MorphoLM::Score(std::vector<const Factor*> context) const
 	ret = backoff + Score(context);
   }
   else {
-		cerr << "HELL D";
 	  assert(context.size() == 1);
 	  ret = m_oov;
   }
