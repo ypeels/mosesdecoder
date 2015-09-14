@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <boost/foreach.hpp>
+#include <boost/filesystem.hpp>
 #include "moses/FF/JoinScore/Trie.h"
 #include "moses/Util.h"
 
@@ -105,11 +106,20 @@ int main(int argc, char* argv[])
 {
   cerr << "Starting..." << endl;
 
+  string arpaPath = argv[1];
+  string outDir = argv[2];
+
+  string lmPath = outDir + "/lm.dat";
+  string vocabPath = outDir + "/vocab.dat";
+
+  boost::filesystem::path dir(outDir);
+  if (boost::filesystem::create_directory(dir))
+      std::cout << "Success" << "\n";
+
   MYTRIE trie;
-  Save(trie, argv[1], argv[2]);
+  Save(trie, arpaPath, lmPath);
 
   // save vocab
-  string vocabPath = string(argv[2]) + ".vocab";
   ofstream vocabStrme;
   vocabStrme.open(vocabPath.c_str());
 

@@ -1,6 +1,7 @@
 #include <vector>
 #include "MorphoLM.h"
 #include "moses/ScoreComponentCollection.h"
+#include "moses/StaticData.h"
 #include "moses/Hypothesis.h"
 #include "moses/FactorCollection.h"
 #include "moses/InputFileStream.h"
@@ -64,15 +65,13 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
 void MorphoLM::Load()
 {
   if (m_binLM) {
-	  m_trieSearch = new TrieSearch<LMScores, NGRAM>;
-	  m_trieSearch->Create(m_path);
-
 	  // vocab
+	  VERBOSE(1, "Loading vocab");
 	  FactorCollection &fc = FactorCollection::Instance();
 
 	  m_vocab = new std::map<const Factor *, uint64_t>;
 
-	  InputFileStream vocabStrme(m_path + ".vocab");
+	  InputFileStream vocabStrme(m_path + "/vocab.dat");
 	  string line;
 	  while (getline(vocabStrme, line)) {
 		  vector<string> toks = Tokenize(line);
@@ -82,6 +81,11 @@ void MorphoLM::Load()
 		  uint64_t vocabId = Scan<uint64_t>(toks[1]);
 		  (*m_vocab)[factor] = vocabId;
 	  }
+
+	  // actual lm
+	  VERBOSE(1, "Loading trie");
+	  m_trieSearch = new TrieSearch<LMScores, NGRAM>;
+	  m_trieSearch->Create(m_path + "/lm.dat");
   }
   else {
 	  FactorCollection &fc = FactorCollection::Instance();
