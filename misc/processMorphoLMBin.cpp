@@ -8,9 +8,19 @@
 using namespace std;
 using namespace Moses;
 
+namespace Moses {
+extern bool g_mosesDebug;
+}
+
 struct LMScores
 {
 	float prob, backoff;
+
+	LMScores()
+	{
+		prob = 4343;
+		backoff = 76;
+	}
 };
 
 std::ostream& operator<<(std::ostream &out, const LMScores &obj)
@@ -28,14 +38,13 @@ int64_t GetVocabId(const string &str)
 {
   int64_t ret;
 	map<string, uint64_t>::iterator iter = vocab.find(str);
+
 	if (iter == vocab.end()) {
-		ret = vocab.size() + 1;
-		vocab[str] = ret;
+		cerr << "Couldn't find in vocab:" << str << endl;
+		abort();
 	}
-	else {
-	  ret = iter->second;
-	}
-	
+
+    ret = iter->second;
 	return ret;
 }
 
@@ -80,9 +89,10 @@ void Save(MYTRIE &trie, const string &inPath, const string &outPath)
       continue;
     }
 
-	NGRAM ngram;
+  	NGRAM ngram;
 	LMScores lmScores;
 	ParseLine(ngram, lmScores, line);
+	//cerr << "lmScores=" << lmScores << endl;
 		
     trie.m_root.Save(ngram, outStrme, 0, params, lmScores);
   }
@@ -112,27 +122,19 @@ int main(int argc, char* argv[])
   string lmPath = outDir + "/lm.dat";
   string vocabPath = outDir + "/vocab.dat";
 
-  boost::filesystem::path dir(outDir);
-  if (boost::filesystem::create_directory(dir))
-      std::cout << "Success" << "\n";
+  // load vocab
+  InputFileStream vocabStrme(vocabPath);
+  string line;
+  uint64_t vocabId = 1;
+  while (getline(vocabStrme, line)) {
+	  vocab[line] = vocabId;
+	  //cerr << line << "=" << vocabId << endl;
+	  ++vocabId;
+  }
 
+  // save trie
   MYTRIE trie;
   Save(trie, arpaPath, lmPath);
-
-  // save vocab
-  ofstream vocabStrme;
-  vocabStrme.open(vocabPath.c_str());
-
-/*
-  BOOST_FOREACH(const map<string, uint64_t>::value_type &e, vocab) {
-	  cerr << e.first << " " << e.second << endl;
-  }
-*/
-  map<string, uint64_t>::const_iterator iter;
-  for (iter = vocab.begin(); iter != vocab.end(); ++iter) {
-	  vocabStrme << iter->first << " " << iter->second << endl;
-  }
-  vocabStrme.close();
 
   cerr << "Finished" << endl;
 }
