@@ -11,15 +11,16 @@ my $arpaPath = $ARGV[0];
 my $outDir = $ARGV[1];
 
 my $cmd = "mkdir -p $outDir";
+print STDERR "Executing: $cmd\n";
 `$cmd`;
 
-open(ARPA_HANDLE, "$arpaPath") or die("Could not open file $arpaPath");
+open(ARPA_HANDLE, "<:encoding(UTF-8)", "$arpaPath") or die("Could not open file $arpaPath");
     	
 my $unsortedFileName = "$outDir/tmp.$$.unsorted";
-open(my $unsorted, ">$unsortedFileName") or die("Could not open file $unsortedFileName");
+open(my $unsorted, ">:encoding(UTF-8)", "$unsortedFileName") or die("Could not open file $unsortedFileName");
 
 my $vocabPathUnsorted = "$outDir/tmp.$$.vocab.dat.unsorted";
-open(my $vocabUnsorted, ">$vocabPathUnsorted") or die("Could not open file $vocabPathUnsorted");
+open(my $vocabUnsorted, ">:encoding(UTF-8)", "$vocabPathUnsorted") or die("Could not open file $vocabPathUnsorted");
 
 while(my $line = <ARPA_HANDLE>) {
 	chomp($line);
@@ -53,12 +54,14 @@ close(ARPA_HANDLE);
 close($vocabUnsorted);
 
 # vocab
-$cmd = "LC_ALL=C sort $vocabPathUnsorted | uniq > $outDir/vocab.dat";
+$cmd = "LC_ALL=C sort $vocabPathUnsorted | LC_ALL=C uniq > $outDir/vocab.dat";
+print STDERR "Executing: $cmd\n";
 `$cmd`;
 
 # sort
 my $sortedFileName = "$outDir/tmp.$$.sorted";
 $cmd = "LC_ALL=C sort $unsortedFileName > $sortedFileName";
+print STDERR "Executing: $cmd\n";
 `$cmd`;
 
 $cmd = "$RealBin/../../bin/processMorphoLMBin $sortedFileName $outDir";
