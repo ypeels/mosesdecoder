@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
 
   string lmPath = outDir + "/lm.dat";
   string vocabPath = outDir + "/vocab.dat";
+  string miscPath = outDir + "/misc.dat";
 
   // load vocab
   InputFileStream vocabStrme(vocabPath);
@@ -135,6 +136,11 @@ int main(int argc, char* argv[])
   // save trie
   MYTRIE trie;
   Save(trie, arpaPath, lmPath);
+
+  ofstream miscStrme;
+  miscStrme.open(miscPath.c_str());
+  miscStrme << "Version 1" << endl;
+  miscStrme.close();
 
   cerr << "Finished" << endl;
 }
