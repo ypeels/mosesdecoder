@@ -1,4 +1,5 @@
 #include <vector>
+#include <boost/filesystem.hpp>
 #include "MorphoLM.h"
 #include "moses/ScoreComponentCollection.h"
 #include "moses/StaticData.h"
@@ -64,6 +65,9 @@ const FFState* MorphoLM::EmptyHypothesisState(const InputType &input) const {
 
 void MorphoLM::Load()
 {
+  boost::filesystem::path resolved = boost::filesystem::canonical(m_path);
+  m_binLM = boost::filesystem::is_directory(resolved);
+
   if (m_binLM) {
 	  // vocab
 	  VERBOSE(1, "Loading vocab");
@@ -432,9 +436,6 @@ void MorphoLM::SetParameter(const std::string& key, const std::string& value)
   }
   else if (key == "marker") {
 	  m_marker = value;
-  }
-  else if (key == "binary") {
-	  m_binLM = Scan<bool>(value);
   }
   else {
     StatefulFeatureFunction::SetParameter(key, value);
