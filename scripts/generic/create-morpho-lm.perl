@@ -68,5 +68,5 @@ $cmd = "$RealBin/../../bin/processMorphoLMBin $sortedFileName $outDir";
 print STDERR "Executing: $cmd\n";
 `$cmd`;
 
-unlink $unsortedFileName $vocabPathUnsorted $sortedFileName;
+unlink $unsortedFileName, $vocabPathUnsorted, $sortedFileName;
 
