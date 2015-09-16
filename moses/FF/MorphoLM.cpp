@@ -131,8 +131,9 @@ void MorphoLM::Load()
 		  Tokenize(key, substrings[1], " ");
 
 		  vector<const Factor*> factorKey;
-		  for (int i = 0; i < key.size(); ++i)
+		  for (size_t i = 0; i < key.size(); ++i) {
 			  factorKey.push_back(fc.AddFactor(key[i], false));
+		  }
 
 		  root->insert(factorKey, LMScores(prob, backoff));
 	  }
