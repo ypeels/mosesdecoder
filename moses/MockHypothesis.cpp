@@ -48,7 +48,7 @@ MockHypothesisGuard
   m_manager->ResetSentenceStats(*m_sentence);
 
   const WordsBitmap &initBitmap = bitmaps.GetInitialBitmap();
-  m_hypothesis = new Hypothesis(*m_manager, *m_sentence, m_initialTransOpt, initBitmap);
+  m_hypothesis = Hypothesis::Create(*m_manager, *m_sentence, m_initialTransOpt, initBitmap);
 
   //create the chain
   vector<Alignment>::const_iterator ai = alignments.begin();
@@ -63,7 +63,7 @@ MockHypothesisGuard
     m_targetPhrases.back().CreateFromString(Input, factors, *ti, NULL);
     m_toptions.push_back(new TranslationOption
                          (wordsRange,m_targetPhrases.back()));
-    m_hypothesis = new Hypothesis(*prevHypo, *m_toptions.back(), newBitmap);
+    m_hypothesis = Hypothesis::Create(*prevHypo, *m_toptions.back(), newBitmap);
 
   }
 
@@ -75,7 +75,7 @@ MockHypothesisGuard::~MockHypothesisGuard()
   RemoveAllInColl(m_toptions);
   while (m_hypothesis) {
     Hypothesis* prevHypo = const_cast<Hypothesis*>(m_hypothesis->GetPrevHypo());
-    delete m_hypothesis;
+    Hypothesis::Destroy(m_hypothesis);
     m_hypothesis = prevHypo;
   }
 }

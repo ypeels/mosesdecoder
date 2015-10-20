@@ -43,6 +43,23 @@ using namespace std;
 
 namespace Moses
 {
+Hypothesis *Hypothesis::Create(Manager& manager, InputType const& source, const TranslationOption &initialTransOpt, const WordsBitmap &bitmap)
+{
+	Hypothesis *hypo = new Hypothesis(manager, source, initialTransOpt, bitmap);
+	return hypo;
+}
+
+Hypothesis *Hypothesis::Create(const Hypothesis &prevHypo, const TranslationOption &transOpt, const WordsBitmap &bitmap)
+{
+	Hypothesis *hypo = new Hypothesis(prevHypo, transOpt, bitmap);
+	return hypo;
+}
+
+void Hypothesis::Destroy(const Hypothesis *hypo)
+{
+	delete hypo;
+}
+
 Hypothesis::
 Hypothesis(Manager& manager, InputType const& source, const TranslationOption &initialTransOpt, const WordsBitmap &bitmap)
   : m_prevHypo(NULL)
@@ -111,7 +128,7 @@ Hypothesis::
   if (m_arcList) {
     ArcList::iterator iter;
     for (iter = m_arcList->begin() ; iter != m_arcList->end() ; ++iter) {
-    	delete *iter;
+    	Hypothesis::Destroy(*iter);
     }
     m_arcList->clear();
 
@@ -301,7 +318,7 @@ CleanupArcList()
     // delete bad ones
     ArcList::iterator iter;
     for (iter = m_arcList->begin() + nBestSize; iter != m_arcList->end() ; ++iter)
-    	delete *iter;
+    	Hypothesis::Destroy(*iter);
     m_arcList->erase(m_arcList->begin() + nBestSize, m_arcList->end());
   }
 

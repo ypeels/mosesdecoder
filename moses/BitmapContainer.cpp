@@ -212,7 +212,7 @@ Hypothesis *BackwardsEdge::CreateHypothesis(const Hypothesis &hypothesis, const 
     hypothesis.GetManager().GetSentenceStats().StartTimeBuildHyp();
   }
   const WordsBitmap &bitmap = m_parent.GetWordsBitmap();
-  Hypothesis *newHypo = new Hypothesis(hypothesis, transOpt, bitmap);
+  Hypothesis *newHypo = Hypothesis::Create(hypothesis, transOpt, bitmap);
   IFVERBOSE(2) {
     hypothesis.GetManager().GetSentenceStats().StopTimeBuildHyp();
   }
@@ -298,7 +298,7 @@ BitmapContainer::~BitmapContainer()
     HypothesisQueueItem *item = m_queue.top();
     m_queue.pop();
 
-    delete item->GetHypothesis();
+    Hypothesis::Destroy(item->GetHypothesis());
     delete item;
   }
 

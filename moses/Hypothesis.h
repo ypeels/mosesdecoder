@@ -90,12 +90,16 @@ protected:
 
   int m_id; /*! numeric ID of this hypothesis, used for logging */
 
-public:
   /*! used by initial seeding of the translation process */
   Hypothesis(Manager& manager, InputType const& source, const TranslationOption &initialTransOpt, const WordsBitmap &bitmap);
   /*! used when creating a new hypothesis using a translation option (phrase translation) */
   Hypothesis(const Hypothesis &prevHypo, const TranslationOption &transOpt, const WordsBitmap &bitmap);
+
   ~Hypothesis();
+public:
+  static Hypothesis *Create(Manager& manager, InputType const& source, const TranslationOption &initialTransOpt, const WordsBitmap &bitmap);
+  static Hypothesis *Create(const Hypothesis &prevHypo, const TranslationOption &transOpt, const WordsBitmap &bitmap);
+  static void Destroy(const Hypothesis *hypo);
 
   void PrintHypothesis() const;
 

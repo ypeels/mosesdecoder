@@ -88,7 +88,7 @@ void SearchNormal::Decode()
 
   // initial seed hypothesis: nothing translated, no words produced
   const WordsBitmap &bitmap = m_bitmaps.GetInitialBitmap();
-  Hypothesis *hypo = new Hypothesis(m_manager, m_source, m_initialTransOpt, bitmap);
+  Hypothesis *hypo = Hypothesis::Create(m_manager, m_source, m_initialTransOpt, bitmap);
 
   m_hypoStackColl[0]->AddPrune(hypo);
 
@@ -304,7 +304,7 @@ void SearchNormal::ExpandHypothesis(const Hypothesis &hypothesis,
     IFVERBOSE(2) {
       stats.StartTimeBuildHyp();
     }
-    newHypo = new Hypothesis(hypothesis, transOpt, bitmap);
+    newHypo = Hypothesis::Create(hypothesis, transOpt, bitmap);
     IFVERBOSE(2) {
       stats.StopTimeBuildHyp();
     }
@@ -338,7 +338,7 @@ void SearchNormal::ExpandHypothesis(const Hypothesis &hypothesis,
     IFVERBOSE(2) {
       stats.StartTimeBuildHyp();
     }
-    newHypo = new Hypothesis(hypothesis, transOpt, bitmap);
+    newHypo = Hypothesis::Create(hypothesis, transOpt, bitmap);
     if (newHypo==NULL) return;
     IFVERBOSE(2) {
       stats.StopTimeBuildHyp();
@@ -349,7 +349,7 @@ void SearchNormal::ExpandHypothesis(const Hypothesis &hypothesis,
       IFVERBOSE(2) {
         stats.AddEarlyDiscarded();
       }
-      delete newHypo;
+      Hypothesis::Destroy(newHypo);
       return;
     }
 
