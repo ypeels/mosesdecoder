@@ -79,6 +79,33 @@ public:
 		ret += m_currInd;
 		return ret;
 	}
+
+	void DestroyAll()
+	{
+		// call all destructors
+		// every list, except last
+		std::vector<void *>::const_iterator iterLast = free_list_.begin() + m_listInd;
+
+		std::vector<void *>::const_iterator iter;
+		for (iter = free_list_.begin(); iter != iterLast; ++iter) {
+			T *list = (T*) *iter;
+			for (size_t i = 0; i < m_incrNum; ++i) {
+				T *obj = list + i;
+
+			}
+		}
+
+		// last list
+		T *list = (T*) free_list_.back();
+		for (size_t i = 0; i < m_currInd; ++i) {
+			T *obj = list + i;
+
+		}
+
+		// reset variables
+		m_currInd = 0;
+		m_listInd = 0;
+	}
 };
 
 } // namespace util
