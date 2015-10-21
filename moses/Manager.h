@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Search.h"
 #include "SearchCubePruning.h"
 #include "BaseManager.h"
+#include "util/pool.hh"
 
 namespace Moses
 {
@@ -111,6 +112,8 @@ private:
 
 
 protected:
+  static util::ObjectPool<Hypothesis> m_hypoPool;
+
   // data
   TranslationOptionCollection *m_transOptColl; /**< pre-computed list of translation options for the phrases in this sentence */
   Search *m_search;
@@ -197,6 +200,10 @@ public:
   */
   void GetForwardBackwardSearchGraph(std::map< int, bool >* pConnected,
                                      std::vector< const Hypothesis* >* pConnectedList, std::map < const Hypothesis*, std::set < const Hypothesis* > >* pOutgoingHyps, std::vector< float>* pFwdBwdScores) const;
+
+
+  util::ObjectPool<Hypothesis> &GetHypoPool()
+  { return m_hypoPool; }
 
   // outputs
   void OutputBest(OutputCollector *collector)  const;

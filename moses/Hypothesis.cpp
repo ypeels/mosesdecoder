@@ -45,7 +45,9 @@ namespace Moses
 {
 Hypothesis *Hypothesis::Create(Manager& manager, InputType const& source, const TranslationOption &initialTransOpt, const WordsBitmap &bitmap)
 {
-	Hypothesis *hypo = new Hypothesis(manager, source, initialTransOpt, bitmap);
+	util::ObjectPool<Hypothesis> &pool = manager.GetHypoPool();
+	Hypothesis *mem = pool.Get();
+	Hypothesis *hypo = new(mem) Hypothesis(manager, source, initialTransOpt, bitmap);
 	return hypo;
 }
 
@@ -57,7 +59,7 @@ Hypothesis *Hypothesis::Create(const Hypothesis &prevHypo, const TranslationOpti
 
 void Hypothesis::Destroy(const Hypothesis *hypo)
 {
-	delete hypo;
+	//delete hypo;
 }
 
 Hypothesis::

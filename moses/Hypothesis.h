@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "ScoreComponentCollection.h"
 #include "InputType.h"
 #include "ObjectPool.h"
+#include "util/pool.hh"
 
 #ifdef HAVE_XMLRPC_C
 #include <xmlrpc-c/base.hpp>
@@ -69,6 +70,7 @@ typedef std::vector<Hypothesis*> ArcList;
 class Hypothesis
 {
   friend std::ostream& operator<<(std::ostream&, const Hypothesis&);
+  friend util::ObjectPool<Hypothesis>;
 
 protected:
   const Hypothesis* m_prevHypo; /*! backpointer to previous hypothesis (from which this one was created) */

@@ -27,7 +27,7 @@ class Pool {
 
     void FreeAll();
 
-  private:
+  protected:
     void *More(std::size_t size);
 
     std::vector<void *> free_list_;
@@ -37,6 +37,48 @@ class Pool {
     // no copying
     Pool(const Pool &);
     Pool &operator=(const Pool &);
+};
+
+template<typename T>
+class ObjectPool : public Pool
+{
+	size_t m_incrNum;
+	size_t m_currInd;
+	size_t m_listInd;
+public:
+	ObjectPool(size_t incrNum)
+	:m_incrNum(incrNum)
+	,m_currInd(0)
+	,m_listInd(0)
+	{
+		size_t size = incrNum * sizeof(T);
+		Allocate(size);
+	}
+
+	void More()
+	{
+		size_t size = m_incrNum * sizeof(T);
+		Pool::More(size);
+	}
+
+	T *Get()
+	{
+		if (m_currInd >= m_incrNum) {
+			// time to go to the next list
+			++m_listInd;
+			if (m_listInd >= free_list_.size()) {
+				More();
+			}
+			m_currInd = 0;
+		}
+		else {
+			++m_currInd;
+		}
+
+		T* ret = (T*)free_list_[m_listInd];
+		ret += m_currInd;
+		return ret;
+	}
 };
 
 } // namespace util

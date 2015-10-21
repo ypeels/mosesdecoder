@@ -63,6 +63,8 @@ using namespace std;
 namespace Moses
 {
 
+util::ObjectPool<Hypothesis> Manager::m_hypoPool(10000);
+
 Manager::Manager(ttasksptr const& ttask)
   : BaseManager(ttask)
   , interrupted_flag(0)
