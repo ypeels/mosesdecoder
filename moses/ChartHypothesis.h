@@ -28,6 +28,7 @@
 #include "Phrase.h"
 #include "ChartTranslationOptions.h"
 #include "ObjectPool.h"
+#include "util/pool.hh"
 
 namespace Moses
 {
