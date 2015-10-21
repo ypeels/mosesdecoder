@@ -63,10 +63,11 @@ using namespace std;
 namespace Moses
 {
 
-util::ObjectPool<Hypothesis> Manager::m_hypoPool(10000);
+boost::thread_specific_ptr<Manager::HypoPool> Manager::m_hypoPools;
 
 Manager::Manager(ttasksptr const& ttask)
   : BaseManager(ttask)
+  , m_hypoPool(SetHypoPool())
   , interrupted_flag(0)
   , m_hypoId(0)
 {
@@ -2064,6 +2065,19 @@ void Manager::OutputAlignment(std::ostringstream &out, const TrellisPath &path) 
   Hypothesis::OutputAlignment(out, path.GetEdges());
   // Used by --alignment-output-file so requires endl
   out << std::endl;
+}
+
+Manager::HypoPool &Manager::SetHypoPool()
+{
+  HypoPool *cache;
+  cache = m_hypoPools.get();
+  if (cache == NULL) {
+	cache = new HypoPool(10000);
+	m_hypoPools.reset(cache);
+  }
+  assert(cache);
+  return *cache;
+
 }
 
 } // namespace

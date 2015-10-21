@@ -37,6 +37,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "BaseManager.h"
 #include "util/pool.hh"
 
+#ifdef WITH_THREADS
+#include <boost/thread/tss.hpp>
+#else
+#include <boost/scoped_ptr.hpp>
+#endif
+
 namespace Moses
 {
 
@@ -110,9 +116,12 @@ private:
   // Helper functions to output search graph in the hypergraph format of Kenneth Heafield's lazy hypergraph decoder
   void OutputFeatureValuesForHypergraph(const Hypothesis* hypo, std::ostream &outputSearchGraphStream) const;
 
+public:
+  typedef util::ObjectPool<Hypothesis> HypoPool;
 
 protected:
-  static util::ObjectPool<Hypothesis> m_hypoPool;
+  static boost::thread_specific_ptr<HypoPool> m_hypoPools;
+  HypoPool &m_hypoPool;
 
   // data
   TranslationOptionCollection *m_transOptColl; /**< pre-computed list of translation options for the phrases in this sentence */
@@ -202,7 +211,8 @@ public:
                                      std::vector< const Hypothesis* >* pConnectedList, std::map < const Hypothesis*, std::set < const Hypothesis* > >* pOutgoingHyps, std::vector< float>* pFwdBwdScores) const;
 
 
-  util::ObjectPool<Hypothesis> &GetHypoPool()
+  HypoPool &SetHypoPool();
+  HypoPool &GetHypoPool()
   { return m_hypoPool; }
 
   // outputs
