@@ -42,23 +42,23 @@ class Pool {
 template<typename T>
 class ObjectPool : public Pool
 {
-	size_t m_incrNum;
-	size_t m_currInd;
-	size_t m_listInd;
+  std::size_t m_incrNum;
+  std::size_t m_currInd;
+  std::size_t m_listInd;
 public:
-	ObjectPool(size_t incrNum)
+  ObjectPool(std::size_t incrNum)
 	:m_incrNum(incrNum)
 	,m_currInd(0)
 	,m_listInd(0)
 	{
-		size_t size = incrNum * sizeof(T);
-		Allocate(size);
+	  std::size_t size = incrNum * sizeof(T);
+	  Allocate(size);
 	}
 
 	void More()
 	{
-		size_t size = m_incrNum * sizeof(T);
-		Pool::More(size);
+	  std::size_t size = m_incrNum * sizeof(T);
+	  Pool::More(size);
 	}
 
 	T *Get()
