@@ -89,7 +89,7 @@ public:
 		std::vector<void *>::const_iterator iter;
 		for (iter = free_list_.begin(); iter != iterLast; ++iter) {
 			T *list = (T*) *iter;
-			for (size_t i = 0; i < m_incrNum; ++i) {
+			for (std::size_t i = 0; i < m_incrNum; ++i) {
 				T *obj = list + i;
 
 			}
@@ -97,7 +97,7 @@ public:
 
 		// last list
 		T *list = (T*) free_list_.back();
-		for (size_t i = 0; i < m_currInd; ++i) {
+		for (std::size_t i = 0; i < m_currInd; ++i) {
 			T *obj = list + i;
 
 		}
