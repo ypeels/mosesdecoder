@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <boost/unordered_map.hpp>
+#include "ChartHypothesis.h"
 #include "ChartCell.h"
 #include "ChartCellCollection.h"
 #include "WordsRange.h"
@@ -32,6 +33,13 @@
 #include "ChartKBestExtractor.h"
 #include "BaseManager.h"
 #include "moses/Syntax/KBestExtractor.h"
+#include "util/pool.hh"
+
+#ifdef WITH_THREADS
+#include <boost/thread/tss.hpp>
+#else
+#include <boost/scoped_ptr.hpp>
+#endif
 
 namespace Moses
 {
@@ -43,7 +51,13 @@ class ChartSearchGraphWriter;
  */
 class ChartManager : public BaseManager
 {
-private:
+public:
+  typedef util::ObjectPool<ChartHypothesis> HypoPool;
+
+protected:
+  static boost::thread_specific_ptr<HypoPool> m_hypoPools;
+  HypoPool &m_hypoPool;
+
   ChartCellCollection m_hypoStackColl;
   std::auto_ptr<SentenceStats> m_sentenceStats;
   clock_t m_start; /**< starting time, used for logging */
@@ -139,6 +153,10 @@ public:
   const ChartParser &GetParser() const {
     return m_parser;
   }
+
+  HypoPool &SetHypoPool();
+  HypoPool &GetHypoPool()
+  { return m_hypoPool; }
 
   // outputs
   void OutputBest(OutputCollector *collector) const;

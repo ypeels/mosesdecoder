@@ -49,7 +49,6 @@ class ChartHypothesis
 //  friend class ChartKBestExtractor;
 
 protected:
-
   boost::shared_ptr<ChartTranslationOption> m_transOpt;
 
   WordsRange					m_currSourceWordsRange;
@@ -77,7 +76,6 @@ protected:
   //! not implemented
   ChartHypothesis(const ChartHypothesis &copy);
 
-public:
   ChartHypothesis(const ChartTranslationOptions &, const RuleCubeItem &item,
                   ChartManager &manager);
 
@@ -85,6 +83,15 @@ public:
   ChartHypothesis(const ChartHypothesis &, const ChartKBestExtractor &);
 
   ~ChartHypothesis();
+
+public:
+  static ChartHypothesis *Create(const ChartTranslationOptions &, const RuleCubeItem &item,
+                  ChartManager &manager);
+
+  //! only used by ChartKBestExtractor
+  static ChartHypothesis *Create(const ChartHypothesis &, const ChartKBestExtractor &);
+  static void Destroy(const ChartHypothesis *hypo);
+
 
   unsigned GetId() const {
     return m_id;

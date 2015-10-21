@@ -210,7 +210,6 @@ public:
   void GetForwardBackwardSearchGraph(std::map< int, bool >* pConnected,
                                      std::vector< const Hypothesis* >* pConnectedList, std::map < const Hypothesis*, std::set < const Hypothesis* > >* pOutgoingHyps, std::vector< float>* pFwdBwdScores) const;
 
-
   HypoPool &SetHypoPool();
   HypoPool &GetHypoPool()
   { return m_hypoPool; }

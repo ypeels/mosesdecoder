@@ -42,12 +42,15 @@ namespace Moses
 
 extern bool g_mosesDebug;
 
+boost::thread_specific_ptr<ChartManager::HypoPool> ChartManager::m_hypoPools;
+
 /* constructor. Initialize everything prior to decoding a particular sentence.
  * \param source the sentence to be decoded
  * \param system which particular set of models to use.
  */
 ChartManager::ChartManager(ttasksptr const& ttask)
   : BaseManager(ttask)
+  , m_hypoPool(SetHypoPool())
   , m_hypoStackColl(m_source, *this)
   , m_start(clock())
   , m_hypothesisId(0)
@@ -145,7 +148,7 @@ void ChartManager::AddXmlChartOptions()
     const WordsRange &range = opt->GetSourceWordsRange();
 
     RuleCubeItem* item = new RuleCubeItem( *opt, m_hypoStackColl );
-    ChartHypothesis* hypo = new ChartHypothesis(*opt, *item, *this);
+    ChartHypothesis* hypo = ChartHypothesis::Create(*opt, *item, *this);
     hypo->EvaluateWhenApplied();
 
 
@@ -878,6 +881,18 @@ void ChartManager::Backtrack(const ChartHypothesis *hypo) const
     VERBOSE(3,prevHypo->GetId() << " <= ");
     Backtrack(prevHypo);
   }
+}
+
+ChartManager::HypoPool &ChartManager::SetHypoPool()
+{
+  HypoPool *cache;
+  cache = m_hypoPools.get();
+  if (cache == NULL) {
+	cache = new HypoPool(10000);
+	m_hypoPools.reset(cache);
+  }
+  assert(cache);
+  return *cache;
 }
 
 } // namespace Moses

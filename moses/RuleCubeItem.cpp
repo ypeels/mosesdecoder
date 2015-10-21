@@ -62,7 +62,7 @@ RuleCubeItem::RuleCubeItem(const RuleCubeItem &copy, int hypoDimensionIncr)
 
 RuleCubeItem::~RuleCubeItem()
 {
-  delete m_hypothesis;
+	ChartHypothesis::Destroy(m_hypothesis);
 }
 
 void RuleCubeItem::EstimateScore()
@@ -78,7 +78,7 @@ void RuleCubeItem::EstimateScore()
 void RuleCubeItem::CreateHypothesis(const ChartTranslationOptions &transOpt,
                                     ChartManager &manager)
 {
-  m_hypothesis = new ChartHypothesis(transOpt, *this, manager);
+  m_hypothesis = ChartHypothesis::Create(transOpt, *this, manager);
   m_hypothesis->EvaluateWhenApplied();
   m_score = m_hypothesis->GetTotalScore();
 }

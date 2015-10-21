@@ -46,8 +46,8 @@ void ChartKBestExtractor::Extract(
   // top-level hypothesis as its predecessor and has the same score.
   std::vector<const ChartHypothesis*>::const_iterator p = topLevelHypos.begin();
   const ChartHypothesis &bestTopLevelHypo = **p;
-  boost::scoped_ptr<ChartHypothesis> supremeHypo(
-    new ChartHypothesis(bestTopLevelHypo, *this));
+  ChartHypothesis *supremeHypo(
+		ChartHypothesis::Create(bestTopLevelHypo, *this));
 
   // Do the same for each alternative top-level hypothesis, but add the new
   // ChartHypothesis objects as arcs from supremeHypo, as if they had been
@@ -58,7 +58,7 @@ void ChartKBestExtractor::Extract(
                    "top-level hypotheses are not correctly sorted");
     // Note: there's no need for a smart pointer here: supremeHypo will take
     // ownership of altHypo.
-    ChartHypothesis *altHypo = new ChartHypothesis(**p, *this);
+    ChartHypothesis *altHypo = ChartHypothesis::Create(**p, *this);
     supremeHypo->AddArc(altHypo);
   }
 

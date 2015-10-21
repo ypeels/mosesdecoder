@@ -48,7 +48,7 @@ ChartHypothesisCollection::~ChartHypothesisCollection()
   HCType::iterator iter;
   for (iter = m_hypos.begin() ; iter != m_hypos.end() ; ++iter) {
     ChartHypothesis *hypo = *iter;
-    delete hypo;
+    ChartHypothesis::Destroy(hypo);
   }
   //RemoveAllInColl(m_hypos);
 }
@@ -65,7 +65,7 @@ bool ChartHypothesisCollection::AddHypothesis(ChartHypothesis *hypo, ChartManage
   if (hypo->GetTotalScore() == - std::numeric_limits<float>::infinity()) {
     manager.GetSentenceStats().AddDiscarded();
     VERBOSE(3,"discarded, -inf score" << std::endl);
-    delete hypo;
+    ChartHypothesis::Destroy(hypo);
     return false;
   }
 
@@ -73,7 +73,7 @@ bool ChartHypothesisCollection::AddHypothesis(ChartHypothesis *hypo, ChartManage
     // really bad score. don't bother adding hypo into collection
     manager.GetSentenceStats().AddDiscarded();
     VERBOSE(3,"discarded, too bad for stack" << std::endl);
-    delete hypo;
+    ChartHypothesis::Destroy(hypo);
     return false;
   }
 
@@ -118,7 +118,7 @@ bool ChartHypothesisCollection::AddHypothesis(ChartHypothesis *hypo, ChartManage
     if (m_nBestIsEnabled) {
       hypoExisting->AddArc(hypo);
     } else {
-      delete hypo;
+    	ChartHypothesis::Destroy(hypo);
     }
     return false;
   }
@@ -168,7 +168,7 @@ void ChartHypothesisCollection::Remove(const HCType::iterator &iter)
 {
   ChartHypothesis *h = *iter;
   Detach(iter);
-  delete h;
+  ChartHypothesis::Destroy(h);
 }
 
 /** prune number of hypo to a particular number of hypos, specified by m_maxHypoStackSize, according to score

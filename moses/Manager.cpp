@@ -2077,7 +2077,6 @@ Manager::HypoPool &Manager::SetHypoPool()
   }
   assert(cache);
   return *cache;
-
 }
 
 } // namespace

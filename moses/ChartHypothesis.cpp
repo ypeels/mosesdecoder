@@ -36,6 +36,25 @@ using namespace std;
 
 namespace Moses
 {
+ChartHypothesis *ChartHypothesis::Create(const ChartTranslationOptions &transOpt,
+        const RuleCubeItem &item,
+        ChartManager &manager)
+{
+	ChartHypothesis *hypo = new ChartHypothesis(transOpt, item, manager);
+	return hypo;
+}
+
+ChartHypothesis *ChartHypothesis::Create(const ChartHypothesis &pred,
+        const ChartKBestExtractor &unused)
+{
+	ChartHypothesis *hypo = new ChartHypothesis(pred, unused);
+	return hypo;
+}
+
+void ChartHypothesis::Destroy(const ChartHypothesis *hypo)
+{
+	//delete hypo;
+}
 
 /** Create a hypothesis from a rule
  * \param transOpt wrapper around the rule
@@ -89,7 +108,7 @@ ChartHypothesis::~ChartHypothesis()
     ChartArcList::iterator iter;
     for (iter = m_arcList->begin() ; iter != m_arcList->end() ; ++iter) {
       ChartHypothesis *hypo = *iter;
-      delete hypo;
+      ChartHypothesis::Destroy(hypo);
     }
     m_arcList->clear();
 
@@ -274,7 +293,7 @@ void ChartHypothesis::CleanupArcList()
     ChartArcList::iterator iter;
     for (iter = m_arcList->begin() + nBestSize ; iter != m_arcList->end() ; ++iter) {
       ChartHypothesis *arc = *iter;
-      delete arc;
+      ChartHypothesis::Destroy(arc);
     }
     m_arcList->erase(m_arcList->begin() + nBestSize
                      , m_arcList->end());
