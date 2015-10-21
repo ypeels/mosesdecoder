@@ -46,6 +46,8 @@ void ChartKBestExtractor::Extract(
   // top-level hypothesis as its predecessor and has the same score.
   std::vector<const ChartHypothesis*>::const_iterator p = topLevelHypos.begin();
   const ChartHypothesis &bestTopLevelHypo = **p;
+
+  // TODO - this was a boost::scoped_ptr. Made it a ptr - compile error with mempool. Need destructor
   ChartHypothesis *supremeHypo(
 		ChartHypothesis::Create(bestTopLevelHypo, *this));
 
