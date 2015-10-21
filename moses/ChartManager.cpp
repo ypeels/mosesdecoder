@@ -64,6 +64,7 @@ ChartManager::~ChartManager()
   float et = (end - m_start);
   et /= (float)CLOCKS_PER_SEC;
   VERBOSE(1, "Translation took " << et << " seconds" << endl);
+  GetHypoPool().DestroyAll();
 
 }
 

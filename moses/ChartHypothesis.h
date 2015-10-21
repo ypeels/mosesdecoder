@@ -47,6 +47,7 @@ class ChartHypothesis
 {
   friend std::ostream& operator<<(std::ostream&, const ChartHypothesis&);
 //  friend class ChartKBestExtractor;
+  friend util::ObjectPool<ChartHypothesis>;
 
 protected:
   boost::shared_ptr<ChartTranslationOption> m_transOpt;
