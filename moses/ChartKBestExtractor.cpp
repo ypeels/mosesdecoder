@@ -48,6 +48,9 @@ void ChartKBestExtractor::Extract(
   const ChartHypothesis &bestTopLevelHypo = **p;
 
   // TODO - this was a boost::scoped_ptr. Made it a ptr - compile error with mempool. Need destructor
+  //boost::scoped_ptr<ChartHypothesis> supremeHypo(
+  //    new ChartHypothesis(bestTopLevelHypo, *this));
+
   ChartHypothesis *supremeHypo(
 		ChartHypothesis::Create(bestTopLevelHypo, *this));
 

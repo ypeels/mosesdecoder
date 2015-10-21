@@ -40,13 +40,17 @@ ChartHypothesis *ChartHypothesis::Create(const ChartTranslationOptions &transOpt
         const RuleCubeItem &item,
         ChartManager &manager)
 {
-	ChartHypothesis *hypo = new ChartHypothesis(transOpt, item, manager);
+	util::ObjectPool<ChartHypothesis> &pool = manager.GetHypoPool();
+	ChartHypothesis *mem = pool.Get();
+
+	ChartHypothesis *hypo = new (mem) ChartHypothesis(transOpt, item, manager);
 	return hypo;
 }
 
 ChartHypothesis *ChartHypothesis::Create(const ChartHypothesis &pred,
         const ChartKBestExtractor &unused)
 {
+	// TODO - ask phil williams. Don't use mem pool here
 	ChartHypothesis *hypo = new ChartHypothesis(pred, unused);
 	return hypo;
 }

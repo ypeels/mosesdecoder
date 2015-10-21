@@ -47,13 +47,18 @@ Hypothesis *Hypothesis::Create(Manager& manager, InputType const& source, const 
 {
 	util::ObjectPool<Hypothesis> &pool = manager.GetHypoPool();
 	Hypothesis *mem = pool.Get();
+
 	Hypothesis *hypo = new(mem) Hypothesis(manager, source, initialTransOpt, bitmap);
 	return hypo;
 }
 
 Hypothesis *Hypothesis::Create(const Hypothesis &prevHypo, const TranslationOption &transOpt, const WordsBitmap &bitmap)
 {
-	Hypothesis *hypo = new Hypothesis(prevHypo, transOpt, bitmap);
+	Manager &manager = prevHypo.GetManager();
+	util::ObjectPool<Hypothesis> &pool = manager.GetHypoPool();
+	Hypothesis *mem = pool.Get();
+
+	Hypothesis *hypo = new (mem) Hypothesis(prevHypo, transOpt, bitmap);
 	return hypo;
 }
 
