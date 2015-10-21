@@ -91,7 +91,7 @@ public:
 			T *list = (T*) *iter;
 			for (std::size_t i = 0; i < m_incrNum; ++i) {
 				T *obj = list + i;
-
+				obj->~T();
 			}
 		}
 
@@ -99,7 +99,7 @@ public:
 		T *list = (T*) free_list_.back();
 		for (std::size_t i = 0; i < m_currInd; ++i) {
 			T *obj = list + i;
-
+			obj->~T();
 		}
 
 		// reset variables
