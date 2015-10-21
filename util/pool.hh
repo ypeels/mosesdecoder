@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <stdint.h>
+#include <iostream>
 
 namespace util {
 
@@ -51,19 +52,18 @@ public:
 	,m_currInd(0)
 	,m_listInd(0)
 	{
-	  std::size_t size = incrNum * sizeof(T);
-	  Allocate(size);
+	  More();
 	}
 
 	void More()
 	{
 	  std::size_t size = m_incrNum * sizeof(T);
+	  std::cerr << "More=" << free_list_.size() << std::endl;
 	  Pool::More(size);
 	}
 
 	T *Get()
 	{
-		++m_currInd;
 		if (m_currInd >= m_incrNum) {
 			// time to go to the next list
 			++m_listInd;
@@ -75,6 +75,9 @@ public:
 
 		T* ret = (T*)free_list_[m_listInd];
 		ret += m_currInd;
+
+		++m_currInd;
+
 		return ret;
 	}
 
@@ -90,7 +93,7 @@ public:
 			std::size_t maxEleInd = (listInd < free_list_.size() - 1) ? m_incrNum : m_currInd;
 			for (std::size_t eleInd = 0; eleInd < m_incrNum; ++eleInd) {
 				T *obj = list + eleInd;
-				obj->~T();
+				//				obj->~T();
 			}
 		}
 
