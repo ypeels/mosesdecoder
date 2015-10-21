@@ -63,6 +63,7 @@ public:
 
 	T *Get()
 	{
+		++m_currInd;
 		if (m_currInd >= m_incrNum) {
 			// time to go to the next list
 			++m_listInd;
@@ -70,9 +71,6 @@ public:
 				More();
 			}
 			m_currInd = 0;
-		}
-		else {
-			++m_currInd;
 		}
 
 		T* ret = (T*)free_list_[m_listInd];
@@ -87,19 +85,13 @@ public:
 		std::vector<void *>::const_iterator iterLast = free_list_.begin() + m_listInd;
 
 		std::vector<void *>::const_iterator iter;
-		for (iter = free_list_.begin(); iter != iterLast; ++iter) {
-			T *list = (T*) *iter;
-			for (std::size_t i = 0; i < m_incrNum; ++i) {
-				T *obj = list + i;
+		for (std::size_t listInd = 0; listInd < free_list_.size(); ++listInd) {
+			T *list = (T*) free_list_[listInd];
+			std::size_t maxEleInd = (listInd < free_list_.size() - 1) ? m_incrNum : m_currInd;
+			for (std::size_t eleInd = 0; eleInd < m_incrNum; ++eleInd) {
+				T *obj = list + eleInd;
 				obj->~T();
 			}
-		}
-
-		// last list
-		T *list = (T*) free_list_.back();
-		for (std::size_t i = 0; i < m_currInd; ++i) {
-			T *obj = list + i;
-			obj->~T();
 		}
 
 		// reset variables
