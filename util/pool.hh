@@ -93,7 +93,7 @@ public:
 			std::size_t maxEleInd = (listInd < free_list_.size() - 1) ? m_incrNum : m_currInd;
 			for (std::size_t eleInd = 0; eleInd < m_incrNum; ++eleInd) {
 				T *obj = list + eleInd;
-				//				obj->~T();
+				obj->~T();
 			}
 		}
 
