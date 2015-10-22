@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include "util/exception.hh"
+#include "util/scoped.hh"
 
 namespace util {
 
@@ -62,7 +63,8 @@ public:
 	{
 	  std::size_t size = m_incrNum * sizeof(T);
 	  std::cerr << "More=" << free_list_.size() << " " << size << std::endl;
-	  void *ret = malloc(size);
+	  //void *ret = malloc(size);
+          void *ret = MallocOrThrow(size);
           UTIL_THROW_IF2(ret == NULL, "Couldn't allocate mem");
 	  std::cerr << "ret=" << ret << std::endl;
 	  free_list_.push_back(ret);

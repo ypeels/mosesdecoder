@@ -320,7 +320,7 @@ CleanupArcList()
     // delete bad ones
     ArcList::iterator iter;
     for (iter = m_arcList->begin() + nBestSize; iter != m_arcList->end() ; ++iter)
-    	Hypothesis::Destroy(*iter);
+      Hypothesis::Destroy(*iter);
     m_arcList->erase(m_arcList->begin() + nBestSize, m_arcList->end());
   }
 

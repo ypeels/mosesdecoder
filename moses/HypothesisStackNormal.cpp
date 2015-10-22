@@ -205,7 +205,7 @@ void HypothesisStackNormal::PruneToSize(size_t newSize)
   // delete hypotheses that have not been included
   for(size_t i=0; i<hypos.size(); i++) {
     if (! included[i]) {
-    	Hypothesis::Destroy(hypos[i]);
+      Hypothesis::Destroy(hypos[i]);
       m_manager.GetSentenceStats().AddPruning();
     }
   }
