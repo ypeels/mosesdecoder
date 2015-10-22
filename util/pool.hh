@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <stdint.h>
+#include <stdlib.h>
 #include <iostream>
 
 namespace util {
@@ -41,8 +42,9 @@ class Pool {
 };
 
 template<typename T>
-class ObjectPool : public Pool
+class ObjectPool
 {
+  std::vector<void *> free_list_;
   std::size_t m_incrNum;
   std::size_t m_currInd;
   std::size_t m_listInd;
@@ -58,8 +60,10 @@ public:
 	void More()
 	{
 	  std::size_t size = m_incrNum * sizeof(T);
-	  //std::cerr << "More=" << free_list_.size() << std::endl;
-	  Pool::More(size);
+	  std::cerr << "More=" << free_list_.size() << " " << size << std::endl;
+	  void *ret = malloc(size);
+	  std::cerr << "ret=" << ret << std::endl;
+	  free_list_.push_back(ret);
 	}
 
 	T *Get()
