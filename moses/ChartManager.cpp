@@ -889,7 +889,7 @@ ChartManager::HypoPool &ChartManager::SetHypoPool()
   HypoPool *cache;
   cache = m_hypoPools.get();
   if (cache == NULL) {
-	cache = new HypoPool(10000);
+	cache = new HypoPool(50000);
 	m_hypoPools.reset(cache);
   }
   assert(cache);
