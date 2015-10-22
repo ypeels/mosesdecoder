@@ -58,7 +58,7 @@ public:
 	void More()
 	{
 	  std::size_t size = m_incrNum * sizeof(T);
-	  std::cerr << "More=" << free_list_.size() << std::endl;
+	  //std::cerr << "More=" << free_list_.size() << std::endl;
 	  Pool::More(size);
 	}
 
@@ -84,14 +84,10 @@ public:
 	void DestroyAll()
 	{
 		// call all destructors
-		// every list, except last
-		std::vector<void *>::const_iterator iterLast = free_list_.begin() + m_listInd;
-
-		std::vector<void *>::const_iterator iter;
-		for (std::size_t listInd = 0; listInd < free_list_.size(); ++listInd) {
+		for (std::size_t listInd = 0; listInd <= m_listInd; ++listInd) {
 			T *list = (T*) free_list_[listInd];
-			std::size_t maxEleInd = (listInd < free_list_.size() - 1) ? m_incrNum : m_currInd;
-			for (std::size_t eleInd = 0; eleInd < m_incrNum; ++eleInd) {
+			std::size_t maxEleInd = (listInd == m_listInd) ? m_currInd : m_incrNum;
+			for (std::size_t eleInd = 0; eleInd < maxEleInd; ++eleInd) {
 				T *obj = list + eleInd;
 				obj->~T();
 			}

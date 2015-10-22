@@ -87,7 +87,10 @@ Manager::~Manager()
   delete m_transOptColl;
   delete m_search;
   StaticData::Instance().CleanUpAfterSentenceProcessing(m_ttask.lock());
+
+  //cerr << "before DestroyAll" << endl;
   GetHypoPool().DestroyAll();
+  //cerr << "after DestroyAll" << endl;
 }
 
 const InputType&
