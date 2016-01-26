@@ -20,9 +20,7 @@ namespace Moses2
 namespace NSCubePruning
 {
 MiniStack::MiniStack(const Manager &mgr)
-:m_collAlloc(mgr.GetPool())
-,m_coll(m_collAlloc)
-,m_sortedHyposAlloc(mgr.GetPool())
+:m_sortedHyposAlloc(mgr.GetPool())
 ,m_sortedHypos(NULL)
 {}
 
@@ -125,10 +123,6 @@ void MiniStack::Clear()
 ///////////////////////////////////////////////////////////////
 Stack::Stack(const Manager &mgr)
 :m_mgr(mgr)
-,m_collAlloc(mgr.GetPool())
-,m_coll(m_collAlloc)
-,m_miniStackRecyclerAlloc(mgr.GetPool())
-,m_miniStackRecycler(m_miniStackRecyclerAlloc)
 {
 }
 

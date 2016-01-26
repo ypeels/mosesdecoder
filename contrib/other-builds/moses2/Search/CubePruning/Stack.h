@@ -29,8 +29,7 @@ class MiniStack
 public:
 	typedef boost::unordered_set<const Hypothesis*,
 			  UnorderedComparer<Hypothesis>,
-			  UnorderedComparer<Hypothesis>,
-			  MemPoolAllocator<const Hypothesis*>
+			  UnorderedComparer<Hypothesis>
 			   > _HCType;
 
 	MiniStack(const Manager &mgr);
@@ -48,7 +47,6 @@ public:
 	Hypotheses &GetSortedAndPruneHypos(const Manager &mgr) const;
 
 protected:
-	MemPoolAllocator<const Hypothesis*> m_collAlloc;
 	_HCType m_coll;
 
 	mutable MemPoolAllocator<const Hypothesis*> m_sortedHyposAlloc;
@@ -70,7 +68,6 @@ public:
   typedef boost::unordered_map<HypoCoverage, MiniStack*
 		  ,boost::hash<HypoCoverage>
 		  ,std::equal_to<HypoCoverage>
-		  ,MemPoolAllocator< std::pair<HypoCoverage, MiniStack*> >
   	  	  > Coll;
 
 
@@ -96,11 +93,9 @@ public:
 protected:
 	const Manager &m_mgr;
 
-	MemPoolAllocator< std::pair<HypoCoverage, MiniStack*> > m_collAlloc;
 	Coll m_coll;
 
-	MemPoolAllocator<MiniStack*> m_miniStackRecyclerAlloc;
-	std::deque<MiniStack*, MemPoolAllocator<MiniStack*> > m_miniStackRecycler;
+	std::deque<MiniStack*> m_miniStackRecycler;
 
 
 };
