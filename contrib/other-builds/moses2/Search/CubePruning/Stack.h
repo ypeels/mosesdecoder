@@ -92,8 +92,11 @@ public:
 
 protected:
 	const Manager &m_mgr;
+
+	MemPoolAllocator< std::pair<HypoCoverage, MiniStack*> > m_collAlloc;
 	Coll m_coll;
 
+	MemPoolAllocator<MiniStack*> m_miniStackRecyclerAlloc;
 	std::deque<MiniStack*, MemPoolAllocator<MiniStack*> > m_miniStackRecycler;
 
 
