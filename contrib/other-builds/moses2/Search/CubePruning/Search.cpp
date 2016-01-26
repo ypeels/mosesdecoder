@@ -30,10 +30,12 @@ Search::Search(Manager &mgr)
 ,m_stack(mgr)
 ,m_cubeEdgeAlloc(mgr.GetPool())
 
+,m_queueAlloc(mgr.GetPool())
 ,m_queue(QueueItemOrderer(),
-		std::vector<QueueItem*, MemPoolAllocator<QueueItem*> >(MemPoolAllocator<QueueItem*>(mgr.GetPool())) )
+		std::vector<QueueItem*, MemPoolAllocator<QueueItem*> >(m_queueAlloc) )
 
-,m_seenPositions(MemPoolAllocator<CubeEdge::SeenPositionItem>(mgr.GetPool()))
+,m_seenPositionsAlloc(mgr.GetPool())
+,m_seenPositions(m_seenPositionsAlloc)
 {
 }
 

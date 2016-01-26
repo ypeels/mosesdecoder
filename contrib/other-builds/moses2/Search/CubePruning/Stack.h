@@ -48,6 +48,7 @@ public:
 	Hypotheses &GetSortedAndPruneHypos(const Manager &mgr) const;
 
 protected:
+	MemPoolAllocator<const Hypothesis*> m_collAlloc;
 	_HCType m_coll;
 	mutable Hypotheses *m_sortedHypos;
 
