@@ -22,6 +22,7 @@ namespace NSCubePruning
 MiniStack::MiniStack(const Manager &mgr)
 :m_collAlloc(mgr.GetPool())
 ,m_coll(m_collAlloc)
+,m_sortedHyposAlloc(mgr.GetPool())
 ,m_sortedHypos(NULL)
 {}
 
@@ -60,7 +61,7 @@ Hypotheses &MiniStack::GetSortedAndPruneHypos(const Manager &mgr) const
   if (m_sortedHypos == NULL) {
     // create sortedHypos first
     MemPool &pool = mgr.GetPool();
-	m_sortedHypos = new (pool.Allocate< Vector<const Hypothesis*> >()) Vector<const Hypothesis*>(pool, m_coll.size());
+	m_sortedHypos = new (pool.Allocate< Vector<const Hypothesis*> >()) Vector<const Hypothesis*>(m_sortedHyposAlloc, m_coll.size());
 
 	  size_t ind = 0;
 	  BOOST_FOREACH(const Hypothesis *hypo, m_coll) {

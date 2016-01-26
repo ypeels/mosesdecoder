@@ -50,6 +50,8 @@ public:
 protected:
 	MemPoolAllocator<const Hypothesis*> m_collAlloc;
 	_HCType m_coll;
+
+	mutable MemPoolAllocator<const Hypothesis*> m_sortedHyposAlloc;
 	mutable Hypotheses *m_sortedHypos;
 
 	void SortAndPruneHypos(const Manager &mgr) const;

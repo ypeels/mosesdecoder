@@ -23,7 +23,9 @@ namespace NSCubePruningCardinalStack
 ///////////////////////////////////////////////////////////////
 Stack::Stack(const Manager &mgr)
 :m_mgr(mgr)
-,m_coll(MemPoolAllocator<const Hypothesis*>(mgr.GetPool()))
+,m_collAlloc(mgr.GetPool())
+,m_coll(m_collAlloc)
+,m_sortedHyposAlloc(mgr.GetPool())
 {
 }
 
@@ -100,7 +102,7 @@ Stack::SortedHypos Stack::GetSortedAndPruneHypos(const Manager &mgr) const
 	  SortedHypos::iterator iter;
 	  iter = ret.find(key);
 	  if (iter == ret.end()) {
-		  hypos = new (pool.Allocate<Hypotheses>()) Hypotheses(pool);
+		  hypos = new (pool.Allocate<Hypotheses>()) Hypotheses(m_sortedHyposAlloc);
 		  ret[key] = hypos;
 	  }
 	  else {

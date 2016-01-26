@@ -170,9 +170,12 @@ public:
 	MemPoolAllocator(Moses2::MemPool &pool)
 	:m_pool(pool)
 	{}
+
+	/*
 	MemPoolAllocator(const MemPoolAllocator &other)
 	:m_pool(other.m_pool)
 	{}
+	*/
 
 	template< class U >
 	MemPoolAllocator( const MemPoolAllocator<U>& other )

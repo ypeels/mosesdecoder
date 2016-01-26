@@ -46,6 +46,7 @@ public:
 
 	//const TargetPhrases *Clone(MemPool &pool, const System &system) const;
 protected:
+	MemPoolAllocator<const TargetPhrase*> m_collAlloc;
 	Coll m_coll;
 	size_t m_currInd;
 };

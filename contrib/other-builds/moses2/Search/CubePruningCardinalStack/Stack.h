@@ -58,7 +58,12 @@ public:
 
 protected:
 	const Manager &m_mgr;
+
+	MemPoolAllocator<const Hypothesis*> m_collAlloc;
 	_HCType m_coll;
+
+	mutable MemPoolAllocator<const Hypothesis*> m_sortedHyposAlloc;
+
 
 };
 

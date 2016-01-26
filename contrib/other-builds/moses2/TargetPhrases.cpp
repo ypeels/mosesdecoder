@@ -14,7 +14,8 @@ namespace Moses2
 {
 
 TargetPhrases::TargetPhrases(MemPool &pool, size_t reserve)
-:m_coll(pool, reserve)
+:m_collAlloc(pool)
+,m_coll(m_collAlloc, reserve)
 ,m_currInd(0)
 {
 }
