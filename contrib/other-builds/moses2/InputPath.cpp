@@ -22,12 +22,12 @@ InputPath::InputPath(MemPool &pool,
 ,m_isUsed(false)
 {
   targetPhrases = pool.Allocate<const TargetPhrases*>(numPt);
-  Init<const TargetPhrases*>(targetPhrases, numPt, NULL);
-  /*
+  //Init<const TargetPhrases*>(targetPhrases, numPt, NULL);
+  
   for (size_t i = 0; i < numPt; ++i) {
     targetPhrases[i] = NULL;
   }
-  */
+  
 }
 
 InputPath::~InputPath() {
