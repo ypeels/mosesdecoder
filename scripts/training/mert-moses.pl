@@ -1401,7 +1401,7 @@ sub get_featlist_from_moses {
       $cmd = "MOSES_INI=`$SCRIPTS_ROOTDIR/ems/support/cache-model.perl $configfn $___CACHE_MODEL` && ";
       $configfn = "\$MOSES_INI";
     }
-    $cmd .= "$___DECODER $___DECODER_FLAGS -config $configfn";
+    $cmd .= "$___DECODER -config $configfn"; # $___DECODER_FLAGS -config $configfn";
     $cmd .= " -inputtype $___INPUTTYPE" if defined($___INPUTTYPE);
     $cmd .= " -show-weights";
     print STDERR "Executing: $cmd\n";
