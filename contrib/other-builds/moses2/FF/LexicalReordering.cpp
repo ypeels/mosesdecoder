@@ -7,6 +7,7 @@
 
 #include <boost/foreach.hpp>
 #include "LexicalReordering.h"
+#include "../TranslationModel/PhraseTable.h"
 #include "../System.h"
 #include "../Search/Manager.h"
 #include "../legacy/InputFileStream.h"

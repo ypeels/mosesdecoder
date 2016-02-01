@@ -187,7 +187,7 @@ TargetPhrase *ProbingPT::CreateTargetPhrase(MemPool &pool, const System &system,
   const std::vector<unsigned int> &probingPhrase = probingTargetPhrase.target_phrase;
   size_t size = probingPhrase.size();
 
-  TargetPhrase *tp = new (pool.Allocate<TargetPhrase>()) TargetPhrase(pool, system, size);
+  TargetPhrase *tp = new (pool.Allocate<TargetPhrase>()) TargetPhrase(pool, *this, system, size);
 
   // words
   for (size_t i = 0; i < size; ++i) {

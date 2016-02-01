@@ -49,8 +49,8 @@ void Manager::Init()
 	m_hypoRecycle = &system.GetHypoRecycler();
 	m_bitmaps = new Bitmaps(GetPool());
 
-	m_initPhrase = new (GetPool().Allocate<TargetPhrase>()) TargetPhrase(GetPool(), system, 0);
-
+	const PhraseTable &firstPt = *system.featureFunctions.m_phraseTables[0];
+	m_initPhrase = new (GetPool().Allocate<TargetPhrase>()) TargetPhrase(GetPool(), firstPt, system, 0);
 
 	// create input phrase obj
 	FactorCollection &vocab = system.GetVocab();
@@ -65,7 +65,6 @@ void Manager::Init()
 		pt.Lookup(*this, m_inputPaths);
 	}
 	//m_inputPaths.DeleteUnusedPaths();
-
 	CalcFutureScore();
 
 	m_bitmaps->Init(m_input->GetSize(), vector<bool>(0));

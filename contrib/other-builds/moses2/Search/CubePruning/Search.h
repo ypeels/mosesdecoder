@@ -36,6 +36,7 @@ protected:
 	Stack m_stack;
 
 	CubeEdge::Queue m_queue;
+
 	CubeEdge::SeenPositions m_seenPositions;
 
 	// CUBE PRUNING VARIABLES
