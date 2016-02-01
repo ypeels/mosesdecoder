@@ -26,7 +26,8 @@ namespace Moses2
 {
 
 Bitmap::Bitmap(MemPool &pool, size_t size)
-  :m_bitmap(pool, size)
+:m_bitmapAlloc(pool)
+,m_bitmap(m_bitmapAlloc, size)
 {
 }
 
